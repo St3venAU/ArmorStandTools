@@ -236,9 +236,9 @@ public class MainListener implements Listener {
                         Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
                     }
                     break;
-                case NODEL:
+                case NODEL: // Developer tool - do not use
                     if(as.getMaxHealth() == 50) {
-                        as.setMaxHealth(2);
+                        as.setMaxHealth(20);
                         p.sendMessage(ChatColor.GREEN + "Deletion Protection: Disabled");
                     } else {
                         as.setMaxHealth(50);
@@ -455,7 +455,7 @@ public class MainListener implements Listener {
         EulerAngle bo = as.getBodyPose();
         String cmd =
                 "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
-                        + (as.getMaxHealth() != 2     ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
+                        + (as.getMaxHealth() != 20    ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
                         + (as.isVisible()             ? "" : "Invisible:1,")
                         + (as.hasBasePlate()          ? "" : "NoBasePlate:1,")
                         + (as.hasGravity()            ? "" : "NoGravity:1,")
@@ -587,7 +587,7 @@ public class MainListener implements Listener {
     private ArmorStand getArmorStand(Block b) {
         UUID uuid = null;
         for (MetadataValue value : b.getMetadata("armorStand")) {
-            if (value.getOwningPlugin() == this) {
+            if (value.getOwningPlugin() == plugin) {
                 uuid = (UUID) value.value();
             }
         }
