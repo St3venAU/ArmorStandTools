@@ -53,17 +53,16 @@ public class MainListener implements Listener {
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
-            if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && !permissionCheck(plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), p)) {
+            if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
                 Utils.actionBarMsg(p, Config.asDropped);
                 event.setCancelled(true);
                 return;
             }
-            if (!p.hasPermission("astools.use") && !p.isOp()) return;
             ArmorStandTool tool = ArmorStandTool.get(p.getItemInHand());
             if(tool == null) return;
             ArmorStand as = (ArmorStand) event.getRightClicked();
-            Block b = as.getLocation().getBlock();
+            if (!playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) return;
             double num = event.getClickedPosition().getY() - 0.05;
             if (num < 0) {
                 num = 0;
@@ -76,157 +75,115 @@ public class MainListener implements Listener {
 
             switch(tool) {
                 case HEADX:
-                    if(permissionCheck(b, p)) return;
                     as.setHeadPose(as.getHeadPose().setX(angle));
                     break;
                 case HEADY:
-                    if(permissionCheck(b, p)) return;
                     as.setHeadPose(as.getHeadPose().setY(angle));
                     break;
                 case HEADZ:
-                    if(permissionCheck(b, p)) return;
                     as.setHeadPose(as.getHeadPose().setZ(angle));
                     break;
                 case LARMX:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftArmPose(as.getLeftArmPose().setX(angle));
                     break;
                 case LARMY:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftArmPose(as.getLeftArmPose().setY(angle));
                     break;
                 case LARMZ:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftArmPose(as.getLeftArmPose().setZ(angle));
                     break;
                 case RARMX:
-                    if(permissionCheck(b, p)) return;
                     as.setRightArmPose(as.getRightArmPose().setX(angle));
                     break;
                 case RARMY:
-                    if(permissionCheck(b, p)) return;
                     as.setRightArmPose(as.getRightArmPose().setY(angle));
                     break;
                 case RARMZ:
-                    if(permissionCheck(b, p)) return;
                     as.setRightArmPose(as.getRightArmPose().setZ(angle));
                     break;
                 case LLEGX:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftLegPose(as.getLeftLegPose().setX(angle));
                     break;
                 case LLEGY:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftLegPose(as.getLeftLegPose().setY(angle));
                     break;
                 case LLEGZ:
-                    if(permissionCheck(b, p)) return;
                     as.setLeftLegPose(as.getLeftLegPose().setZ(angle));
                     break;
                 case RLEGX:
-                    if(permissionCheck(b, p)) return;
                     as.setRightLegPose(as.getRightLegPose().setX(angle));
                     break;
                 case RLEGY:
-                    if(permissionCheck(b, p)) return;
                     as.setRightLegPose(as.getRightLegPose().setY(angle));
                     break;
                 case RLEGZ:
-                    if(permissionCheck(b, p)) return;
                     as.setRightLegPose(as.getRightLegPose().setZ(angle));
                     break;
                 case BODYX:
-                    if(permissionCheck(b, p)) return;
                     as.setBodyPose(as.getBodyPose().setX(angle));
                     break;
                 case BODYY:
-                    if(permissionCheck(b, p)) return;
                     as.setBodyPose(as.getBodyPose().setY(angle));
                     break;
                 case BODYZ:
-                    if(permissionCheck(b, p)) return;
                     as.setBodyPose(as.getBodyPose().setZ(angle));
                     break;
                 case MOVEX:
-                    if(permissionCheck(b, p)) return;
                     as.teleport(as.getLocation().add(0.05 * (p.isSneaking() ? -1 : 1), 0.0, 0.0));
                     break;
                 case MOVEY:
-                    if(permissionCheck(b, p)) return;
                     as.teleport(as.getLocation().add(0.0, 0.05 * (p.isSneaking() ? -1 : 1), 0.0));
                     break;
                 case MOVEZ:
-                    if(permissionCheck(b, p)) return;
                     as.teleport(as.getLocation().add(0.0, 0.0, 0.05 * (p.isSneaking() ? -1 : 1)));
                     break;
                 case ROTAT:
-                    if(permissionCheck(b, p)) return;
                     Location l = as.getLocation();
                     l.setYaw(((float) num) * 180F);
                     as.teleport(l);
                     break;
                 case INVIS:
-                    if(permissionCheck(b, p)) return;
                     as.setVisible(!as.isVisible());
                     p.sendMessage(ChatColor.GREEN + Config.asVisible + ": " + (as.isVisible() ? Config.isTrue : Config.isFalse));
                     break;
                 case CLONE:
-                    if (p.hasPermission("astools.clone") || p.isOp()) {
-                        if(permissionCheck(b, p)) return;
-                        pickUpArmorStand(clone(as), p, true);
-                        p.sendMessage(ChatColor.GREEN + Config.asCloned);
-                        Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
-                    } else {
-                        p.sendMessage(ChatColor.RED + Config.noPerm);
-                    }
+                    pickUpArmorStand(clone(as), p, true);
+                    p.sendMessage(ChatColor.GREEN + Config.asCloned);
+                    Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
                     break;
                 case SAVE:
-                    if (p.hasPermission("astools.cmdblock") || p.isOp()) {
-                        if(permissionCheck(b, p)) return;
-                        generateCmdBlock(p.getLocation(), as);
-                        p.sendMessage(ChatColor.GREEN + Config.cbCreated);
-                    } else {
-                        p.sendMessage(ChatColor.RED + Config.noPerm);
-                    }
+                    generateCmdBlock(p.getLocation(), as);
+                    p.sendMessage(ChatColor.GREEN + Config.cbCreated);
                     break;
                 case SIZE:
-                    if(permissionCheck(b, p)) return;
                     as.setSmall(!as.isSmall());
                     p.sendMessage(ChatColor.GREEN + Config.size + ": " + (as.isSmall() ? Config.small : Config.normal));
                     break;
                 case BASE:
-                    if(permissionCheck(b, p)) return;
                     as.setBasePlate(!as.hasBasePlate());
                     p.sendMessage(ChatColor.GREEN + Config.basePlate + ": " + (as.hasBasePlate() ? Config.isOn : Config.isOff));
                     break;
                 case GRAV:
-                    if(permissionCheck(b, p)) return;
                     as.setGravity(!as.hasGravity());
                     p.sendMessage(ChatColor.GREEN + Config.gravity + ": " + (as.hasGravity() ? Config.isOn : Config.isOff));
                     break;
                 case ARMS:
-                    if(permissionCheck(b, p)) return;
                     as.setArms(!as.hasArms());
                     p.sendMessage(ChatColor.GREEN + Config.arms + ": " + (as.hasArms() ? Config.isOn : Config.isOff));
                     break;
                 case NAME:
-                    if(permissionCheck(b, p)) return;
                     setName(p, as);
                     break;
                 case PHEAD:
-                    if(permissionCheck(b, p)) return;
                     setPlayerSkull(p, as);
                     break;
                 case INVUL:
-                    if(permissionCheck(b, p)) return;
                     p.sendMessage(ChatColor.GREEN + Config.invul + ": " + (NBT.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
                     break;
                 case SLOTS:
-                    if(permissionCheck(b, p)) return;
                     p.sendMessage(ChatColor.GREEN + Config.equip + ": " + (NBT.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
                     break;
                 case MOVE:
-                    if(permissionCheck(b, p)) return;
                     UUID uuid = p.getUniqueId();
                     if(plugin.carryingArmorStand.containsKey(uuid)) {
                         plugin.carryingArmorStand.remove(uuid);
@@ -258,6 +215,8 @@ public class MainListener implements Listener {
         if (event.getRightClicked() instanceof ItemFrame && ArmorStandTool.isTool(event.getPlayer().getItemInHand())) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
+        } else if(!(event.getRightClicked() instanceof ArmorStand) && ArmorStandTool.NAME.is(event.getPlayer().getItemInHand())) {
+            event.setCancelled(true);
         }
     }
 
@@ -378,28 +337,33 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        ItemStack inHand = event.getItem();
-        if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && !permissionCheck(plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), p)) {
+        if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
             plugin.carryingArmorStand.remove(p.getUniqueId());
             Utils.actionBarMsg(p, Config.asDropped);
             event.setCancelled(true);
             return;
         }
-        if(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (ArmorStandTool.isTool(inHand)) {
-                event.setCancelled(true);
-                Utils.cycleInventory(p);
-            }
-        } else if(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if(ArmorStandTool.SUMMON.is(inHand)) {
-                event.setCancelled(true);
-                Location l = Utils.getLocationFacingPlayer(p);
-                if(permissionCheck(l.getBlock(), p)) return;
-                pickUpArmorStand(spawnArmorStand(l), p, true);
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
-                p.updateInventory();
-            } else if(ArmorStandTool.NAME.is(inHand)) {
-                event.setCancelled(true);
+        Action action = event.getAction();
+        ArmorStandTool tool = ArmorStandTool.get(event.getItem());
+        if(tool == null) return;
+        if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            event.setCancelled(true);
+            Utils.cycleInventory(p);
+            return;
+        }
+        if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+            if(!playerHasPermission(p, p.getLocation().getBlock(), tool)) return;
+            switch (tool) {
+                case SUMMON:
+                    event.setCancelled(true);
+                    Location l = Utils.getLocationFacingPlayer(p);
+                    pickUpArmorStand(spawnArmorStand(l), p, true);
+                    Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                    p.updateInventory();
+                    break;
+                case NAME:
+                    event.setCancelled(true);
+                    break;
             }
         }
     }
@@ -602,13 +566,19 @@ public class MainListener implements Listener {
         return null;
     }
 
-    boolean permissionCheck(Block b, Player p) {
-        if(Config.worldGuardPlugin == null) return false;
+    boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+        if(!p.isOp() && (!p.hasPermission("astools.use")
+                     || (ArmorStandTool.SAVE == tool  && !p.hasPermission("astools.cmdblock"))
+                     || (ArmorStandTool.CLONE == tool && !p.hasPermission("astools.clone")))) {
+            p.sendMessage(ChatColor.RED + Config.noPerm);
+            return false;
+        }
+        if(Config.worldGuardPlugin == null) return true;
         boolean canBuild = Config.worldGuardPlugin.canBuild(p, b);
         if(!canBuild) {
             p.sendMessage(ChatColor.RED + Config.wgNoPerm);
         }
-        return !canBuild;
+        return canBuild;
     }
 
     void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
