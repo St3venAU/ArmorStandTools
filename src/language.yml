@@ -1,0 +1,227 @@
+# Armor Stand Tools Language Config
+#
+# Edit these strings if you wish to customize the wording
+# or the language of the text used in this plugin.
+#
+# IMPORTANT: Only edit the text that is between the single
+# quotation marks: 'like this'
+# If you change anything outside of the quotation marks,
+# errors will occur.
+# Do not use ' marks inside the string itself.
+#
+# If you ever wish to return to the default language config
+# then delete this file and reload the plugin. A new default
+# file will be generated.
+#
+####################
+# General Messages #
+####################
+invReturned: 'Inventory contents returned'
+asDropped: 'Armor stand dropped'
+asVisible: 'Armor stand visible'
+isTrue: 'True'
+isFalse: 'False'
+asCloned: 'Armor stand cloned'
+carrying: 'Carrying armor stand. Click to drop.'
+noPerm: 'You do not have permission to use this tool'
+cbCreated: 'Command block created'
+size: 'Size'
+small: 'Small'
+normal: 'Normal'
+basePlate: 'Base plate'
+isOn: 'On'
+isOff: 'Off'
+gravity: 'Gravity'
+arms: 'Arms'
+invul: 'Invulnerability'
+equip: 'Equipment'
+locked: 'Locked'
+unLocked: 'Un-Locked'
+notConsole: 'This command can not be run from console'
+giveMsg1: 'Given armor stand tools. L-click any tool to cycle through tools.'
+giveMsg2: 'Run this command again to return your inventory.'
+conReload: 'Armor Stand Tools config reloaded'
+noRelPerm: 'You do not have permission to reload the plugin'
+noAirError: 'Error: Failed to find a near-by air block. Move and try again.'
+pleaseWait: 'Please wait, this may take a few seconds...'
+appliedHead: 'Applied the head of player'
+noHead: 'No player head found for player'
+invalidName: 'is not a valid minecraft username'
+wgNoPerm: 'You do not have permission to alter an armor stand in this region'
+#
+#############################
+# Tool names & descriptions #
+#############################
+tool:
+  headX:
+    name: 'Head X'
+    lore:
+      - 'R-Click armor stand to change Head X Value'
+      - 'Value depends on how high up the body you click'
+  headY:
+    name: 'Head Y'
+    lore:
+      - 'R-Click armor stand to change Head Y Value'
+      - 'Value depends on how high up the body you click'
+  headZ:
+    name: 'Head Z'
+    lore:
+      - 'R-Click armor stand to change Head Z Value'
+      - 'Value depends on how high up the body you click'
+  lArmX:
+    name: 'Left Arm X'
+    lore:
+      - 'R-Click armor stand to change Left Arm X Value'
+      - 'Value depends on how high up the body you click'
+  lArmY:
+    name: 'Left Arm Y'
+    lore:
+      - 'R-Click armor stand to change Left Arm Y Value'
+      - 'Value depends on how high up the body you click'
+  lArmZ:
+    name: 'Left Arm Z'
+    lore:
+      - 'R-Click armor stand to change Left Arm Z Value'
+      - 'Value depends on how high up the body you click'
+  rArmX:
+    name: 'Right Arm X'
+    lore:
+      - 'R-Click armor stand to change Right Arm X Value'
+      - 'Value depends on how high up the body you click'
+  rArmY:
+    name: 'Right Arm Y'
+    lore:
+      - 'R-Click armor stand to change Right Arm Y Value'
+      - 'Value depends on how high up the body you click'
+  rArmZ:
+    name: 'Right Arm Z'
+    lore:
+      - 'R-Click armor stand to change Right Arm Z Value'
+      - 'Value depends on how high up the body you click'
+  moveX:
+    name: 'Move X'
+    lore:
+      - 'R-Click armor stand to move +0.1 X'
+      - 'Crouch R-Click for -0.1 X'
+  moveY:
+    name: 'Move Y'
+    lore:
+      - 'R-Click armor stand to move +0.1 Y'
+      - 'Crouch R-Click for -0.1 Y'
+  moveZ:
+    name: 'Move Z'
+    lore:
+      - 'R-Click armor stand to move +0.1 Z'
+      - 'Crouch R-Click for -0.1 Z'
+  rotat:
+    name: 'Rotation'
+    lore:
+      - 'R-Click armor stand to change its Rotation'
+      - 'Value depends on how high up the body you click'
+  invis:
+    name: 'Toggle Visibility'
+    lore:
+      - 'R-Click armor stand to toggle its visibility'
+  summon:
+    name: 'Summon Armor Stand'
+    lore:
+      - 'R-Click to summon an armor stand and pick it up'
+      - 'Any click will drop it'
+      - 'To change summoned armor stand defaults, edit config.yml'
+  clone:
+    name: 'Clone'
+    lore:
+      - 'R-Click armor stand to pick up a clone of it'
+      - 'Any click will drop it'
+  save:
+    name: 'Create Command Block'
+    lore:
+      - 'R-Click armor stand to create command block'
+      - 'with a summon command for this armor stand'
+  lLegX:
+    name: 'Left Leg X'
+    lore:
+      - 'R-Click armor stand to change Left Leg X'
+      - 'Value depends on how high up the body you click'
+  lLegY:
+    name: 'Left Leg Y'
+    lore:
+      - 'R-Click armor stand to change Left Leg Y'
+      - 'Value depends on how high up the body you click'
+  lLegZ:
+    name: 'Left Leg Z'
+    lore:
+      - 'R-Click armor stand to change Left Leg Z'
+      - 'Value depends on how high up the body you click'
+  rLegX:
+    name: 'Right Leg X'
+    lore:
+      - 'R-Click armor stand to change Right Leg X'
+      - 'Value depends on how high up the body you click'
+  rLegY:
+    name: 'Right Leg Y'
+    lore:
+      - 'R-Click armor stand to change Right Leg Y'
+      - 'Value depends on how high up the body you click'
+  rLegZ:
+    name: 'Right Leg Z'
+    lore:
+      - 'R-Click armor stand to change Right Leg Z'
+      - 'Value depends on how high up the body you click'
+  bodyX:
+    name: 'Body X'
+    lore:
+      - 'R-Click armor stand to change Body Z'
+      - 'Value depends on how high up the body you click'
+  bodyY:
+    name: 'Body Y'
+    lore:
+      - 'R-Click armor stand to change Body Z'
+      - 'Value depends on how high up the body you click'
+  bodyZ:
+    name: 'Body Z'
+    lore:
+      - 'R-Click armor stand to change Body Z'
+      - 'Value depends on how high up the body you click'
+  size:
+    name: 'Toggle Size'
+    lore:
+      - 'R-Click armor stand to toggle its size'
+  base:
+    name: 'Toggle Base'
+    lore:
+      - 'R-Click armor stand to toggle its base'
+  grav:
+    name: 'Toggle Gravity'
+    lore:
+      - 'R-Click armor stand to toggle its gravity'
+  arms:
+    name: 'Toggle Arms'
+    lore:
+      - 'R-Click armor stand to toggle its arms'
+  name:
+    name: 'Set Name'
+    lore:
+      - 'R-Click armor stand to set its name'
+      - 'Standard color codes accepted'
+  slots:
+    name: 'Toggle Equipment Lock'
+    lore:
+      - 'R-Click armor stand to toggle equipment lock'
+      - 'When equipment is locked, players can not take or add equipment'
+  pHead:
+    name: 'Give a Player Head'
+    lore:
+      - 'R-Click armor stand and specify a player name to'
+      - 'give it that players head'
+      - '(Will not work if used multiple times too fast)'
+  invul:
+    name: 'Toggle Invulnerability'
+    lore:
+      - 'R-Click armor stand to toggle invulnerability'
+      - 'Note: Creative mode players can break invulnerable armor stands'
+  move:
+    name: 'Pick Up (Move)'
+    lore:
+      - 'R-Click armor stand to pick it up and move it'
+      - 'Any click will drop it again'
