@@ -24,6 +24,24 @@ class Utils {
         }
         return false;
     }
+    
+    public static boolean hasPermissionNode(Player player, String perm) {
+        if ((player == null) || player.isOp()) {
+            return true;
+        }
+        if (player.hasPermission(perm)) {
+            return true;
+        }
+        final String[] nodes = perm.split("\\.");
+        final StringBuilder n = new StringBuilder();
+        for (int i = 0; i < (nodes.length - 1); i++) {
+            n.append(nodes[i] + ("."));
+            if (player.hasPermission(n + "*")) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     static boolean hasItems(Player p) {
         for(ItemStack i : p.getInventory()) {

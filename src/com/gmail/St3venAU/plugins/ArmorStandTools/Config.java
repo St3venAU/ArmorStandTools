@@ -100,6 +100,12 @@ class Config {
         invulnerable  = config.getBoolean("invulnerable");
         equipmentLock = config.getBoolean("equipmentLock");
         plugin.carryingArmorStand.clear();
+        
+        Plugin plotSquared = plugin.getServer().getPluginManager().getPlugin("PlotSquared");
+        if (plotSquared != null && plotSquared.isEnabled()) {
+            new PlotSquaredHook(plugin);
+        }
+        
         Plugin worldGuard = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
         worldGuardPlugin = worldGuard == null || !(worldGuard instanceof WorldGuardPlugin) ? null : (WorldGuardPlugin) worldGuard;
         if(config.getBoolean("integrateWithWorldGuard")) {

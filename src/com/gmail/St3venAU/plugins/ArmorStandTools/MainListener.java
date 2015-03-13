@@ -1,5 +1,6 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -53,16 +55,24 @@ public class MainListener implements Listener {
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
-            if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
-                plugin.carryingArmorStand.remove(p.getUniqueId());
-                Utils.actionBarMsg(p, Config.asDropped);
-                event.setCancelled(true);
-                return;
+            if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
+                if (playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
+                    plugin.carryingArmorStand.remove(p.getUniqueId());
+                    Utils.actionBarMsg(p, Config.asDropped);
+                    event.setCancelled(true);
+                    return;
+                }
+                else {
+                    p.sendMessage(ChatColor.RED + Config.wgNoPerm);
+                }
             }
             ArmorStandTool tool = ArmorStandTool.get(p.getItemInHand());
             if(tool == null) return;
             ArmorStand as = (ArmorStand) event.getRightClicked();
-            if (!playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) return;
+            if (!playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) {
+                p.sendMessage(ChatColor.RED + Config.wgNoPerm);
+                return;
+            }
             double num = event.getClickedPosition().getY() - 0.05;
             if (num < 0) {
                 num = 0;
@@ -264,8 +274,12 @@ public class MainListener implements Listener {
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            as.teleport(Utils.getLocationFacingPlayer(p));
-            Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            Location loc = Utils.getLocationFacingPlayer(p);
+            Block block = loc.getBlock();
+            if (playerHasPermission(p, block, null)) {
+                as.teleport(loc);
+                Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            }
         }
     }
 
@@ -337,10 +351,16 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        if(plugin.carryingArmorStand.containsKey(p.getUniqueId()) && playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
-            plugin.carryingArmorStand.remove(p.getUniqueId());
-            Utils.actionBarMsg(p, Config.asDropped);
-            event.setCancelled(true);
+        if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
+            boolean perm = playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null);
+            if (perm) {
+                plugin.carryingArmorStand.remove(p.getUniqueId());
+                Utils.actionBarMsg(p, Config.asDropped);
+                event.setCancelled(true);
+            }
+            else {
+                p.sendMessage(ChatColor.RED + Config.wgNoPerm);
+            }
             return;
         }
         Action action = event.getAction();
@@ -351,8 +371,11 @@ public class MainListener implements Listener {
             Utils.cycleInventory(p);
             return;
         }
-        if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-            if(!playerHasPermission(p, p.getLocation().getBlock(), tool)) return;
+        else if(action == Action.RIGHT_CLICK_BLOCK) {
+            if (!playerHasPermission(p, event.getClickedBlock(), tool)) {
+                p.sendMessage(ChatColor.RED + Config.wgNoPerm);
+                return;
+            }
             switch (tool) {
                 case SUMMON:
                     event.setCancelled(true);
@@ -565,20 +588,49 @@ public class MainListener implements Listener {
         }
         return null;
     }
-
+    
+    public boolean checkPermission(Player player, Block block) {
+        
+        // Check PlotSquared
+        Location loc = block.getLocation();
+        if (PlotSquaredHook.api != null) {
+            if (PlotSquaredHook.isPlotWorld(loc)) {
+                boolean result = PlotSquaredHook.checkPermission(player, loc);
+                return result;
+            }
+        }
+        
+        // check WorldGuard
+        if(Config.worldGuardPlugin != null) {
+            boolean canBuild = Config.worldGuardPlugin.canBuild(player, block);
+            return canBuild;
+        }
+        
+        // Use standard permission checking (will support basically any plugin)
+        BlockBreakEvent mybreak = new BlockBreakEvent(block, player);
+        Bukkit.getServer().getPluginManager().callEvent(mybreak);
+        boolean hasperm;
+        if (mybreak.isCancelled()) {
+            hasperm = false;
+        } else {
+            hasperm = true;
+        }
+        BlockPlaceEvent place = new BlockPlaceEvent(block, block.getState(), block, null, player, true);
+        Bukkit.getServer().getPluginManager().callEvent(place);
+        if (place.isCancelled()) {
+          hasperm = false;
+        }
+        return hasperm;
+    }
+    
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
-        if(!p.isOp() && (!p.hasPermission("astools.use")
-                     || (ArmorStandTool.SAVE == tool  && !p.hasPermission("astools.cmdblock"))
-                     || (ArmorStandTool.CLONE == tool && !p.hasPermission("astools.clone")))) {
+        if(tool != null && !p.isOp() && (!Utils.hasPermissionNode(p, "astools.use")
+                     || (ArmorStandTool.SAVE == tool  && !Utils.hasPermissionNode(p, "astools.cmdblock"))
+                     || (ArmorStandTool.CLONE == tool && !Utils.hasPermissionNode(p, "astools.clone")))) {
             p.sendMessage(ChatColor.RED + Config.noPerm);
             return false;
         }
-        if(Config.worldGuardPlugin == null) return true;
-        boolean canBuild = Config.worldGuardPlugin.canBuild(p, b);
-        if(!canBuild) {
-            p.sendMessage(ChatColor.RED + Config.wgNoPerm);
-        }
-        return canBuild;
+        return checkPermission(p, b);
     }
 
     void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
