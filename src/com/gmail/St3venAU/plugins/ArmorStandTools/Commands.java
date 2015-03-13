@@ -23,6 +23,9 @@ class Commands implements CommandExecutor {
             return false;
         }
         Player p = (Player) sender;
+        if (!Utils.hasPermissionNode(p, "astools.command")) {
+            p.sendMessage(ChatColor.RED + "You don't have permission to use this command");
+        }
         if(args.length == 0) {
             UUID uuid = p.getUniqueId();
             if(plugin.savedInventories.containsKey(uuid)) {
@@ -39,7 +42,7 @@ class Commands implements CommandExecutor {
             }
         }
         if(args[0].equalsIgnoreCase("reload")) {
-            if(p.hasPermission("astools.reload")) {
+            if(Utils.hasPermissionNode(p, "astools.reload")) {
                 Config.reload();
                 p.sendMessage(ChatColor.GREEN + Config.conReload);
                 return true;

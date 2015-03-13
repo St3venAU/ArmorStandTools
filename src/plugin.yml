@@ -9,5 +9,3 @@ commands:
       description: Give yourself all of the armor stand tools (Warning; clears your inventory).
       aliases: ast
       usage: Usage /astools or /astools reload
-      permission: astools.command
-      permission-message: You don't have permission to use this command

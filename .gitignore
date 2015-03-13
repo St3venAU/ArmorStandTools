@@ -2,3 +2,7 @@
 libs/
 out/
 ArmorStand.iml
+/bin/
+
+*.project
+.classpath
