@@ -546,7 +546,7 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     private void setName(Player p, ArmorStand as) {
         Block b = Utils.findAnAirBlock(p.getLocation());
-        if(b == null) {
+        if(b == null || !checkPermission(p, b)) {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
