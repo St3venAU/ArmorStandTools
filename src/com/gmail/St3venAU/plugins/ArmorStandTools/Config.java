@@ -34,9 +34,9 @@ class Config {
             asCloned, carrying, noPerm, cbCreated, size, small,
             normal, basePlate, isOn, isOff, gravity, arms, invul,
             equip, locked, unLocked, notConsole, giveMsg1,
-            giveMsg2, conReload, noRelPerm, noAirError,
+            giveMsg2, conReload, noRelPerm, noHeadPerm, notTarget, notBlock, noAirError,
             pleaseWait, appliedHead, noHead, invalidName,
-            wgNoPerm;
+            wgNoPerm, setHead;
 
     public static void reload(Main main) {
         plugin = main;
@@ -74,12 +74,16 @@ class Config {
         giveMsg2 = languageConfig.getString("giveMsg2");
         conReload = languageConfig.getString("conReload");
         noRelPerm = languageConfig.getString("noRelPerm");
+        noHeadPerm = languageConfig.getString("noHeadPerm");
+        notTarget = languageConfig.getString("notTarget");
+        notBlock = languageConfig.getString("notBlock");
         noAirError = languageConfig.getString("noAirError");
         pleaseWait = languageConfig.getString("pleaseWait");
         appliedHead = languageConfig.getString("appliedHead");
         noHead = languageConfig.getString("noHead");
         invalidName = languageConfig.getString("invalidName");
         wgNoPerm = languageConfig.getString("wgNoPerm");
+        setHead = languageConfig.getString("setHead");
     }
 
     private static void reloadMainConfig() {

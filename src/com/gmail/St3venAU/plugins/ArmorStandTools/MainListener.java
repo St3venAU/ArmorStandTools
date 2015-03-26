@@ -212,8 +212,9 @@ public class MainListener implements Listener {
                         p.sendMessage(ChatColor.GREEN + "Deletion Protection: Enabled");
                     }
                     break;
-                default:
+                default: {
                     cancel = tool == ArmorStandTool.SUMMON || tool == ArmorStandTool.SAVE  || event.isCancelled();
+                }
             }
             event.setCancelled(cancel);
         }
@@ -570,7 +571,7 @@ public class MainListener implements Listener {
         b.setMetadata("armorStand", new FixedMetadataValue(plugin, as.getUniqueId()));
         b.setMetadata("setSkull", new FixedMetadataValue(plugin, true));
     }
-
+    
     private ArmorStand getArmorStand(Block b) {
         UUID uuid = null;
         for (MetadataValue value : b.getMetadata("armorStand")) {
@@ -589,7 +590,7 @@ public class MainListener implements Listener {
         return null;
     }
     
-    public boolean checkPermission(Player player, Block block) {
+    public static boolean checkPermission(Player player, Block block) {
         
         // Check PlotSquared
         Location loc = block.getLocation();
@@ -623,7 +624,7 @@ public class MainListener implements Listener {
         return hasperm;
     }
     
-    boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+    public static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
         if(tool != null && !p.isOp() && (!Utils.hasPermissionNode(p, "astools.use")
                      || (ArmorStandTool.SAVE == tool  && !Utils.hasPermissionNode(p, "astools.cmdblock"))
                      || (ArmorStandTool.CLONE == tool && !Utils.hasPermissionNode(p, "astools.clone")))) {
