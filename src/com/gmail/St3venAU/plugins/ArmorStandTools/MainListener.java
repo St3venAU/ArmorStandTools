@@ -252,8 +252,8 @@ public class MainListener implements Listener {
         clone.setCustomNameVisible(as.isCustomNameVisible());
         clone.setSmall(as.isSmall());
         clone.setMaxHealth(as.getMaxHealth());
-        NBT.setSlotsDisabled(clone, NBT.getDisabledSlots(as) == 2039583);
-        NBT.setInvulnerable(clone, NBT.isInvulnerable(as));
+        NBT.setSlotsDisabled(as, Config.equipmentLock);
+        NBT.setInvulnerable(as, Config.invulnerable);
         return clone;
     }
 
