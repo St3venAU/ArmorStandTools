@@ -42,16 +42,13 @@ giveMsg1: 'Given armor stand tools. L-click any tool to cycle through tools.'
 giveMsg2: 'Run this command again to return your inventory.'
 conReload: 'Armor Stand Tools config reloaded'
 noRelPerm: 'You do not have permission to reload the plugin'
-noHeadPerm: 'You do not have permission to set a head'
-notTarget: 'You are not looking at an ArmorStand'
 noAirError: 'Error: Failed to find a near-by air block. Move and try again.'
 pleaseWait: 'Please wait, this may take a few seconds...'
 appliedHead: 'Applied the head of player'
 noHead: 'No player head found for player'
 invalidName: 'is not a valid minecraft username'
 wgNoPerm: 'You do not have permission to alter an armor stand in this region'
-notBlock: 'You are not holding a block'
-setHead: 'Set the head block'
+noCommandPerm: 'You do not have permission to use this command'
 #
 #############################
 # Tool names & descriptions #

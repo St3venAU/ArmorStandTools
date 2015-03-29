@@ -12,7 +12,8 @@ import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.intellectualcrafters.plot.util.Permissions;
 import com.intellectualcrafters.plot.util.bukkit.BukkitUtil;
 
-public class PlotSquaredHook {
+@SuppressWarnings("deprecation")
+class PlotSquaredHook {
     
     public static PlotAPI api = null;
     
@@ -32,9 +33,6 @@ public class PlotSquaredHook {
         }
         PlotPlayer pp = BukkitUtil.getPlayer(player);
         UUID uuid = pp.getUUID();
-        if (plot.isAdded(uuid)) {
-            return true;
-        }
-        return Permissions.hasPermission(pp, "plots.admin.build.other");
+        return plot.isAdded(uuid) || Permissions.hasPermission(pp, "plots.admin.build.other");
     }
 }

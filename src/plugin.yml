@@ -3,9 +3,9 @@ name: ArmorStandTools
 version: 1.7
 author: St3venAU
 description: Armor stand manipulation tools
-softdepend: [WorldGuard]
+softdepend: [WorldGuard, PlotSquared]
 commands:
    astools:
-      description: Give yourself all of the armor stand tools (Warning; clears your inventory).
+      description: Give yourself the armor stand tools
       aliases: ast
-      usage: Usage /astools or /astools reload or /astools head
+      usage: Usage /astools or /astools reload
