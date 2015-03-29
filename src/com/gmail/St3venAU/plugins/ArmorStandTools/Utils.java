@@ -35,7 +35,7 @@ class Utils {
         final String[] nodes = perm.split("\\.");
         final StringBuilder n = new StringBuilder();
         for (int i = 0; i < (nodes.length - 1); i++) {
-            n.append(nodes[i] + ("."));
+            n.append(nodes[i]).append(".");
             if (player.hasPermission(n + "*")) {
                 return true;
             }

@@ -61,8 +61,7 @@ public class MainListener implements Listener {
                     Utils.actionBarMsg(p, Config.asDropped);
                     event.setCancelled(true);
                     return;
-                }
-                else {
+                } else {
                     p.sendMessage(ChatColor.RED + Config.wgNoPerm);
                 }
             }
@@ -212,9 +211,8 @@ public class MainListener implements Listener {
                         p.sendMessage(ChatColor.GREEN + "Deletion Protection: Enabled");
                     }
                     break;
-                default: {
+                default:
                     cancel = tool == ArmorStandTool.SUMMON || tool == ArmorStandTool.SAVE  || event.isCancelled();
-                }
             }
             event.setCancelled(cancel);
         }
@@ -252,14 +250,14 @@ public class MainListener implements Listener {
         clone.setCustomNameVisible(as.isCustomNameVisible());
         clone.setSmall(as.isSmall());
         clone.setMaxHealth(as.getMaxHealth());
-        NBT.setSlotsDisabled(as, Config.equipmentLock);
-        NBT.setInvulnerable(as, Config.invulnerable);
+        NBT.setSlotsDisabled(clone, NBT.getDisabledSlots(as) == 2039583);
+        NBT.setInvulnerable(clone, NBT.isInvulnerable(as));
         return clone;
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if(ArmorStandTool.isTool(event.getItemInHand())) {
+        if (ArmorStandTool.isTool(event.getItemInHand())) {
             event.setCancelled(true);
         }
     }
@@ -275,12 +273,8 @@ public class MainListener implements Listener {
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            Location loc = Utils.getLocationFacingPlayer(p);
-            Block block = loc.getBlock();
-            if (playerHasPermission(p, block, null)) {
-                as.teleport(loc);
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
-            }
+            as.teleport(Utils.getLocationFacingPlayer(p));
+            Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
         }
     }
 
@@ -330,7 +324,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(final PlayerDropItemEvent event) {
-        if(ArmorStandTool.isTool(event.getItemDrop().getItemStack())) {
+        if (ArmorStandTool.isTool(event.getItemDrop().getItemStack())) {
             event.getItemDrop().remove();
         }
     }
@@ -358,8 +352,7 @@ public class MainListener implements Listener {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
                 Utils.actionBarMsg(p, Config.asDropped);
                 event.setCancelled(true);
-            }
-            else {
+            } else {
                 p.sendMessage(ChatColor.RED + Config.wgNoPerm);
             }
             return;
@@ -370,9 +363,7 @@ public class MainListener implements Listener {
         if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
             event.setCancelled(true);
             Utils.cycleInventory(p);
-            return;
-        }
-        else if(action == Action.RIGHT_CLICK_BLOCK) {
+        } else if(action == Action.RIGHT_CLICK_BLOCK) {
             if (!playerHasPermission(p, event.getClickedBlock(), tool)) {
                 p.sendMessage(ChatColor.RED + Config.wgNoPerm);
                 return;
@@ -547,8 +538,12 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     private void setName(Player p, ArmorStand as) {
         Block b = Utils.findAnAirBlock(p.getLocation());
-        if(b == null || !checkPermission(p, b)) {
+        if(b == null) {
             p.sendMessage(ChatColor.RED + Config.noAirError);
+            return;
+        }
+        if(!checkPermission(p, b)) {
+            p.sendMessage(ChatColor.RED + Config.wgNoPerm);
             return;
         }
         b.setData((byte) 0);
@@ -561,8 +556,12 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     private void setPlayerSkull(Player p, ArmorStand as) {
         Block b = Utils.findAnAirBlock(p.getLocation());
-        if(b == null || !checkPermission(p, b)) {
+        if(b == null) {
             p.sendMessage(ChatColor.RED + Config.noAirError);
+            return;
+        }
+        if(!checkPermission(p, b)) {
+            p.sendMessage(ChatColor.RED + Config.wgNoPerm);
             return;
         }
         b.setData((byte) 0);
@@ -590,44 +589,37 @@ public class MainListener implements Listener {
         return null;
     }
     
-    public static boolean checkPermission(Player player, Block block) {
+    private static boolean checkPermission(Player player, Block block) {
         
         // Check PlotSquared
         Location loc = block.getLocation();
         if (PlotSquaredHook.api != null) {
             if (PlotSquaredHook.isPlotWorld(loc)) {
-                boolean result = PlotSquaredHook.checkPermission(player, loc);
-                return result;
+                return PlotSquaredHook.checkPermission(player, loc);
             }
         }
         
         // check WorldGuard
         if(Config.worldGuardPlugin != null) {
-            boolean canBuild = Config.worldGuardPlugin.canBuild(player, block);
-            return canBuild;
+            return Config.worldGuardPlugin.canBuild(player, block);
         }
         
         // Use standard permission checking (will support basically any plugin)
-        BlockBreakEvent mybreak = new BlockBreakEvent(block, player);
-        Bukkit.getServer().getPluginManager().callEvent(mybreak);
-        boolean hasperm;
-        if (mybreak.isCancelled()) {
-            hasperm = false;
-        } else {
-            hasperm = true;
-        }
+        BlockBreakEvent myBreak = new BlockBreakEvent(block, player);
+        Bukkit.getServer().getPluginManager().callEvent(myBreak);
+        boolean hasPerm = !myBreak.isCancelled();
         BlockPlaceEvent place = new BlockPlaceEvent(block, block.getState(), block, null, player, true);
         Bukkit.getServer().getPluginManager().callEvent(place);
         if (place.isCancelled()) {
-          hasperm = false;
+          hasPerm = false;
         }
-        return hasperm;
+        return hasPerm;
     }
     
-    public static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+    private static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
         if(tool != null && !p.isOp() && (!Utils.hasPermissionNode(p, "astools.use")
-                     || (ArmorStandTool.SAVE == tool  && !Utils.hasPermissionNode(p, "astools.cmdblock"))
-                     || (ArmorStandTool.CLONE == tool && !Utils.hasPermissionNode(p, "astools.clone")))) {
+        ||(ArmorStandTool.SAVE == tool  && !Utils.hasPermissionNode(p, "astools.cmdblock"))
+        ||(ArmorStandTool.CLONE == tool && !Utils.hasPermissionNode(p, "astools.clone")))) {
             p.sendMessage(ChatColor.RED + Config.noPerm);
             return false;
         }
