@@ -25,6 +25,7 @@ class Commands implements CommandExecutor {
         Player p = (Player) sender;
         if (!Utils.hasPermissionNode(p, "astools.command")) {
             p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+            return true;
         }
         if(args.length == 0) {
             UUID uuid = p.getUniqueId();

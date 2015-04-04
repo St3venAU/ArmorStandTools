@@ -31,12 +31,13 @@ class Config {
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
-            asCloned, carrying, noPerm, cbCreated, size, small,
+            carrying, cbCreated, size, small,
             normal, basePlate, isOn, isOff, gravity, arms, invul,
             equip, locked, unLocked, notConsole, giveMsg1,
             giveMsg2, conReload, noRelPerm, noAirError,
             pleaseWait, appliedHead, noHead, invalidName,
-            wgNoPerm, noCommandPerm;
+            wgNoPerm, currently, headFailed, noCommandPerm,
+            generalNoPerm;
 
     public static void reload(Main main) {
         plugin = main;
@@ -53,9 +54,7 @@ class Config {
         asVisible = languageConfig.getString("asVisible");
         isTrue = languageConfig.getString("isTrue");
         isFalse = languageConfig.getString("isFalse");
-        asCloned = languageConfig.getString("asCloned");
         carrying = languageConfig.getString("carrying");
-        noPerm = languageConfig.getString("noPerm");
         cbCreated = languageConfig.getString("cbCreated");
         size = languageConfig.getString("size");
         small = languageConfig.getString("small");
@@ -81,6 +80,9 @@ class Config {
         invalidName = languageConfig.getString("invalidName");
         wgNoPerm = languageConfig.getString("wgNoPerm");
         noCommandPerm = languageConfig.getString("noCommandPerm");
+        currently = languageConfig.getString("currently");
+        headFailed = languageConfig.getString("headFailed");
+        generalNoPerm = languageConfig.getString("generalNoPerm");
     }
 
     private static void reloadMainConfig() {
