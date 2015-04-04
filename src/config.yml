@@ -1,4 +1,4 @@
-# Armor Stand Tools v1.7
+# Armor Stand Tools v2.0
 #
 # by St3venAU (St3venAU@gmail.com)
 #
@@ -7,6 +7,7 @@
 #   - Name armor stands
 #   - Toggle: Gravity, Visibility, Arms, Base, Size, Invulnerability, Equipment Lock
 #   - Manipulate the position of the Head, Body, Arms and Legs
+#   - Full control over armor stand's inventory (armor & item in hand)
 #   - Clone armor stand tool
 #   - Create command block tool: Creates a command block with the command that will summon this
 #     armor stand in its current state

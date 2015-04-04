@@ -6,10 +6,12 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.Collection;
 
 class Utils {
@@ -18,7 +20,7 @@ class Utils {
 
     static boolean containsItems(Collection<ItemStack> items) {
         for(ItemStack i : items) {
-            if(items.contains(i)) {
+            if(ArmorStandTool.get(i) != null) {
                 return true;
             }
         }
@@ -157,6 +159,13 @@ class Utils {
             l.add(0, 1, 0);
         }
         return l.getY() < 255 && l.getBlock().getType() == Material.AIR ? l.getBlock() : null;
+    }
+
+    static ItemStack setLore(ItemStack is, String... lore) {
+        ItemMeta meta = is.getItemMeta();
+        meta.setLore(Arrays.asList(lore));
+        is.setItemMeta(meta);
+        return is;
     }
 
 }
