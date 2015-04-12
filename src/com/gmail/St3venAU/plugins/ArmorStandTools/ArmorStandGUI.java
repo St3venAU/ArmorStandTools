@@ -53,6 +53,8 @@ class ArmorStandGUI implements Listener {
         String name = as.getCustomName();
         if(name == null) {
             name = "Armor Stand";
+        } else if(name.length() > 32) {
+            name = name.substring(0, 32);
         }
         i = Bukkit.createInventory(null, 36, name);
         for(int slot = 0; slot < i.getSize(); slot++) {
