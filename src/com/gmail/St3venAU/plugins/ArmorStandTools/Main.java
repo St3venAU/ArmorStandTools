@@ -182,40 +182,28 @@ public class Main extends JavaPlugin {
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));
     }
 
-    boolean checkPermission(Player player, Block block) {
-
-        if(block == null) return true;
-
-        // Check PlotSquared
-        Location loc = block.getLocation();
+    boolean checkPermission(Player p, Block b) {
+        if(b == null) return true;
         if (PlotSquaredHook.api != null) {
-            if (PlotSquaredHook.isPlotWorld(loc)) {
-                return PlotSquaredHook.checkPermission(player, loc);
+            Location l = b.getLocation();
+            if(PlotSquaredHook.isPlotWorld(l) && !PlotSquaredHook.checkPermission(p, l)) {
+                return false;
             }
         }
-
-        // check WorldGuard
-        if(Config.worldGuardPlugin != null) {
-            return Config.worldGuardPlugin.canBuild(player, block);
+        if(Config.worldGuardPlugin != null && !Config.worldGuardPlugin.canBuild(p, b)) {
+            return false;
         }
-
-        // Use standard permission checking (will support basically any plugin)
-        BlockBreakEvent myBreak = new BlockBreakEvent(block, player);
-        Bukkit.getServer().getPluginManager().callEvent(myBreak);
-        boolean hasPerm = !myBreak.isCancelled();
-        BlockPlaceEvent place = new BlockPlaceEvent(block, block.getState(), block, null, player, true);
-        Bukkit.getServer().getPluginManager().callEvent(place);
-        if (place.isCancelled()) {
-            hasPerm = false;
+        BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
+        Bukkit.getServer().getPluginManager().callEvent(breakEvent);
+        if(breakEvent.isCancelled()){
+            return false;
         }
-        return hasPerm;
+        BlockPlaceEvent placeEvent = new BlockPlaceEvent(b, b.getState(), b, null, p, true);
+        Bukkit.getServer().getPluginManager().callEvent(placeEvent);
+        return !placeEvent.isCancelled();
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
-        return !(tool != null && !p.isOp()
-                    && (!Utils.hasPermissionNode(p, "astools.use")
-                        || (ArmorStandTool.SAVE == tool && !Utils.hasPermissionNode(p, "astools.cmdblock"))
-                        || (ArmorStandTool.CLONE == tool && !Utils.hasPermissionNode(p, "astools.clone"))))
-                    && checkPermission(p, b);
+        return (tool == null || tool.isEnabled() && Utils.hasPermissionNode(p, tool.getPermission())) && checkPermission(p, b);
     }
 }

@@ -9,56 +9,58 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public enum ArmorStandTool {
-    HEADX   ("headX",       Material.JACK_O_LANTERN,    (short) 0, 12, false, true),
-    HEADY   ("headY",       Material.JACK_O_LANTERN,    (short) 0, 13, false, true),
-    HEADZ   ("headZ",       Material.JACK_O_LANTERN,    (short) 0, 14, false, true),
-    LARMX   ("lArmX",       Material.TORCH,             (short) 0, 27, false, true),
-    LARMY   ("lArmY",       Material.TORCH,             (short) 0, 28, false, true),
-    LARMZ   ("lArmZ",       Material.TORCH,             (short) 0, 29, false, true),
-    RARMX   ("rArmX",       Material.REDSTONE_TORCH_ON, (short) 0, 30, false, true),
-    RARMY   ("rArmY",       Material.REDSTONE_TORCH_ON, (short) 0, 31, false, true),
-    RARMZ   ("rArmZ",       Material.REDSTONE_TORCH_ON, (short) 0, 32, false, true),
-    MOVEX   ("moveX",       Material.SHEARS,            (short) 0,  3, false, true),
-    MOVEY   ("moveY",       Material.SHEARS,            (short) 0,  4, false, true),
-    MOVEZ   ("moveZ",       Material.SHEARS,            (short) 0,  5, false, true),
-    LLEGX   ("lLegX",       Material.BONE,              (short) 0, 18, false, true),
-    LLEGY   ("lLegY",       Material.BONE,              (short) 0, 19, false, true),
-    LLEGZ   ("lLegZ",       Material.BONE,              (short) 0, 20, false, true),
-    RLEGX   ("rLegX",       Material.BLAZE_ROD,         (short) 0, 21, false, true),
-    RLEGY   ("rLegY",       Material.BLAZE_ROD,         (short) 0, 22, false, true),
-    RLEGZ   ("rLegZ",       Material.BLAZE_ROD,         (short) 0, 23, false, true),
-    BODYX   ("bodyX",       Material.NETHER_BRICK_ITEM, (short) 0,  9, false, true),
-    BODYY   ("bodyY",       Material.NETHER_BRICK_ITEM, (short) 0, 10, false, true),
-    BODYZ   ("bodyZ",       Material.NETHER_BRICK_ITEM, (short) 0, 11, false, true),
-    SUMMON  ("summon",      Material.ARMOR_STAND,       (short) 0,  0, false, true),
-    GUI     ("gui",         Material.NETHER_STAR,       (short) 0,  1, false, true),
-    ROTAT   ("rotat",       Material.MAGMA_CREAM,       (short) 0,  2, false, true),
-    CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,    (short) 0, 16, true,  true),
-    SAVE    ("gui_save",    Material.DIAMOND,           (short) 0, 17, true,  true),
-    INVIS   ("gui_invis",   Material.GOLD_NUGGET,       (short) 0, 14, true,  true),
-    SIZE    ("gui_size",    Material.EMERALD,           (short) 0, 23, true,  true),
-    BASE    ("gui_base",    Material.BOOK,              (short) 0, 22, true,  true),
-    GRAV    ("gui_grav",    Material.GHAST_TEAR,        (short) 0, 24, true,  true),
-    ARMS    ("gui_arms",    Material.ARROW,             (short) 0, 21, true,  true),
-    NAME    ("gui_name",    Material.NAME_TAG,          (short) 0, 12, true,  true),
-    SLOTS   ("gui_slots",   Material.IRON_HOE,          (short) 0, 26, true,  true),
-    PHEAD   ("gui_pHead",   Material.SKULL_ITEM,        (short) 3, 13, true,  true),
-    INVUL   ("gui_invul",   Material.GOLDEN_CARROT,     (short) 0, 25, true,  true),
-    MOVE    ("gui_move",    Material.FEATHER,           (short) 0, 15, true,  true),
-    NODEL   ("gui_noDel",   Material.WOOD_SPADE,        (short) 0, 35, true, false); // Developer tool, disabled by default
+    HEADX   ("headX",       Material.JACK_O_LANTERN,    (short) 0, 12, false, true, "astools.use"),
+    HEADY   ("headY",       Material.JACK_O_LANTERN,    (short) 0, 13, false, true, "astools.use"),
+    HEADZ   ("headZ",       Material.JACK_O_LANTERN,    (short) 0, 14, false, true, "astools.use"),
+    LARMX   ("lArmX",       Material.TORCH,             (short) 0, 27, false, true, "astools.use"),
+    LARMY   ("lArmY",       Material.TORCH,             (short) 0, 28, false, true, "astools.use"),
+    LARMZ   ("lArmZ",       Material.TORCH,             (short) 0, 29, false, true, "astools.use"),
+    RARMX   ("rArmX",       Material.REDSTONE_TORCH_ON, (short) 0, 30, false, true, "astools.use"),
+    RARMY   ("rArmY",       Material.REDSTONE_TORCH_ON, (short) 0, 31, false, true, "astools.use"),
+    RARMZ   ("rArmZ",       Material.REDSTONE_TORCH_ON, (short) 0, 32, false, true, "astools.use"),
+    MOVEX   ("moveX",       Material.SHEARS,            (short) 0,  3, false, true, "astools.use"),
+    MOVEY   ("moveY",       Material.SHEARS,            (short) 0,  4, false, true, "astools.use"),
+    MOVEZ   ("moveZ",       Material.SHEARS,            (short) 0,  5, false, true, "astools.use"),
+    LLEGX   ("lLegX",       Material.BONE,              (short) 0, 18, false, true, "astools.use"),
+    LLEGY   ("lLegY",       Material.BONE,              (short) 0, 19, false, true, "astools.use"),
+    LLEGZ   ("lLegZ",       Material.BONE,              (short) 0, 20, false, true, "astools.use"),
+    RLEGX   ("rLegX",       Material.BLAZE_ROD,         (short) 0, 21, false, true, "astools.use"),
+    RLEGY   ("rLegY",       Material.BLAZE_ROD,         (short) 0, 22, false, true, "astools.use"),
+    RLEGZ   ("rLegZ",       Material.BLAZE_ROD,         (short) 0, 23, false, true, "astools.use"),
+    BODYX   ("bodyX",       Material.NETHER_BRICK_ITEM, (short) 0,  9, false, true, "astools.use"),
+    BODYY   ("bodyY",       Material.NETHER_BRICK_ITEM, (short) 0, 10, false, true, "astools.use"),
+    BODYZ   ("bodyZ",       Material.NETHER_BRICK_ITEM, (short) 0, 11, false, true, "astools.use"),
+    SUMMON  ("summon",      Material.ARMOR_STAND,       (short) 0,  0, false, true, "astools.use"),
+    GUI     ("gui",         Material.NETHER_STAR,       (short) 0,  1, false, true, "astools.use"),
+    ROTAT   ("rotat",       Material.MAGMA_CREAM,       (short) 0,  2, false, true, "astools.use"),
+    CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,    (short) 0, 16, true,  true, "astools.clone"),
+    SAVE    ("gui_save",    Material.DIAMOND,           (short) 0, 17, true,  true, "astools.cmdblock"),
+    INVIS   ("gui_invis",   Material.GOLD_NUGGET,       (short) 0, 14, true,  true, "astools.use"),
+    SIZE    ("gui_size",    Material.EMERALD,           (short) 0, 23, true,  true, "astools.use"),
+    BASE    ("gui_base",    Material.BOOK,              (short) 0, 22, true,  true, "astools.use"),
+    GRAV    ("gui_grav",    Material.GHAST_TEAR,        (short) 0, 24, true,  true, "astools.use"),
+    ARMS    ("gui_arms",    Material.ARROW,             (short) 0, 21, true,  true, "astools.use"),
+    NAME    ("gui_name",    Material.NAME_TAG,          (short) 0, 12, true,  true, "astools.use"),
+    SLOTS   ("gui_slots",   Material.IRON_HOE,          (short) 0, 26, true,  true, "astools.use"),
+    PHEAD   ("gui_pHead",   Material.SKULL_ITEM,        (short) 3, 13, true,  true, "astools.use"),
+    INVUL   ("gui_invul",   Material.GOLDEN_CARROT,     (short) 0, 25, true,  true, "astools.use"),
+    MOVE    ("gui_move",    Material.FEATHER,           (short) 0, 15, true,  true, "astools.use"),
+    NODEL   ("gui_noDel",   Material.WOOD_SPADE,        (short) 0, 35, true, false, "astools.use"); // Developer tool, disabled by default
 
     private final ItemStack item;
     private final String id;
     private final int slot;
-    private final boolean enabled;
+    private boolean enabled;
     private final boolean forGui;
+    private final String permission;
 
-    ArmorStandTool(String id, Material m, short data, int slot, boolean forGui, boolean enabled) {
+    ArmorStandTool(String id, Material m, short data, int slot, boolean forGui, boolean enabled, String permission) {
         item = new ItemStack(m, 1, data);
         this.id = id;
         this.slot = slot;
         this.forGui = forGui;
         this.enabled = enabled;
+        this.permission = permission;
     }
 
     ItemStack getItem() {
@@ -75,8 +77,17 @@ public enum ArmorStandTool {
         return forGui;
     }
 
+    void setEnabled(FileConfiguration config) {
+        if(this == NODEL) return;
+        enabled = config.getBoolean("enableTool." + id);
+    }
+
     boolean isEnabled() {
         return enabled;
+    }
+
+    String getPermission() {
+        return permission;
     }
 
     int getSlot() {
@@ -94,6 +105,9 @@ public enum ArmorStandTool {
 
     static void give(Player p) {
         PlayerInventory i = p.getInventory();
+        for(int slot = 0; slot < 36; slot++) {
+            i.setItem(slot, null);
+        }
         for(ArmorStandTool t : values()) {
             if(t.enabled && !t.forGui) {
                 i.setItem(t.slot, t.item);

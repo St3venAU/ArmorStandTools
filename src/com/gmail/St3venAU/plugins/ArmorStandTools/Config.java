@@ -31,13 +31,13 @@ class Config {
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
-            carrying, cbCreated, size, small,
-            normal, basePlate, isOn, isOff, gravity, arms, invul,
-            equip, locked, unLocked, notConsole, giveMsg1,
-            giveMsg2, conReload, noRelPerm, noAirError,
-            pleaseWait, appliedHead, noHead, invalidName,
-            wgNoPerm, currently, headFailed, noCommandPerm,
-            generalNoPerm;
+            carrying, cbCreated, size, small, normal, basePlate,
+            isOn, isOff, gravity, arms, invul, equip, locked,
+            unLocked, notConsole, giveMsg1, giveMsg2, conReload,
+            noRelPerm, noAirError, pleaseWait, appliedHead,
+            noHead, invalidName, wgNoPerm, currently, headFailed,
+            noCommandPerm, generalNoPerm, armorStand, none,
+            enabled, disabled, guiInUse;
 
     public static void reload(Main main) {
         plugin = main;
@@ -83,6 +83,11 @@ class Config {
         currently = languageConfig.getString("currently");
         headFailed = languageConfig.getString("headFailed");
         generalNoPerm = languageConfig.getString("generalNoPerm");
+        armorStand = languageConfig.getString("armorStand");
+        none = languageConfig.getString("none");
+        enabled = languageConfig.getString("enabled");
+        disabled = languageConfig.getString("disabled");
+        guiInUse = languageConfig.getString("guiInUse");
     }
 
     private static void reloadMainConfig() {
@@ -103,6 +108,10 @@ class Config {
         invulnerable  = config.getBoolean("invulnerable");
         equipmentLock = config.getBoolean("equipmentLock");
         plugin.carryingArmorStand.clear();
+
+        for(ArmorStandTool tool : ArmorStandTool.values()) {
+            tool.setEnabled(config);
+        }
         
         Plugin plotSquared = plugin.getServer().getPluginManager().getPlugin("PlotSquared");
         if (plotSquared != null && plotSquared.isEnabled()) {
@@ -141,7 +150,7 @@ class Config {
         }
         String[] split = s.split(" ");
         if(split.length > 2) {
-            System.out.println("[ArmorStandTools] Error in Config: Must use the format: MATERIAL_NAME dataValue. Continuing using AIR instead.");
+            System.out.println("[ArmorStandTools] Error in config.yml: Must use the format: MATERIAL_NAME dataValue. Continuing using AIR instead.");
             return new ItemStack(Material.AIR);
         }
         byte dataValue = (byte) 0;
@@ -149,14 +158,14 @@ class Config {
             try {
                 dataValue = Byte.parseByte(split[1]);
             } catch (NumberFormatException nfe) {
-                System.out.println("[ArmorStandTools] Error in Config: Invalid data value specifed. Continuing using data value 0 instead.");
+                System.out.println("[ArmorStandTools] Error in config.yml: Invalid data value specifed. Continuing using data value 0 instead.");
             }
         }
         Material m;
         try {
             m = Material.valueOf(split[0].toUpperCase());
         } catch(IllegalArgumentException iae) {
-            System.out.println("[ArmorStandTools] Error in Config: Invalid material name specifed. Continuing using AIR instead.");
+            System.out.println("[ArmorStandTools] Error in config.yml: Invalid material name specifed. Continuing using AIR instead.");
             return new ItemStack(Material.AIR);
         }
         return new ItemStack(m, 1, dataValue);
