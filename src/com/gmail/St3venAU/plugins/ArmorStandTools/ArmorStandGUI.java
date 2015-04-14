@@ -33,7 +33,7 @@ class ArmorStandGUI implements Listener {
 
     ArmorStandGUI(Main plugin, ArmorStand as, Player p) {
         if(inUse.contains(as.getEntityId())) {
-            p.sendMessage(ChatColor.RED + "This armor stand's GUI is in use");
+            p.sendMessage(ChatColor.RED + Config.guiInUse);
             return;
         }
         if(filler == null) {
@@ -52,7 +52,7 @@ class ArmorStandGUI implements Listener {
         this.as = as;
         String name = as.getCustomName();
         if(name == null) {
-            name = "Armor Stand";
+            name = Config.armorStand;
         } else if(name.length() > 32) {
             name = name.substring(0, 32);
         }
@@ -74,7 +74,7 @@ class ArmorStandGUI implements Listener {
         p.openInventory(i);
     }
 
-    ItemStack updateLore(ArmorStandTool tool) {
+    private ItemStack updateLore(ArmorStandTool tool) {
         ItemStack item = tool.getItem();
         switch (tool) {
             case INVIS:
@@ -92,18 +92,18 @@ class ArmorStandGUI implements Listener {
             case SLOTS:
                 return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (NBT.getDisabledSlots(as) == 2039583 ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
             case NODEL:
-                return Utils.setLore(item, ChatColor.AQUA + "Deletion Protection: " + (as.getMaxHealth() == 50 ? (ChatColor.GREEN + "Enabled") : (ChatColor.RED + "Disabled")));
+                return Utils.setLore(item, ChatColor.AQUA + "Deletion Protection: " + (as.getMaxHealth() == 50 ? (ChatColor.GREEN + Config.enabled) : (ChatColor.RED + Config.disabled)));
             case NAME:
-                return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + "None") : (ChatColor.GREEN + as.getCustomName())));
+                return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + as.getCustomName())));
             case PHEAD:
                 String name = plrHeadName(as);
-                return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (name == null ? (ChatColor.BLUE + "None") : (ChatColor.GREEN + name)));
+                return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (name == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + name)));
             default:
                 return item;
         }
     }
 
-    String plrHeadName(ArmorStand as) {
+    private String plrHeadName(ArmorStand as) {
         if(as.getHelmet() == null) return null;
         if(!(as.getHelmet().getItemMeta() instanceof SkullMeta)) return null;
         SkullMeta meta = (SkullMeta) as.getHelmet().getItemMeta();
@@ -240,7 +240,7 @@ class ArmorStandGUI implements Listener {
         }
     }
 
-    void updateInventory() {
+    private void updateInventory() {
         new BukkitRunnable() {
             @Override
             public void run() {
