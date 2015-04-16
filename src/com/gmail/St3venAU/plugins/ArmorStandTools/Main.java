@@ -186,8 +186,8 @@ public class Main extends JavaPlugin {
         if(b == null) return true;
         if (PlotSquaredHook.api != null) {
             Location l = b.getLocation();
-            if(PlotSquaredHook.isPlotWorld(l) && !PlotSquaredHook.checkPermission(p, l)) {
-                return false;
+            if(PlotSquaredHook.isPlotWorld(l)) {
+                return PlotSquaredHook.checkPermission(p, l);
             }
         }
         if(Config.worldGuardPlugin != null && !Config.worldGuardPlugin.canBuild(p, b)) {
