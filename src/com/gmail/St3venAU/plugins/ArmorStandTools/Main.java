@@ -182,7 +182,7 @@ public class Main extends JavaPlugin {
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));
     }
 
-    boolean checkPermission(Player p, Block b) {
+    boolean checkBlockPermission(Player p, Block b) {
         if(b == null) return true;
         if (PlotSquaredHook.api != null) {
             Location l = b.getLocation();
@@ -190,8 +190,8 @@ public class Main extends JavaPlugin {
                 return PlotSquaredHook.checkPermission(p, l);
             }
         }
-        if(Config.worldGuardPlugin != null && !Config.worldGuardPlugin.canBuild(p, b)) {
-            return false;
+        if(Config.worldGuardPlugin != null) {
+            return Config.worldGuardPlugin.canBuild(p, b);
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);
@@ -204,6 +204,6 @@ public class Main extends JavaPlugin {
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
-        return (tool == null || tool.isEnabled() && Utils.hasPermissionNode(p, tool.getPermission())) && checkPermission(p, b);
+        return (tool == null || tool.isEnabled() && Utils.hasPermissionNode(p, tool.getPermission())) && checkBlockPermission(p, b);
     }
 }
