@@ -129,7 +129,7 @@ class ArmorStandGUI implements Listener {
         int slot = event.getRawSlot();
         if(slot > i.getSize()) return;
         if(invSlots.contains(slot)) {
-            if(plugin.checkPermission(p, as.getLocation().getBlock())) {
+            if(plugin.checkBlockPermission(p, as.getLocation().getBlock())) {
                 updateInventory();
             } else {
                 event.setCancelled(true);
@@ -231,7 +231,7 @@ class ArmorStandGUI implements Listener {
             }
         }
         if(invModified) {
-            if(plugin.checkPermission(p, as.getLocation().getBlock())) {
+            if(plugin.checkBlockPermission(p, as.getLocation().getBlock())) {
                 updateInventory();
             } else {
                 event.setCancelled(true);
