@@ -187,8 +187,12 @@ public class MainListener implements Listener {
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            as.teleport(Utils.getLocationFacingPlayer(p));
-            Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            Location loc = Utils.getLocationFacingPlayer(p);
+            Location previous = as.getLocation();
+            if ((previous.getBlockX() == loc.getBlockX() && previous.getBlockZ() == loc.getBlockZ()) || plugin.checkBlockPermission(p, loc.getBlock())) {
+                as.teleport(loc);
+                Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            }
         }
     }
 
