@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotPlayer;
-import com.intellectualcrafters.plot.util.Permissions;
 
 @SuppressWarnings("deprecation")
 class PlotSquaredHook {

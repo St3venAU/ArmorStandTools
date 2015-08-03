@@ -54,12 +54,12 @@ class Utils {
         return false;
     }
 
-    static Location getLocationFacingPlayer(Player p) {
-        Vector v = p.getLocation().getDirection();
+    static Location getLocationFacing(Location l) {
+        Vector v = l.getDirection();
         v.setY(0);
         v.multiply(3);
-        Location l = p.getLocation().add(v);
-        l.setYaw(p.getLocation().getYaw() + 180);
+        l.add(v);
+        l.setYaw(l.getYaw() + 180);
         int n;
         boolean ok = false;
         for (n = 0; n < 5; n++) {

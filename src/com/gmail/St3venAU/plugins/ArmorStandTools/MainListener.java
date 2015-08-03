@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -187,8 +188,28 @@ public class MainListener implements Listener {
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            as.teleport(Utils.getLocationFacingPlayer(p));
+            as.teleport(Utils.getLocationFacing(event.getTo()));
             Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        final Player p = event.getPlayer();
+        if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
+            final ArmorStand as = plugin.carryingArmorStand.get(p.getUniqueId());
+            if (as == null || as.isDead()) {
+                plugin.carryingArmorStand.remove(p.getUniqueId());
+                Utils.actionBarMsg(p, Config.asDropped);
+                return;
+            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    as.teleport(Utils.getLocationFacing(p.getLocation()));
+                    Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                }
+            }.runTaskLater(plugin, 1L);
         }
     }
 
@@ -282,7 +303,7 @@ public class MainListener implements Listener {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
                 return;
             }
-            Location l = Utils.getLocationFacingPlayer(p);
+            Location l = Utils.getLocationFacing(p.getLocation());
             plugin.pickUpArmorStand(spawnArmorStand(l), p, true);
             Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
             p.updateInventory();
