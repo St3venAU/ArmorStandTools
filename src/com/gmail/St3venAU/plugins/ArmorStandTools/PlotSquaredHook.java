@@ -10,7 +10,6 @@ import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.intellectualcrafters.plot.util.Permissions;
-import com.intellectualcrafters.plot.util.bukkit.BukkitUtil;
 
 @SuppressWarnings("deprecation")
 class PlotSquaredHook {
@@ -28,11 +27,11 @@ class PlotSquaredHook {
 
     public static boolean checkPermission(Player player, Location loc) {
         Plot plot = api.getPlot(loc);
+        PlotPlayer pp = PlotPlayer.wrap(player);
         if (plot == null) {
-            return Permissions.hasPermission(BukkitUtil.getPlayer(player), "plots.admin.build.road");
+            return pp.hasPermission("plots.admin.build.road");
         }
-        PlotPlayer pp = BukkitUtil.getPlayer(player);
         UUID uuid = pp.getUUID();
-        return plot.isAdded(uuid) || Permissions.hasPermission(pp, "plots.admin.build.other");
+        return plot.isAdded(uuid) || pp.hasPermission("plots.admin.build.other");
     }
 }
