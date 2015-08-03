@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game Fortress Wars tha
 
 Compatibility
 -------------
-- Spigot/CraftBukkit 1.8 & 1.8.3
+- Spigot/CraftBukkit 1.8.x
 
 Features
 --------
