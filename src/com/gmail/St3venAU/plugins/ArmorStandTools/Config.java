@@ -115,7 +115,12 @@ class Config {
         
         Plugin plotSquared = plugin.getServer().getPluginManager().getPlugin("PlotSquared");
         if (plotSquared != null && plotSquared.isEnabled()) {
-            new PlotSquaredHook(plugin);
+            try {
+                new PlotSquaredHook(plugin);
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
         
         Plugin worldGuard = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
