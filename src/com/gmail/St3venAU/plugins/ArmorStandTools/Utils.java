@@ -54,7 +54,8 @@ class Utils {
         return false;
     }
 
-    static Location getLocationFacing(Location l) {
+    static Location getLocationFacing(Location loc) {
+        Location l = loc.clone();
         Vector v = l.getDirection();
         v.setY(0);
         v.multiply(3);

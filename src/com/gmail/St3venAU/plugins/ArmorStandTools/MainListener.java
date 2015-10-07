@@ -170,6 +170,7 @@ public class MainListener implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ArmorStandTool.isTool(event.getItemInHand())) {
@@ -280,7 +281,7 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
+        final Player p = event.getPlayer();
         if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
             if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
@@ -306,8 +307,13 @@ public class MainListener implements Listener {
             Location l = Utils.getLocationFacing(p.getLocation());
             plugin.pickUpArmorStand(spawnArmorStand(l), p, true);
             Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
-            p.updateInventory();
         }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                p.updateInventory();
+            }
+        }.runTaskLater(plugin, 1L);
     }
 
     @EventHandler
@@ -470,5 +476,17 @@ public class MainListener implements Listener {
         }
         return null;
     }
+
+    // Give all permissions to all players - for testing only
+    /*@EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player p = event.getPlayer();
+        PermissionAttachment attachment = p.addAttachment(plugin);
+        attachment.setPermission("astools.command", true);
+        attachment.setPermission("astools.use", true);
+        attachment.setPermission("astools.clone", true);
+        attachment.setPermission("astools.reload", true);
+        attachment.setPermission("astools.cmdblock", true);
+    }*/
 
 }
