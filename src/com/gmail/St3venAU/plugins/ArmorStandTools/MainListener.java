@@ -198,19 +198,28 @@ public class MainListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         final Player p = event.getPlayer();
         if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
-            final ArmorStand as = plugin.carryingArmorStand.get(p.getUniqueId());
+            UUID uuid = event.getPlayer().getUniqueId();
+            final ArmorStand as = plugin.carryingArmorStand.get(uuid);
             if (as == null || as.isDead()) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    as.teleport(Utils.getLocationFacing(p.getLocation()));
-                    Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            if(event.getFrom().getWorld() == event.getTo().getWorld() || Config.allowMoveWorld) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        as.teleport(Utils.getLocationFacing(p.getLocation()));
+                        Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                    }
+                }.runTaskLater(plugin, 1L);
+            } else {
+                plugin.carryingArmorStand.remove(uuid);
+                if (plugin.savedInventories.containsKey(uuid)) {
+                    p.getInventory().setContents(plugin.savedInventories.get(uuid));
+                    plugin.savedInventories.remove(uuid);
                 }
-            }.runTaskLater(plugin, 1L);
+            }
         }
     }
 

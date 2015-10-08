@@ -28,6 +28,7 @@ class Config {
     public static String  defaultName   = "";
     public static boolean invulnerable  = false;
     public static boolean equipmentLock = false;
+    public static boolean allowMoveWorld = false;
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -107,6 +108,7 @@ class Config {
         defaultName   = config.getString("name");
         invulnerable  = config.getBoolean("invulnerable");
         equipmentLock = config.getBoolean("equipmentLock");
+        allowMoveWorld = config.getBoolean("allowMovingStandsBetweenWorlds");
         plugin.carryingArmorStand.clear();
 
         for(ArmorStandTool tool : ArmorStandTool.values()) {
