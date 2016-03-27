@@ -5,11 +5,11 @@ Spigot resource page with plugin download: http://www.spigotmc.org/resources/arm
 
 Inspiration
 -----------
-I wanted to create an armor stand for each kit in my mini-game Fortress Wars that acts out its special ability. I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Among other features you can create any pose you wish just by holding right click on the tools and moving your cursor up and down on the armor stand. You can then generate the summon command that will re-create the armor stand at any time.
+I wanted to create an armor stand for each kit in my mini-game that acts out its special ability. I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Among other features you can create any pose you wish just by holding right click on the tools and moving your cursor up and down on the armor stand. The plugin can also generate a summon command that will re-create the armor stand at any time.
 
 Compatibility
 -------------
-- Spigot/CraftBukkit 1.8.x
+- Spigot/CraftBukkit 1.8 - 1.9.x
 
 Features
 --------
@@ -17,11 +17,13 @@ Features
 - Name armor stands.
 - Toggle: Gravity, Visibility, Arms, Base, Size, Invulnerability, Equipment Lock.
 - Manipulate the x/y/z rotations of the Head, Body, Arms and Legs. The value depends on how high up the armor stand's body you click with the tool (i.e. click near the feet is one extreme, near the top of the head is the other extreme).
+- Full control over armor stand's inventory (armor & items in hands).
 - Pick up and move armor stands.
 - Armor stand cloning tool.
 - Save tool: Automatically generate a command block with the command to summon that armor stand in its current state.
 - Player head tool: Give an armor stand the head of a specific player.
 - WorldGuard region support.
+- Customizable language config file.
 
 Commands
 --------
