@@ -19,7 +19,7 @@ class Config {
 
     public static WorldGuardPlugin worldGuardPlugin;
 
-    public static ItemStack helmet, chest, pants, boots, itemInHand;
+    public static ItemStack helmet, chest, pants, boots, itemInHand, itemInOffHand;
     public static boolean isVisible     = true;
     public static boolean isSmall       = false;
     public static boolean hasArms       = true;
@@ -100,6 +100,7 @@ class Config {
         pants         = toItemStack(config.getString("pants"));
         boots         = toItemStack(config.getString("boots"));
         itemInHand    = toItemStack(config.getString("inHand"));
+        itemInOffHand = toItemStack(config.getString("inOffHand"));
         isVisible     = config.getBoolean("isVisible");
         isSmall       = config.getBoolean("isSmall");
         hasArms       = config.getBoolean("hasArms");

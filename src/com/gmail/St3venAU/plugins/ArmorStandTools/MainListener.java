@@ -1,11 +1,10 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.block.Block;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -64,7 +63,7 @@ public class MainListener implements Listener {
                     p.sendMessage(ChatColor.RED + Config.wgNoPerm);
                 }
             }
-            ArmorStandTool tool = ArmorStandTool.get(p.getItemInHand());
+            ArmorStandTool tool = ArmorStandTool.get(p.getInventory().getItemInMainHand());
             if(tool == null) return;
             ArmorStand as = (ArmorStand) event.getRightClicked();
             if (!plugin.playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) {
@@ -190,7 +189,7 @@ public class MainListener implements Listener {
                 return;
             }
             as.teleport(Utils.getLocationFacing(event.getTo()));
-            Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            Utils.actionBarMsg(p, Config.carrying);
         }
     }
 
@@ -210,7 +209,7 @@ public class MainListener implements Listener {
                     @Override
                     public void run() {
                         as.teleport(Utils.getLocationFacing(p.getLocation()));
-                        Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                        Utils.actionBarMsg(p, Config.carrying);
                     }
                 }.runTaskLater(plugin, 1L);
             } else {
@@ -315,7 +314,7 @@ public class MainListener implements Listener {
             }
             Location l = Utils.getLocationFacing(p.getLocation());
             plugin.pickUpArmorStand(spawnArmorStand(l), p, true);
-            Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+            Utils.actionBarMsg(p, Config.carrying);
         }
         new BukkitRunnable() {
             @Override
@@ -327,7 +326,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof ArmorStand && event.getDamager() instanceof Player && ArmorStandTool.isTool(((Player) event.getDamager()).getItemInHand())) {
+        if(event.getEntity() instanceof ArmorStand && event.getDamager() instanceof Player && ArmorStandTool.isTool(((Player) event.getDamager()).getInventory().getItemInMainHand())) {
             event.setCancelled(true);
             if(noCooldown(event.getDamager())) {
                 Utils.cycleInventory((Player) event.getDamager());
@@ -350,7 +349,12 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        as.setItemInHand(Config.itemInHand);
+        if(Main.one_nine) {
+            as.getEquipment().setItemInMainHand(Config.itemInHand);
+            as.getEquipment().setItemInOffHand(Config.itemInOffHand);
+        } else {
+            as.setItemInHand(Config.itemInHand);
+        }
         as.setVisible(Config.isVisible);
         as.setSmall(Config.isSmall);
         as.setArms(Config.hasArms);
@@ -379,7 +383,6 @@ public class MainListener implements Listener {
         if(event.getBlock().hasMetadata("armorStand")) {
             final Block b = event.getBlock();
             final ArmorStand as = getArmorStand(b);
-            boolean delete = true;
             if (as != null) {
                 String input = "";
                 for (String line : event.getLines()) {
@@ -400,58 +403,27 @@ public class MainListener implements Listener {
                     if(MC_USERNAME_PATTERN.matcher(input).matches()) {
                         final String name = input;
                         b.setMetadata("protected", new FixedMetadataValue(plugin, true));
-                        b.setType(Material.SKULL);
-                        final Skull s = (Skull) b.getState();
-                        s.setSkullType(SkullType.PLAYER);
-                        delete = false;
                         event.getPlayer().sendMessage(ChatColor.GOLD + Config.pleaseWait);
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                final boolean ok = Utils.loadProfile(name);
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        if (ok) {
-                                            s.setOwner(name);
-                                            s.update();
-                                            new BukkitRunnable() {
-                                                int n = 0;
-                                                ItemStack skull;
-                                                @Override
-                                                public void run() {
-                                                    if(++n > 20) {
-                                                        this.cancel();
-                                                        event.getPlayer().sendMessage(ChatColor.RED + Config.headFailed);
-                                                        b.setType(Material.AIR);
-                                                        b.setData((byte) 0);
-                                                        b.removeMetadata("protected", plugin);
-                                                        return;
-                                                    }
-                                                    skull = b.getDrops().iterator().next();
-                                                    if(skull.getType() == Material.SKULL_ITEM && skull.getData().getData() == (byte) 3) {
-                                                        SkullMeta meta = (SkullMeta) skull.getItemMeta();
-                                                        if(meta.hasOwner() && meta.getOwner().equalsIgnoreCase(name)) {
-                                                            as.setHelmet(skull);
-                                                            event.getPlayer().sendMessage(ChatColor.GREEN + Config.appliedHead + ChatColor.GOLD + " " + name);
-                                                            b.setType(Material.AIR);
-                                                            b.setData((byte) 0);
-                                                            b.removeMetadata("protected", plugin);
-                                                            this.cancel();
-                                                        }
-                                                    }
-                                                }
-                                            }.runTaskTimer(plugin, 10L, 10L);
-                                        } else {
-                                            event.getPlayer().sendMessage(ChatColor.RED + Config.noHead + ChatColor.GOLD + " " + name);
-                                            b.setType(Material.AIR);
-                                            b.setData((byte) 0);
-                                            b.removeMetadata("protected", plugin);
-                                        }
-                                    }
-                                }.runTask(plugin);
+                        String cmd = "give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + name + "\"}";
+                        String current = b.getWorld().getGameRuleValue("sendCommandFeedback");
+                        b.getWorld().setGameRuleValue("sendCommandFeedback", "false");
+                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
+                        b.getWorld().setGameRuleValue("sendCommandFeedback", current);
+                        boolean found = false;
+                        for(int slot : event.getPlayer().getInventory().all(Material.SKULL_ITEM).keySet()) {
+                            ItemStack skull = event.getPlayer().getInventory().getItem(slot);
+                            SkullMeta sm = (SkullMeta) skull.getItemMeta();
+                            if(sm.hasOwner() && name.equalsIgnoreCase(sm.getOwner())) {
+                                as.setHelmet(skull);
+                                event.getPlayer().sendMessage(ChatColor.GREEN + Config.appliedHead + ChatColor.GOLD + " " + name);
+                                event.getPlayer().getInventory().setItem(slot, null);
+                                found = true;
+                                break;
                             }
-                        }.runTaskAsynchronously(plugin);
+                        }
+                        if(!found) {
+                            event.getPlayer().sendMessage(ChatColor.GOLD + Config.headFailed);
+                        }
                     } else {
                         event.getPlayer().sendMessage(ChatColor.RED + input + " " + Config.invalidName);
                     }
@@ -461,10 +433,8 @@ public class MainListener implements Listener {
             b.removeMetadata("armorStand", plugin);
             b.removeMetadata("setName", plugin);
             b.removeMetadata("setSkull", plugin);
-            if(delete) {
-                b.setType(Material.AIR);
-                b.setData((byte) 0);
-            }
+            b.setType(Material.AIR);
+            b.setData((byte) 0);
         }
     }
     

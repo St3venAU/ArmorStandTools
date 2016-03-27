@@ -41,11 +41,14 @@ class ArmorStandGUI implements Listener {
             ItemMeta im = filler.getItemMeta();
             im.setDisplayName(" ");
             filler.setItemMeta(im);
-            invSlots.add(0);
-            invSlots.add(9);
             invSlots.add(10);
-            invSlots.add(18);
-            invSlots.add(27);
+            if(Main.one_nine) {
+                invSlots.add(12);
+            }
+            invSlots.add(2);
+            invSlots.add(11);
+            invSlots.add(20);
+            invSlots.add(29);
         }
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -65,11 +68,16 @@ class ArmorStandGUI implements Listener {
                 i.setItem(tool.getSlot(), updateLore(tool));
             }
         }
-        i.setItem(0,  as.getHelmet());
-        i.setItem(9,  as.getChestplate());
-        i.setItem(10, as.getItemInHand());
-        i.setItem(18, as.getLeggings());
-        i.setItem(27, as.getBoots());
+        if(Main.one_nine) {
+            i.setItem(10, as.getEquipment().getItemInMainHand());
+            i.setItem(12, as.getEquipment().getItemInOffHand());
+        } else {
+            i.setItem(10, as.getItemInHand());
+        }
+        i.setItem(2,  as.getHelmet());
+        i.setItem(11, as.getChestplate());
+        i.setItem(20, as.getLeggings());
+        i.setItem(29, as.getBoots());
         inUse.add(as.getEntityId());
         p.openInventory(i);
     }
@@ -148,32 +156,32 @@ class ArmorStandGUI implements Listener {
         switch (t) {
             case INVIS:
                 as.setVisible(!as.isVisible());
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.asVisible + ": " + (as.isVisible() ? Config.isTrue : Config.isFalse));
+                Utils.actionBarMsg(p, Config.asVisible + ": " + (as.isVisible() ? Config.isTrue : Config.isFalse));
                 break;
             case CLONE:
                 p.closeInventory();
                 plugin.pickUpArmorStand(plugin.clone(as), p, true);
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                Utils.actionBarMsg(p, Config.carrying);
                 break;
             case SAVE:
                 plugin.generateCmdBlock(p.getLocation(), as);
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.cbCreated);
+                Utils.actionBarMsg(p, Config.cbCreated);
                 break;
             case SIZE:
                 as.setSmall(!as.isSmall());
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.size + ": " + (as.isSmall() ? Config.small : Config.normal));
+                Utils.actionBarMsg(p, Config.size + ": " + (as.isSmall() ? Config.small : Config.normal));
                 break;
             case BASE:
                 as.setBasePlate(!as.hasBasePlate());
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.basePlate + ": " + (as.hasBasePlate() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.basePlate + ": " + (as.hasBasePlate() ? Config.isOn : Config.isOff));
                 break;
             case GRAV:
                 as.setGravity(!as.hasGravity());
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.gravity + ": " + (as.hasGravity() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.gravity + ": " + (as.hasGravity() ? Config.isOn : Config.isOff));
                 break;
             case ARMS:
                 as.setArms(!as.hasArms());
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.arms + ": " + (as.hasArms() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.arms + ": " + (as.hasArms() ? Config.isOn : Config.isOff));
                 break;
             case NAME:
                 p.closeInventory();
@@ -184,10 +192,10 @@ class ArmorStandGUI implements Listener {
                 plugin.setPlayerSkull(p, as);
                 break;
             case INVUL:
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.invul + ": " + (NBT.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.invul + ": " + (NBT.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
                 break;
             case SLOTS:
-                Utils.actionBarMsg(p, ChatColor.GREEN + Config.equip + ": " + (NBT.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
+                Utils.actionBarMsg(p, Config.equip + ": " + (NBT.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
                 break;
             case MOVE:
                 p.closeInventory();
@@ -197,16 +205,16 @@ class ArmorStandGUI implements Listener {
                     Utils.actionBarMsg(p, Config.asDropped);
                 } else {
                     plugin.pickUpArmorStand(as, p, false);
-                    Utils.actionBarMsg(p, ChatColor.GREEN + Config.carrying);
+                    Utils.actionBarMsg(p, Config.carrying);
                 }
                 break;
             case NODEL: // Developer tool - do not use
                 if(as.getMaxHealth() == 50) {
                     as.setMaxHealth(20);
-                    Utils.actionBarMsg(p, ChatColor.GREEN + "Deletion Protection: Disabled");
+                    Utils.actionBarMsg(p, "Deletion Protection: Disabled");
                 } else {
                     as.setMaxHealth(50);
-                    Utils.actionBarMsg(p, ChatColor.GREEN + "Deletion Protection: Enabled");
+                    Utils.actionBarMsg(p, "Deletion Protection: Enabled");
                 }
                 break;
             default:
@@ -245,11 +253,16 @@ class ArmorStandGUI implements Listener {
             @Override
             public void run() {
                 if(as == null || i == null) return;
-                as.setHelmet(i.getItem(0));
-                as.setChestplate(i.getItem(9));
-                as.setItemInHand(i.getItem(10));
-                as.setLeggings(i.getItem(18));
-                as.setBoots(i.getItem(27));
+                if(Main.one_nine) {
+                    as.getEquipment().setItemInMainHand(i.getItem(10));
+                    as.getEquipment().setItemInOffHand(i.getItem(12));
+                } else {
+                    as.setItemInHand(i.getItem(10));
+                }
+                as.setHelmet(i.getItem(2));
+                as.setChestplate(i.getItem(11));
+                as.setLeggings(i.getItem(20));
+                as.setBoots(i.getItem(29));
             }
         }.runTaskLater(plugin, 1L);
     }

@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 class Utils {
 
@@ -93,7 +94,7 @@ class Utils {
 
     static void actionBarMsg(Player p, String msg) {
         try {
-            Object chat = getNMSClass("ChatSerializer").getMethod("a", String.class).invoke(null, "{text:\"" + msg + "\"}");
+            Object chat = getNMSClass("ChatSerializer").getMethod("a", String.class).invoke(null, "{\"text\":\"" + msg + "\",\"color\":\"green\"}");
             Object packet = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), byte.class).newInstance(chat, (byte) 2);
             sendPacket(p, packet);
         } catch (Exception e) {
@@ -118,17 +119,6 @@ class Utils {
             nmsClassString = "IChatBaseComponent$ChatSerializer";
         }
         return Class.forName("net.minecraft.server." + Main.NMS_VERSION + "." + nmsClassString);
-    }
-
-    static boolean loadProfile(String name) {
-        try {
-            Object server = getNMSClass("MinecraftServer").getMethod("getServer").invoke(null);
-            Object cache = server.getClass().getMethod("getUserCache").invoke(server);
-            return cache.getClass().getMethod("getProfile", String.class).invoke(cache, name) != null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     private static void sendPacket(Player p, Object packet) {
@@ -167,6 +157,39 @@ class Utils {
         meta.setLore(Arrays.asList(lore));
         is.setItemMeta(meta);
         return is;
+    }
+
+    static String getNmsName(Material m) {
+        try {
+            Class block = getNMSClass("Block");
+            Class item = getNMSClass("Item");
+            Class registryBlocks = getNMSClass("RegistryBlocks");
+            Class registryMaterials = getNMSClass("RegistryMaterials");
+            Class regKey = getNMSClass("MinecraftKey");
+            Object registry = block.getDeclaredField("REGISTRY").get(null);
+            Set<Object> set = (Set<Object>) registry.getClass().getMethod("keySet").invoke(registry);
+            for(Object key : set) {
+                Object b = registryBlocks.getMethod("get", Object.class).invoke(registry, key);
+                Integer id = (Integer) block.getMethod("getId", block).invoke(null, b);
+                if(id == m.getId()) {
+                    return (String) regKey.getMethod("a").invoke(key);
+                }
+            }
+
+            registry = item.getDeclaredField("REGISTRY").get(null);
+            set = (Set<Object>) registry.getClass().getMethod("keySet").invoke(registry);
+            for(Object key : set) {
+                Object i = registryMaterials.getMethod("get", Object.class).invoke(registry, key);
+                Integer id = (Integer) item.getMethod("getId", item).invoke(null, i);
+                if(id == m.getId()) {
+                    return (String) regKey.getMethod("a").invoke(key);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
     }
 
 }

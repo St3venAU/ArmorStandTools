@@ -27,10 +27,12 @@ public class Main extends JavaPlugin {
     public final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
     private final EulerAngle zero = new EulerAngle(0D, 0D, 0D);
     static String NMS_VERSION;
+    static boolean one_nine;
 
     @Override
     public void onEnable() {
         NMS_VERSION = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+        one_nine = NMS_VERSION.startsWith("v1_9");
         getServer().getPluginManager().registerEvents(new MainListener(this), this);
         CommandExecutor ce = new Commands(this);
         getCommand("astools").setExecutor(ce);
@@ -77,15 +79,30 @@ public class Main extends JavaPlugin {
     void generateCmdBlock(Location l, ArmorStand as) {
         Location loc = as.getLocation();
         int dSlots = NBT.getDisabledSlots(as);
-        int hand = as.getItemInHand() == null ? 0 : as.getItemInHand().getTypeId();
-        int handDmg = as.getItemInHand() == null ? 0 : as.getItemInHand().getDurability();
-        int boots = as.getBoots() == null ? 0 : as.getBoots().getTypeId();
+        String hand, boots, legs, chest, helm, offHand = "0";
+        int handDmg, offHandDmg = 0;
+
+        if(one_nine) {
+            hand = as.getEquipment().getItemInMainHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInMainHand().getType());
+            offHand = as.getEquipment().getItemInOffHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInOffHand().getType());
+            boots = as.getBoots() == null ? "air" : Utils.getNmsName(as.getBoots().getType());
+            legs = as.getLeggings() == null ? "air" : Utils.getNmsName(as.getLeggings().getType());
+            chest = as.getChestplate() == null ? "air" : Utils.getNmsName(as.getChestplate().getType());
+            helm = as.getHelmet() == null ? "air" : Utils.getNmsName(as.getHelmet().getType());
+            handDmg = as.getEquipment().getItemInMainHand() == null ? 0 : as.getEquipment().getItemInMainHand().getDurability();
+            offHandDmg = as.getEquipment().getItemInOffHand() == null ? 0 : as.getEquipment().getItemInOffHand().getDurability();
+        } else {
+            hand = as.getItemInHand() == null ? "0" : String.valueOf(as.getItemInHand().getTypeId());
+            boots = as.getBoots() == null ? "0" : String.valueOf(as.getBoots().getTypeId());
+            legs = as.getLeggings() == null ? "0" : String.valueOf(as.getLeggings().getTypeId());
+            chest = as.getChestplate() == null ? "0" : String.valueOf(as.getChestplate().getTypeId());
+            helm = as.getHelmet() == null ? "0" : String.valueOf(as.getHelmet().getTypeId());
+            handDmg = as.getItemInHand() == null ? 0 : as.getItemInHand().getDurability();
+        }
+
         int bootsDmg = as.getBoots() == null ? 0 : as.getBoots().getDurability();
-        int legs = as.getLeggings() == null ? 0 : as.getLeggings().getTypeId();
         int legsDmg = as.getLeggings() == null ? 0 : as.getLeggings().getDurability();
-        int chest = as.getChestplate() == null ? 0 : as.getChestplate().getTypeId();
         int chestDmg = as.getChestplate() == null ? 0 : as.getChestplate().getDurability();
-        int helm = as.getHelmet() == null ? 0 : as.getHelmet().getTypeId();
         int helmDmg = as.getHelmet() == null ? 0 : as.getHelmet().getDurability();
         EulerAngle he = as.getHeadPose();
         EulerAngle ll = as.getLeftLegPose();
@@ -93,33 +110,65 @@ public class Main extends JavaPlugin {
         EulerAngle la = as.getLeftArmPose();
         EulerAngle ra = as.getRightArmPose();
         EulerAngle bo = as.getBodyPose();
-        String cmd =
-                "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
-                        + (as.getMaxHealth() != 20    ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
-                        + (as.isVisible()             ? "" : "Invisible:1,")
-                        + (as.hasBasePlate()          ? "" : "NoBasePlate:1,")
-                        + (as.hasGravity()            ? "" : "NoGravity:1,")
-                        + (as.hasArms()               ? "ShowArms:1," : "")
-                        + (as.isSmall()               ? "Small:1," : "")
-                        + (NBT.isInvulnerable(as)     ? "Invulnerable:1," : "")
-                        + (dSlots == 0                ? "" : ("DisabledSlots:" + dSlots + ","))
-                        + (as.isCustomNameVisible()   ? "CustomNameVisible:1," : "")
-                        + (as.getCustomName() == null ? "" : ("CustomName:\"" + as.getCustomName() + "\","))
-                        + (loc.getYaw() == 0F         ? "" : ("Rotation:[" + Utils.twoDec(loc.getYaw()) + "f],"))
-                        + (hand == 0 && boots == 0 && legs == 0 && chest == 0 && helm == 0 ? "" : (
-                        "Equipment:["
-                                + "{id:" + hand  + ",Count:" + as.getItemInHand().getAmount() + ",Damage:" + handDmg  + NBT.getItemStackTags(as.getItemInHand()) + "},"
-                                + "{id:" + boots + ",Count:" + as.getBoots().getAmount() + ",Damage:" + bootsDmg + NBT.getItemStackTags(as.getBoots()) + "},"
-                                + "{id:" + legs  + ",Count:" + as.getLeggings().getAmount() + ",Damage:" + legsDmg  + NBT.getItemStackTags(as.getLeggings()) + "},"
-                                + "{id:" + chest + ",Count:" + as.getChestplate().getAmount() + ",Damage:" + chestDmg + NBT.getItemStackTags(as.getChestplate()) + "},"
-                                + "{id:" + helm  + ",Count:" + as.getHelmet().getAmount() + ",Damage:" + helmDmg  + NBT.getItemStackTags(as.getHelmet()) + NBT.skullOwner(as.getHelmet()) + "}],"))
-                        + "Pose:{"
-                        + (bo.equals(zero) ? "" : ("Body:["     + Utils.angle(bo.getX()) + "f," + Utils.angle(bo.getY()) + "f," + Utils.angle(bo.getZ()) + "f],"))
-                        + (he.equals(zero) ? "" : ("Head:["     + Utils.angle(he.getX()) + "f," + Utils.angle(he.getY()) + "f," + Utils.angle(he.getZ()) + "f],"))
-                        + (ll.equals(zero) ? "" : ("LeftLeg:["  + Utils.angle(ll.getX()) + "f," + Utils.angle(ll.getY()) + "f," + Utils.angle(ll.getZ()) + "f],"))
-                        + (rl.equals(zero) ? "" : ("RightLeg:[" + Utils.angle(rl.getX()) + "f," + Utils.angle(rl.getY()) + "f," + Utils.angle(rl.getZ()) + "f],"))
-                        + (la.equals(zero) ? "" : ("LeftArm:["  + Utils.angle(la.getX()) + "f," + Utils.angle(la.getY()) + "f," + Utils.angle(la.getZ()) + "f],"))
-                        + "RightArm:[" + Utils.angle(ra.getX()) + "f," + Utils.angle(ra.getY()) + "f," + Utils.angle(ra.getZ()) + "f]}}";
+        String cmd;
+        if(one_nine) {
+            cmd = "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
+                    + (as.getMaxHealth() != 20 ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
+                    + (as.isVisible() ? "" : "Invisible:1,")
+                    + (as.hasBasePlate() ? "" : "NoBasePlate:1,")
+                    + (as.hasGravity() ? "" : "NoGravity:1,")
+                    + (as.hasArms() ? "ShowArms:1," : "")
+                    + (as.isSmall() ? "Small:1," : "")
+                    + (NBT.isInvulnerable(as) ? "Invulnerable:1," : "")
+                    + (dSlots == 0 ? "" : ("DisabledSlots:" + dSlots + ","))
+                    + (as.isCustomNameVisible() ? "CustomNameVisible:1," : "")
+                    + (as.getCustomName() == null ? "" : ("CustomName:\"" + as.getCustomName() + "\","))
+                    + (loc.getYaw() == 0F ? "" : ("Rotation:[" + Utils.twoDec(loc.getYaw()) + "f],"))
+                    + (as.getBoots() == null && as.getLeggings() == null && as.getChestplate() == null && as.getHelmet() == null ? "" : (
+                    "ArmorItems:["
+                            + "{id:" + boots + ",Count:" + as.getBoots().getAmount() + ",Damage:" + bootsDmg + NBT.getItemStackTags(as.getBoots()) + "},"
+                            + "{id:" + legs + ",Count:" + as.getLeggings().getAmount() + ",Damage:" + legsDmg + NBT.getItemStackTags(as.getLeggings()) + "},"
+                            + "{id:" + chest + ",Count:" + as.getChestplate().getAmount() + ",Damage:" + chestDmg + NBT.getItemStackTags(as.getChestplate()) + "},"
+                            + "{id:" + helm + ",Count:" + as.getHelmet().getAmount() + ",Damage:" + helmDmg + NBT.getItemStackTags(as.getHelmet()) + NBT.skullOwner(as.getHelmet()) + "}],"))
+                    + (as.getEquipment().getItemInMainHand() == null && as.getEquipment().getItemInOffHand() == null ? "" : (
+                    "HandItems:["
+                            + "{id:" + hand + ",Count:" + as.getEquipment().getItemInMainHand().getAmount() + ",Damage:" + handDmg + NBT.getItemStackTags(as.getEquipment().getItemInMainHand()) + "},"
+                            + "{id:" + offHand + ",Count:" + as.getEquipment().getItemInOffHand().getAmount() + ",Damage:" + offHandDmg + NBT.getItemStackTags(as.getEquipment().getItemInOffHand()) + "}],"))
+                    + "Pose:{"
+                    + (bo.equals(zero) ? "" : ("Body:[" + Utils.angle(bo.getX()) + "f," + Utils.angle(bo.getY()) + "f," + Utils.angle(bo.getZ()) + "f],"))
+                    + (he.equals(zero) ? "" : ("Head:[" + Utils.angle(he.getX()) + "f," + Utils.angle(he.getY()) + "f," + Utils.angle(he.getZ()) + "f],"))
+                    + (ll.equals(zero) ? "" : ("LeftLeg:[" + Utils.angle(ll.getX()) + "f," + Utils.angle(ll.getY()) + "f," + Utils.angle(ll.getZ()) + "f],"))
+                    + (rl.equals(zero) ? "" : ("RightLeg:[" + Utils.angle(rl.getX()) + "f," + Utils.angle(rl.getY()) + "f," + Utils.angle(rl.getZ()) + "f],"))
+                    + (la.equals(zero) ? "" : ("LeftArm:[" + Utils.angle(la.getX()) + "f," + Utils.angle(la.getY()) + "f," + Utils.angle(la.getZ()) + "f],"))
+                    + "RightArm:[" + Utils.angle(ra.getX()) + "f," + Utils.angle(ra.getY()) + "f," + Utils.angle(ra.getZ()) + "f]}}";
+        } else {
+            cmd = "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
+                    + (as.getMaxHealth() != 20 ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
+                    + (as.isVisible() ? "" : "Invisible:1,")
+                    + (as.hasBasePlate() ? "" : "NoBasePlate:1,")
+                    + (as.hasGravity() ? "" : "NoGravity:1,")
+                    + (as.hasArms() ? "ShowArms:1," : "")
+                    + (as.isSmall() ? "Small:1," : "")
+                    + (NBT.isInvulnerable(as) ? "Invulnerable:1," : "")
+                    + (dSlots == 0 ? "" : ("DisabledSlots:" + dSlots + ","))
+                    + (as.isCustomNameVisible() ? "CustomNameVisible:1," : "")
+                    + (as.getCustomName() == null ? "" : ("CustomName:\"" + as.getCustomName() + "\","))
+                    + (loc.getYaw() == 0F ? "" : ("Rotation:[" + Utils.twoDec(loc.getYaw()) + "f],"))
+                    + (as.getItemInHand() == null && as.getBoots() == null && as.getLeggings() == null && as.getChestplate() == null && as.getHelmet() == null ? "" : (
+                    "Equipment:["
+                            + "{id:" + hand + ",Count:" + as.getItemInHand().getAmount() + ",Damage:" + handDmg + NBT.getItemStackTags(as.getItemInHand()) + "},"
+                            + "{id:" + boots + ",Count:" + as.getBoots().getAmount() + ",Damage:" + bootsDmg + NBT.getItemStackTags(as.getBoots()) + "},"
+                            + "{id:" + legs + ",Count:" + as.getLeggings().getAmount() + ",Damage:" + legsDmg + NBT.getItemStackTags(as.getLeggings()) + "},"
+                            + "{id:" + chest + ",Count:" + as.getChestplate().getAmount() + ",Damage:" + chestDmg + NBT.getItemStackTags(as.getChestplate()) + "},"
+                            + "{id:" + helm + ",Count:" + as.getHelmet().getAmount() + ",Damage:" + helmDmg + NBT.getItemStackTags(as.getHelmet()) + NBT.skullOwner(as.getHelmet()) + "}],"))
+                    + "Pose:{"
+                    + (bo.equals(zero) ? "" : ("Body:[" + Utils.angle(bo.getX()) + "f," + Utils.angle(bo.getY()) + "f," + Utils.angle(bo.getZ()) + "f],"))
+                    + (he.equals(zero) ? "" : ("Head:[" + Utils.angle(he.getX()) + "f," + Utils.angle(he.getY()) + "f," + Utils.angle(he.getZ()) + "f],"))
+                    + (ll.equals(zero) ? "" : ("LeftLeg:[" + Utils.angle(ll.getX()) + "f," + Utils.angle(ll.getY()) + "f," + Utils.angle(ll.getZ()) + "f],"))
+                    + (rl.equals(zero) ? "" : ("RightLeg:[" + Utils.angle(rl.getX()) + "f," + Utils.angle(rl.getY()) + "f," + Utils.angle(rl.getZ()) + "f],"))
+                    + (la.equals(zero) ? "" : ("LeftArm:[" + Utils.angle(la.getX()) + "f," + Utils.angle(la.getY()) + "f," + Utils.angle(la.getZ()) + "f],"))
+                    + "RightArm:[" + Utils.angle(ra.getX()) + "f," + Utils.angle(ra.getY()) + "f," + Utils.angle(ra.getZ()) + "f]}}";
+        }
         Block b = l.getBlock();
         b.setType(Material.COMMAND);
         b.setData((byte) 0);

@@ -6,65 +6,123 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 class NBT {
 
     static boolean toggleSlotsDisabled(ArmorStand as) {
-        Object nmsEntity = getNmsEntity(as);
-        if(nmsEntity == null) return false;
-        Object tag = getTag(nmsEntity);
-        if(tag == null) return false;
-        boolean slotsDisabled = getInt(tag, "DisabledSlots") == 0;
-        setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
-        saveTagA(nmsEntity, tag);
+        boolean slotsDisabled = getDisabledSlots(as) == 0;
+        setSlotsDisabled(as, slotsDisabled);
         return slotsDisabled;
-    }
-
-    static boolean toggleInvulnerability(ArmorStand as) {
-        Object nmsEntity = getNmsEntity(as);
-        if(nmsEntity == null) return false;
-        Object tag = getTag(nmsEntity);
-        if(tag == null) return false;
-        boolean invulnerable = !getBoolean(tag, "Invulnerable");
-        setBoolean(tag, "Invulnerable", invulnerable);
-        saveTagF(nmsEntity, tag);
-        return invulnerable;
-    }
-
-    static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
-        Object nmsEntity = getNmsEntity(as);
-        if(nmsEntity == null) return;
-        Object tag = getTag(nmsEntity);
-        if(tag == null) return;
-        setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
-        saveTagA(nmsEntity, tag);
-    }
-
-    static void setInvulnerable(ArmorStand as, boolean invulnerable) {
-        Object nmsEntity = getNmsEntity(as);
-        if(nmsEntity == null) return;
-        Object tag = getTag(nmsEntity);
-        if(tag == null) return;
-        setBoolean(tag, "Invulnerable", invulnerable);
-        saveTagF(nmsEntity, tag);
-    }
-
-    static boolean isInvulnerable(ArmorStand as) {
-        Object nmsEntity = getNmsEntity(as);
-        if (nmsEntity == null) return false;
-        Object tag = getTag(nmsEntity);
-        return tag != null && getBoolean(tag, "Invulnerable");
     }
 
     static int getDisabledSlots(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if(nmsEntity == null) return 0;
-        Object tag = getTag(nmsEntity);
-        if (tag == null) return 0;
-        return getInt(tag, "DisabledSlots");
+        if(Main.one_nine) {
+            Field f;
+            try {
+                f = nmsEntity.getClass().getDeclaredField("bz");
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+                return 0;
+            }
+            f.setAccessible(true);
+            try {
+                return (Integer) f.get(nmsEntity);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        } else {
+            Object tag = getTag(nmsEntity);
+            if (tag == null) return 0;
+            return getInt(tag, "DisabledSlots");
+        }
     }
+
+    static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
+        Object nmsEntity = getNmsEntity(as);
+        if (nmsEntity == null) return;
+        if(Main.one_nine) {
+            Field f;
+            try {
+                f = nmsEntity.getClass().getDeclaredField("bz");
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+                return;
+            }
+            f.setAccessible(true);
+            try {
+                f.set(nmsEntity, slotsDisabled ? 2039583 : 0);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Object tag = getTag(nmsEntity);
+            if (tag == null) return;
+            setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
+            saveTagA(nmsEntity, tag);
+        }
+    }
+
+    static boolean toggleInvulnerability(ArmorStand as) {
+        boolean isInvulnerable = !isInvulnerable(as);
+        setInvulnerable(as, isInvulnerable);
+        return isInvulnerable;
+    }
+
+    static boolean isInvulnerable(ArmorStand as) {
+        Object nmsEntity = getNmsEntity(as);
+        if (nmsEntity == null) return false;
+        if(Main.one_nine) {
+            Field f;
+            try {
+                f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+            f.setAccessible(true);
+            try {
+                return (Boolean) f.get(nmsEntity);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            Object tag = getTag(nmsEntity);
+            return tag != null && getBoolean(tag, "Invulnerable");
+        }
+    }
+
+    static void setInvulnerable(ArmorStand as, boolean invulnerable) {
+        Object nmsEntity = getNmsEntity(as);
+        if (nmsEntity == null) return;
+        if(Main.one_nine) {
+            Field f;
+            try {
+                f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            f.setAccessible(true);
+            try {
+                f.set(nmsEntity, invulnerable);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Object tag = getTag(nmsEntity);
+            if(tag == null) return;
+            setBoolean(tag, "Invulnerable", invulnerable);
+            saveTagF(nmsEntity, tag);
+        }
+    }
+
 
     private static Object getNmsEntity(org.bukkit.entity.Entity entity) {
         try {
@@ -76,6 +134,7 @@ class NBT {
     }
 
     private static Object getTag(Object nmsEntity) {
+
         try {
             Method method = nmsEntity.getClass().getMethod("getNBTTag");
             Object tag = method.invoke(nmsEntity);
