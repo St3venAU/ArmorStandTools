@@ -11,7 +11,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -27,12 +26,12 @@ public class Main extends JavaPlugin {
     public final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
     private final EulerAngle zero = new EulerAngle(0D, 0D, 0D);
     static String NMS_VERSION;
-    static boolean one_nine;
+    static boolean oneNine;
 
     @Override
     public void onEnable() {
         NMS_VERSION = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        one_nine = NMS_VERSION.startsWith("v1_9");
+        oneNine = NMS_VERSION.startsWith("v1_9");
         getServer().getPluginManager().registerEvents(new MainListener(this), this);
         CommandExecutor ce = new Commands(this);
         getCommand("astools").setExecutor(ce);
@@ -82,7 +81,7 @@ public class Main extends JavaPlugin {
         String hand, boots, legs, chest, helm, offHand = "0";
         int handDmg, offHandDmg = 0;
 
-        if(one_nine) {
+        if(oneNine) {
             hand = as.getEquipment().getItemInMainHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInMainHand().getType());
             offHand = as.getEquipment().getItemInOffHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInOffHand().getType());
             boots = as.getBoots() == null ? "air" : Utils.getNmsName(as.getBoots().getType());
@@ -111,7 +110,7 @@ public class Main extends JavaPlugin {
         EulerAngle ra = as.getRightArmPose();
         EulerAngle bo = as.getBodyPose();
         String cmd;
-        if(one_nine) {
+        if(oneNine) {
             cmd = "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
                     + (as.getMaxHealth() != 20 ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
                     + (as.isVisible() ? "" : "Invisible:1,")
@@ -244,12 +243,7 @@ public class Main extends JavaPlugin {
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);
-        if(breakEvent.isCancelled()){
-            return false;
-        }
-        BlockPlaceEvent placeEvent = new BlockPlaceEvent(b, b.getState(), b, null, p, true);
-        Bukkit.getServer().getPluginManager().callEvent(placeEvent);
-        return !placeEvent.isCancelled();
+        return !breakEvent.isCancelled();
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {

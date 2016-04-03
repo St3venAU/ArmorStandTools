@@ -123,7 +123,17 @@ public enum ArmorStandTool {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
+    static ArmorStandTool get(Player p) {
+        return get(Main.oneNine ? p.getInventory().getItemInMainHand() : p.getItemInHand());
+    }
+
     static boolean isTool(ItemStack is) {
         return get(is) != null;
+    }
+
+    @SuppressWarnings("deprecation")
+    static boolean isHoldingTool(Player p) {
+        return isTool(Main.oneNine ? p.getInventory().getItemInMainHand() : p.getItemInHand());
     }
 }

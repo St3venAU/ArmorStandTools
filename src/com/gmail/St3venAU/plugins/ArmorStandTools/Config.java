@@ -36,7 +36,7 @@ class Config {
             isOn, isOff, gravity, arms, invul, equip, locked,
             unLocked, notConsole, giveMsg1, giveMsg2, conReload,
             noRelPerm, noAirError, pleaseWait, appliedHead,
-            noHead, invalidName, wgNoPerm, currently, headFailed,
+            invalidName, wgNoPerm, currently, headFailed,
             noCommandPerm, generalNoPerm, armorStand, none,
             enabled, disabled, guiInUse;
 
@@ -77,7 +77,6 @@ class Config {
         noAirError = languageConfig.getString("noAirError");
         pleaseWait = languageConfig.getString("pleaseWait");
         appliedHead = languageConfig.getString("appliedHead");
-        noHead = languageConfig.getString("noHead");
         invalidName = languageConfig.getString("invalidName");
         wgNoPerm = languageConfig.getString("wgNoPerm");
         noCommandPerm = languageConfig.getString("noCommandPerm");

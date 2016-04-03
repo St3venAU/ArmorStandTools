@@ -159,6 +159,7 @@ class Utils {
         return is;
     }
 
+    @SuppressWarnings({"deprecation", "unchecked"})
     static String getNmsName(Material m) {
         try {
             Class block = getNMSClass("Block");
@@ -175,7 +176,6 @@ class Utils {
                     return (String) regKey.getMethod("a").invoke(key);
                 }
             }
-
             registry = item.getDeclaredField("REGISTRY").get(null);
             set = (Set<Object>) registry.getClass().getMethod("keySet").invoke(registry);
             for(Object key : set) {

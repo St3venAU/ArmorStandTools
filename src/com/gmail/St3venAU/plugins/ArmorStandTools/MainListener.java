@@ -63,7 +63,7 @@ public class MainListener implements Listener {
                     p.sendMessage(ChatColor.RED + Config.wgNoPerm);
                 }
             }
-            ArmorStandTool tool = ArmorStandTool.get(p.getInventory().getItemInMainHand());
+            ArmorStandTool tool = ArmorStandTool.get(p);
             if(tool == null) return;
             ArmorStand as = (ArmorStand) event.getRightClicked();
             if (!plugin.playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) {
@@ -163,7 +163,7 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked() instanceof ItemFrame && ArmorStandTool.isTool(event.getPlayer().getItemInHand())) {
+        if (event.getRightClicked() instanceof ItemFrame && ArmorStandTool.isHoldingTool(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
         }
@@ -172,7 +172,7 @@ public class MainListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (ArmorStandTool.isTool(event.getItemInHand())) {
+        if (ArmorStandTool.isHoldingTool(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
@@ -326,9 +326,9 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof ArmorStand && event.getDamager() instanceof Player && ArmorStandTool.isTool(((Player) event.getDamager()).getInventory().getItemInMainHand())) {
+        if(event.getEntity() instanceof ArmorStand && event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
             event.setCancelled(true);
-            if(noCooldown(event.getDamager())) {
+            if (noCooldown(event.getDamager())) {
                 Utils.cycleInventory((Player) event.getDamager());
             }
         }
@@ -349,7 +349,7 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        if(Main.one_nine) {
+        if(Main.oneNine) {
             as.getEquipment().setItemInMainHand(Config.itemInHand);
             as.getEquipment().setItemInOffHand(Config.itemInOffHand);
         } else {
@@ -401,10 +401,9 @@ public class MainListener implements Listener {
                     }
                 } else if(b.hasMetadata("setSkull")) {
                     if(MC_USERNAME_PATTERN.matcher(input).matches()) {
-                        final String name = input;
                         b.setMetadata("protected", new FixedMetadataValue(plugin, true));
                         event.getPlayer().sendMessage(ChatColor.GOLD + Config.pleaseWait);
-                        String cmd = "give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + name + "\"}";
+                        String cmd = "give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + input + "\"}";
                         String current = b.getWorld().getGameRuleValue("sendCommandFeedback");
                         b.getWorld().setGameRuleValue("sendCommandFeedback", "false");
                         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
@@ -413,9 +412,9 @@ public class MainListener implements Listener {
                         for(int slot : event.getPlayer().getInventory().all(Material.SKULL_ITEM).keySet()) {
                             ItemStack skull = event.getPlayer().getInventory().getItem(slot);
                             SkullMeta sm = (SkullMeta) skull.getItemMeta();
-                            if(sm.hasOwner() && name.equalsIgnoreCase(sm.getOwner())) {
+                            if(sm.hasOwner() && input.equalsIgnoreCase(sm.getOwner())) {
                                 as.setHelmet(skull);
-                                event.getPlayer().sendMessage(ChatColor.GREEN + Config.appliedHead + ChatColor.GOLD + " " + name);
+                                event.getPlayer().sendMessage(ChatColor.GREEN + Config.appliedHead + ChatColor.GOLD + " " + input);
                                 event.getPlayer().getInventory().setItem(slot, null);
                                 found = true;
                                 break;

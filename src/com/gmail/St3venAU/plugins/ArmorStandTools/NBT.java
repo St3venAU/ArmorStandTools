@@ -21,7 +21,7 @@ class NBT {
     static int getDisabledSlots(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if(nmsEntity == null) return 0;
-        if(Main.one_nine) {
+        if(Main.oneNine) {
             Field f;
             try {
                 f = nmsEntity.getClass().getDeclaredField("bz");
@@ -46,7 +46,7 @@ class NBT {
     static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        if(Main.one_nine) {
+        if(Main.oneNine) {
             Field f;
             try {
                 f = nmsEntity.getClass().getDeclaredField("bz");
@@ -77,7 +77,7 @@ class NBT {
     static boolean isInvulnerable(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return false;
-        if(Main.one_nine) {
+        if(Main.oneNine) {
             Field f;
             try {
                 f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
@@ -101,7 +101,7 @@ class NBT {
     static void setInvulnerable(ArmorStand as, boolean invulnerable) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        if(Main.one_nine) {
+        if(Main.oneNine) {
             Field f;
             try {
                 f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
@@ -194,6 +194,7 @@ class NBT {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static int getInt(Object tag, String name) {
         try {
             return (Integer) tag.getClass().getMethod("getInt", String.class).invoke(tag, name);
@@ -203,6 +204,7 @@ class NBT {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static boolean getBoolean(Object tag, String name) {
         try {
             return (Boolean) tag.getClass().getMethod("getBoolean", String.class).invoke(tag, name);
@@ -212,6 +214,7 @@ class NBT {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void setInt(Object tag, String name, int value) {
         try {
             tag.getClass().getMethod("setInt", String.class, int.class).invoke(tag, name, value);
@@ -220,6 +223,7 @@ class NBT {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void setBoolean(Object tag, String name, boolean value) {
         try {
             tag.getClass().getMethod("setBoolean", String.class, boolean.class).invoke(tag, name, value);
