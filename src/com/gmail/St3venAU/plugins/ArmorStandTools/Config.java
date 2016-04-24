@@ -29,6 +29,7 @@ class Config {
     public static boolean invulnerable  = false;
     public static boolean equipmentLock = false;
     public static boolean allowMoveWorld = false;
+    public static boolean deactivateOnWorldChange = true;
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -109,6 +110,7 @@ class Config {
         invulnerable  = config.getBoolean("invulnerable");
         equipmentLock = config.getBoolean("equipmentLock");
         allowMoveWorld = config.getBoolean("allowMovingStandsBetweenWorlds");
+        deactivateOnWorldChange = config.getBoolean("deactivateToolsOnWorldChange");
         plugin.carryingArmorStand.clear();
 
         for(ArmorStandTool tool : ArmorStandTool.values()) {

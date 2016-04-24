@@ -11,6 +11,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -193,9 +194,10 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         final Player p = event.getPlayer();
+        boolean sameWorld = event.getFrom().getWorld() == event.getTo().getWorld();
         if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
             UUID uuid = event.getPlayer().getUniqueId();
             final ArmorStand as = plugin.carryingArmorStand.get(uuid);
@@ -204,7 +206,7 @@ public class MainListener implements Listener {
                 Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
-            if(event.getFrom().getWorld() == event.getTo().getWorld() || Config.allowMoveWorld) {
+            if(sameWorld || Config.allowMoveWorld) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -219,6 +221,10 @@ public class MainListener implements Listener {
                     plugin.savedInventories.remove(uuid);
                 }
             }
+        }
+        if(Config.deactivateOnWorldChange && !sameWorld && plugin.savedInventories.containsKey(p.getUniqueId())) {
+            p.getInventory().setContents(plugin.savedInventories.get(p.getUniqueId()));
+            plugin.savedInventories.remove(p.getUniqueId());
         }
     }
 
