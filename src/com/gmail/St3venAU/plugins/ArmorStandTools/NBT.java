@@ -24,7 +24,7 @@ class NBT {
         if(Main.oneNine) {
             Field f;
             try {
-                f = nmsEntity.getClass().getDeclaredField("bz");
+                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : "bz");
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return 0;
@@ -49,7 +49,7 @@ class NBT {
         if(Main.oneNine) {
             Field f;
             try {
-                f = nmsEntity.getClass().getDeclaredField("bz");
+                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : "bz");
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return;

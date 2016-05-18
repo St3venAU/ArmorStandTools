@@ -332,10 +332,15 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof ArmorStand && event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
-            event.setCancelled(true);
-            if (noCooldown(event.getDamager())) {
-                Utils.cycleInventory((Player) event.getDamager());
+        if(event.getEntity() instanceof ArmorStand) {
+            if(NBT.isInvulnerable((ArmorStand) event.getEntity())) {
+                event.setCancelled(true);
+            }
+            if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
+                event.setCancelled(true);
+                if(noCooldown(event.getDamager())) {
+                    Utils.cycleInventory((Player) event.getDamager());
+                }
             }
         }
     }

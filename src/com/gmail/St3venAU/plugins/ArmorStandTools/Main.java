@@ -26,13 +26,14 @@ public class Main extends JavaPlugin {
     public final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
     private final EulerAngle zero = new EulerAngle(0D, 0D, 0D);
     static String NMS_VERSION;
-    static boolean oneNine;
+    static boolean oneNine, oneNineFour;
 
     @Override
     public void onEnable() {
         NMS_VERSION = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         oneNine = NMS_VERSION.startsWith("v1_9");
-        getServer().getPluginManager().registerEvents(new MainListener(this), this);
+        oneNineFour = NMS_VERSION.startsWith("v1_9_R2");
+        getServer().getPluginManager().registerEvents(new  MainListener(this), this);
         CommandExecutor ce = new Commands(this);
         getCommand("astools").setExecutor(ce);
         Config.reload(this);
@@ -183,7 +184,12 @@ public class Main extends JavaPlugin {
         clone.setChestplate(as.getChestplate());
         clone.setLeggings(as.getLeggings());
         clone.setBoots(as.getBoots());
-        clone.setItemInHand(as.getItemInHand());
+        if(oneNine) {
+            clone.getEquipment().setItemInMainHand(as.getEquipment().getItemInMainHand());
+            clone.getEquipment().setItemInOffHand(as.getEquipment().getItemInOffHand());
+        } else {
+            clone.setItemInHand(as.getItemInHand());
+        }
         clone.setHeadPose(as.getHeadPose());
         clone.setBodyPose(as.getBodyPose());
         clone.setLeftArmPose(as.getLeftArmPose());
