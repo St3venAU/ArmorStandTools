@@ -26,13 +26,14 @@ public class Main extends JavaPlugin {
     public final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
     private final EulerAngle zero = new EulerAngle(0D, 0D, 0D);
     static String NMS_VERSION;
-    static boolean oneNine, oneNineFour;
+    static boolean oneEight, oneNineFour, oneTen;
 
     @Override
     public void onEnable() {
         NMS_VERSION = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        oneNine = NMS_VERSION.startsWith("v1_9");
+        oneEight = NMS_VERSION.startsWith("v1_8");
         oneNineFour = NMS_VERSION.startsWith("v1_9_R2");
+        oneTen = NMS_VERSION.startsWith("v1_10");
         getServer().getPluginManager().registerEvents(new  MainListener(this), this);
         CommandExecutor ce = new Commands(this);
         getCommand("astools").setExecutor(ce);
@@ -81,8 +82,15 @@ public class Main extends JavaPlugin {
         int dSlots = NBT.getDisabledSlots(as);
         String hand, boots, legs, chest, helm, offHand = "0";
         int handDmg, offHandDmg = 0;
+        if(oneEight) {
+            hand = as.getItemInHand() == null ? "0" : String.valueOf(as.getItemInHand().getTypeId());
+            boots = as.getBoots() == null ? "0" : String.valueOf(as.getBoots().getTypeId());
+            legs = as.getLeggings() == null ? "0" : String.valueOf(as.getLeggings().getTypeId());
+            chest = as.getChestplate() == null ? "0" : String.valueOf(as.getChestplate().getTypeId());
+            helm = as.getHelmet() == null ? "0" : String.valueOf(as.getHelmet().getTypeId());
+            handDmg = as.getItemInHand() == null ? 0 : as.getItemInHand().getDurability();
 
-        if(oneNine) {
+        } else {
             hand = as.getEquipment().getItemInMainHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInMainHand().getType());
             offHand = as.getEquipment().getItemInOffHand() == null ? "air" : Utils.getNmsName(as.getEquipment().getItemInOffHand().getType());
             boots = as.getBoots() == null ? "air" : Utils.getNmsName(as.getBoots().getType());
@@ -91,13 +99,6 @@ public class Main extends JavaPlugin {
             helm = as.getHelmet() == null ? "air" : Utils.getNmsName(as.getHelmet().getType());
             handDmg = as.getEquipment().getItemInMainHand() == null ? 0 : as.getEquipment().getItemInMainHand().getDurability();
             offHandDmg = as.getEquipment().getItemInOffHand() == null ? 0 : as.getEquipment().getItemInOffHand().getDurability();
-        } else {
-            hand = as.getItemInHand() == null ? "0" : String.valueOf(as.getItemInHand().getTypeId());
-            boots = as.getBoots() == null ? "0" : String.valueOf(as.getBoots().getTypeId());
-            legs = as.getLeggings() == null ? "0" : String.valueOf(as.getLeggings().getTypeId());
-            chest = as.getChestplate() == null ? "0" : String.valueOf(as.getChestplate().getTypeId());
-            helm = as.getHelmet() == null ? "0" : String.valueOf(as.getHelmet().getTypeId());
-            handDmg = as.getItemInHand() == null ? 0 : as.getItemInHand().getDurability();
         }
 
         int bootsDmg = as.getBoots() == null ? 0 : as.getBoots().getDurability();
@@ -111,7 +112,7 @@ public class Main extends JavaPlugin {
         EulerAngle ra = as.getRightArmPose();
         EulerAngle bo = as.getBodyPose();
         String cmd;
-        if(oneNine) {
+        if(!oneEight) {
             cmd = "summon ArmorStand " + Utils.twoDec(loc.getX()) + " " + Utils.twoDec(loc.getY()) + " " + Utils.twoDec(loc.getZ()) + " {"
                     + (as.getMaxHealth() != 20 ? "Attributes:[{Name:\"generic.maxHealth\", Base:" + as.getMaxHealth() + "}]," : "")
                     + (as.isVisible() ? "" : "Invisible:1,")
@@ -184,11 +185,11 @@ public class Main extends JavaPlugin {
         clone.setChestplate(as.getChestplate());
         clone.setLeggings(as.getLeggings());
         clone.setBoots(as.getBoots());
-        if(oneNine) {
+        if(oneEight) {
+            clone.setItemInHand(as.getItemInHand());
+        } else {
             clone.getEquipment().setItemInMainHand(as.getEquipment().getItemInMainHand());
             clone.getEquipment().setItemInOffHand(as.getEquipment().getItemInOffHand());
-        } else {
-            clone.setItemInHand(as.getItemInHand());
         }
         clone.setHeadPose(as.getHeadPose());
         clone.setBodyPose(as.getBodyPose());

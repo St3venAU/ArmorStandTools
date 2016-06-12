@@ -125,7 +125,7 @@ public enum ArmorStandTool {
 
     @SuppressWarnings("deprecation")
     static ArmorStandTool get(Player p) {
-        return get(Main.oneNine ? p.getInventory().getItemInMainHand() : p.getItemInHand());
+        return get(Main.oneEight ? p.getItemInHand() : p.getInventory().getItemInMainHand());
     }
 
     static boolean isTool(ItemStack is) {
@@ -134,6 +134,6 @@ public enum ArmorStandTool {
 
     @SuppressWarnings("deprecation")
     static boolean isHoldingTool(Player p) {
-        return isTool(Main.oneNine ? p.getInventory().getItemInMainHand() : p.getItemInHand());
+        return isTool(Main.oneEight ? p.getItemInHand() : p.getInventory().getItemInMainHand());
     }
 }

@@ -360,11 +360,11 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            as.setItemInHand(Config.itemInHand);
+        } else {
             as.getEquipment().setItemInMainHand(Config.itemInHand);
             as.getEquipment().setItemInOffHand(Config.itemInOffHand);
-        } else {
-            as.setItemInHand(Config.itemInHand);
         }
         as.setVisible(Config.isVisible);
         as.setSmall(Config.isSmall);

@@ -42,7 +42,7 @@ class ArmorStandGUI implements Listener {
             im.setDisplayName(" ");
             filler.setItemMeta(im);
             invSlots.add(10);
-            if(Main.oneNine) {
+            if(!Main.oneEight) {
                 invSlots.add(12);
             }
             invSlots.add(2);
@@ -68,11 +68,11 @@ class ArmorStandGUI implements Listener {
                 i.setItem(tool.getSlot(), updateLore(tool));
             }
         }
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            i.setItem(10, as.getItemInHand());
+        } else {
             i.setItem(10, as.getEquipment().getItemInMainHand());
             i.setItem(12, as.getEquipment().getItemInOffHand());
-        } else {
-            i.setItem(10, as.getItemInHand());
         }
         i.setItem(2,  as.getHelmet());
         i.setItem(11, as.getChestplate());
@@ -253,11 +253,11 @@ class ArmorStandGUI implements Listener {
             @Override
             public void run() {
                 if(as == null || i == null) return;
-                if(Main.oneNine) {
+                if(Main.oneEight) {
+                    as.setItemInHand(i.getItem(10));
+                } else {
                     as.getEquipment().setItemInMainHand(i.getItem(10));
                     as.getEquipment().setItemInOffHand(i.getItem(12));
-                } else {
-                    as.setItemInHand(i.getItem(10));
                 }
                 as.setHelmet(i.getItem(2));
                 as.setChestplate(i.getItem(11));

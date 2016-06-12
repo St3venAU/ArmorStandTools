@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game that acts out its
 
 Compatibility
 -------------
-- Spigot/CraftBukkit 1.8 - 1.9.x
+- Spigot/CraftBukkit 1.8.x, 1.9.x, 1.10
 
 Features
 --------

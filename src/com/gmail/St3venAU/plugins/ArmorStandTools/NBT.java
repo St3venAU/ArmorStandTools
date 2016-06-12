@@ -21,10 +21,14 @@ class NBT {
     static int getDisabledSlots(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if(nmsEntity == null) return 0;
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            Object tag = getTag(nmsEntity);
+            if (tag == null) return 0;
+            return getInt(tag, "DisabledSlots");
+        } else {
             Field f;
             try {
-                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : "bz");
+                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : (Main.oneTen ? "bB" : "bz"));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return 0;
@@ -36,20 +40,21 @@ class NBT {
                 e.printStackTrace();
                 return 0;
             }
-        } else {
-            Object tag = getTag(nmsEntity);
-            if (tag == null) return 0;
-            return getInt(tag, "DisabledSlots");
         }
     }
 
     static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            Object tag = getTag(nmsEntity);
+            if (tag == null) return;
+            setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
+            saveTagA(nmsEntity, tag);
+        } else {
             Field f;
             try {
-                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : "bz");
+                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : (Main.oneTen ? "bB" : "bz"));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return;
@@ -60,11 +65,6 @@ class NBT {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else {
-            Object tag = getTag(nmsEntity);
-            if (tag == null) return;
-            setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
-            saveTagA(nmsEntity, tag);
         }
     }
 
@@ -75,9 +75,15 @@ class NBT {
     }
 
     static boolean isInvulnerable(ArmorStand as) {
+        if(Main.oneNineFour || Main.oneTen) {
+            return as.isInvulnerable();
+        }
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return false;
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            Object tag = getTag(nmsEntity);
+            return tag != null && getBoolean(tag, "Invulnerable");
+        } else {
             Field f;
             try {
                 f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
@@ -92,16 +98,21 @@ class NBT {
                 e.printStackTrace();
                 return false;
             }
-        } else {
-            Object tag = getTag(nmsEntity);
-            return tag != null && getBoolean(tag, "Invulnerable");
         }
     }
 
     static void setInvulnerable(ArmorStand as, boolean invulnerable) {
+        if(Main.oneNineFour || Main.oneTen) {
+            as.setInvulnerable(invulnerable);
+        }
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        if(Main.oneNine) {
+        if(Main.oneEight) {
+            Object tag = getTag(nmsEntity);
+            if(tag == null) return;
+            setBoolean(tag, "Invulnerable", invulnerable);
+            saveTagF(nmsEntity, tag);
+        } else {
             Field f;
             try {
                 f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
@@ -115,11 +126,6 @@ class NBT {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            Object tag = getTag(nmsEntity);
-            if(tag == null) return;
-            setBoolean(tag, "Invulnerable", invulnerable);
-            saveTagF(nmsEntity, tag);
         }
     }
 
