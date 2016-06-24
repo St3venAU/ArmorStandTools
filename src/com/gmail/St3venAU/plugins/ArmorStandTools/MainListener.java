@@ -233,6 +233,17 @@ public class MainListener implements Listener {
         final Player p = event.getEntity();
         if(p.getWorld().getGameRuleValue("keepInventory").equalsIgnoreCase("true")) return;
         List<ItemStack> drops = event.getDrops();
+        for(ItemStack item : p.getInventory().getArmorContents())
+        {
+            if(item != null)
+            {
+                drops.remove(item);
+            }
+        }
+        if(p.getInventory().getItemInOffHand() != null)
+        {
+            drops.remove(p.getInventory().getItemInOffHand());
+        }
         for(ArmorStandTool t : ArmorStandTool.values()) {
             drops.remove(t.getItem());
         }
