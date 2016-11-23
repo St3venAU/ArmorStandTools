@@ -407,7 +407,7 @@ public class MainListener implements Listener {
                     if(MC_USERNAME_PATTERN.matcher(input).matches()) {
                         b.setMetadata("protected", new FixedMetadataValue(plugin, true));
                         event.getPlayer().sendMessage(ChatColor.GOLD + Config.pleaseWait);
-                        String cmd = "give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + input + "\"}";
+                        String cmd = "minecraft:give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + input + "\"}";
                         String current = b.getWorld().getGameRuleValue("sendCommandFeedback");
                         b.getWorld().setGameRuleValue("sendCommandFeedback", "false");
                         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
