@@ -105,9 +105,6 @@ public enum ArmorStandTool {
 
     static void give(Player p) {
         PlayerInventory i = p.getInventory();
-        for(int slot = 0; slot < 36; slot++) {
-            i.setItem(slot, null);
-        }
         for(ArmorStandTool t : values()) {
             if(t.enabled && !t.forGui) {
                 i.setItem(t.slot, t.item);
@@ -125,7 +122,7 @@ public enum ArmorStandTool {
 
     @SuppressWarnings("deprecation")
     static ArmorStandTool get(Player p) {
-        return get(Main.oneEight ? p.getItemInHand() : p.getInventory().getItemInMainHand());
+        return get(p.getInventory().getItemInMainHand());
     }
 
     static boolean isTool(ItemStack is) {
@@ -134,6 +131,6 @@ public enum ArmorStandTool {
 
     @SuppressWarnings("deprecation")
     static boolean isHoldingTool(Player p) {
-        return isTool(Main.oneEight ? p.getItemInHand() : p.getInventory().getItemInMainHand());
+        return isTool(p.getInventory().getItemInMainHand());
     }
 }

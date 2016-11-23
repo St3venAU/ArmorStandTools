@@ -217,14 +217,12 @@ public class MainListener implements Listener {
             } else {
                 plugin.carryingArmorStand.remove(uuid);
                 if (plugin.savedInventories.containsKey(uuid)) {
-                    p.getInventory().setContents(plugin.savedInventories.get(uuid));
-                    plugin.savedInventories.remove(uuid);
+                    plugin.restoreInventory(p);
                 }
             }
         }
         if(Config.deactivateOnWorldChange && !sameWorld && plugin.savedInventories.containsKey(p.getUniqueId())) {
-            p.getInventory().setContents(plugin.savedInventories.get(p.getUniqueId()));
-            plugin.savedInventories.remove(p.getUniqueId());
+            plugin.restoreInventory(p);
         }
     }
 
@@ -287,8 +285,7 @@ public class MainListener implements Listener {
             plugin.carryingArmorStand.remove(uuid);
         }
         if(plugin.savedInventories.containsKey(uuid)) {
-            event.getPlayer().getInventory().setContents(plugin.savedInventories.get(uuid));
-            plugin.savedInventories.remove(uuid);
+            plugin.restoreInventory(event.getPlayer());
         }
     }
 
@@ -333,7 +330,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
-            if(NBT.isInvulnerable((ArmorStand) event.getEntity())) {
+            if(event.getEntity().isInvulnerable()) {
                 event.setCancelled(true);
             }
             if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
@@ -360,12 +357,8 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        if(Main.oneEight) {
-            as.setItemInHand(Config.itemInHand);
-        } else {
-            as.getEquipment().setItemInMainHand(Config.itemInHand);
-            as.getEquipment().setItemInOffHand(Config.itemInOffHand);
-        }
+        as.getEquipment().setItemInMainHand(Config.itemInHand);
+        as.getEquipment().setItemInOffHand(Config.itemInOffHand);
         as.setVisible(Config.isVisible);
         as.setSmall(Config.isSmall);
         as.setArms(Config.hasArms);
@@ -376,7 +369,7 @@ public class MainListener implements Listener {
             as.setCustomNameVisible(true);
         }
         NBT.setSlotsDisabled(as, Config.equipmentLock);
-        NBT.setInvulnerable(as, Config.invulnerable);
+        as.setInvulnerable(Config.invulnerable);
         return as;
     }
 

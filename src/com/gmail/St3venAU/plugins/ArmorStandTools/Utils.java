@@ -114,7 +114,7 @@ class Utils {
         }
     }
 
-    static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
+    private static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
         if(nmsClassString.equals("ChatSerializer") && !Main.NMS_VERSION.equals("v1_8_R1")) {
             nmsClassString = "IChatBaseComponent$ChatSerializer";
         }

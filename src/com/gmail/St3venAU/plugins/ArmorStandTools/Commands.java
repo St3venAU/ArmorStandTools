@@ -30,12 +30,10 @@ class Commands implements CommandExecutor {
         if(args.length == 0) {
             UUID uuid = p.getUniqueId();
             if(plugin.savedInventories.containsKey(uuid)) {
-                p.getInventory().setContents(plugin.savedInventories.get(uuid));
-                plugin.savedInventories.remove(uuid);
-                p.sendMessage(ChatColor.GREEN + Config.invReturned);
+                plugin.restoreInventory(p);
                 return true;
             } else {
-                plugin.savedInventories.put(uuid, p.getInventory().getContents());
+                plugin.saveInventoryAndClear(p);
                 ArmorStandTool.give(p);
                 p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
                 p.sendMessage(ChatColor.AQUA + Config.giveMsg2);

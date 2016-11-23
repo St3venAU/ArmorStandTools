@@ -7,10 +7,24 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 class NBT {
+
+    private static String disabledSlotsFieldName;
+    private static String getDisabledSlotsFieldName() {
+        if(disabledSlotsFieldName != null) return disabledSlotsFieldName;
+        if(Main.NMS_VERSION.startsWith("v1_9_R2")) {
+            disabledSlotsFieldName = "bA";
+        } else if(Main.NMS_VERSION.startsWith("v1_10")) {
+            disabledSlotsFieldName = "bB";
+        } else if(Main.NMS_VERSION.startsWith("v1_11")) {
+            disabledSlotsFieldName = "bA";
+        } else {
+            disabledSlotsFieldName = "bA"; // If ver greater than 1.11 then assume the same as 1.11 and hope that it didn't change :)
+        }
+        return disabledSlotsFieldName;
+    }
 
     static boolean toggleSlotsDisabled(ArmorStand as) {
         boolean slotsDisabled = getDisabledSlots(as) == 0;
@@ -21,135 +35,49 @@ class NBT {
     static int getDisabledSlots(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if(nmsEntity == null) return 0;
-        if(Main.oneEight) {
-            Object tag = getTag(nmsEntity);
-            if (tag == null) return 0;
-            return getInt(tag, "DisabledSlots");
-        } else {
-            Field f;
-            try {
-                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : (Main.oneTen ? "bB" : "bz"));
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-                return 0;
-            }
-            f.setAccessible(true);
-            try {
-                return (Integer) f.get(nmsEntity);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                return 0;
-            }
+        Field f;
+        try {
+            f = nmsEntity.getClass().getDeclaredField(getDisabledSlotsFieldName());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        f.setAccessible(true);
+        try {
+            return (Integer) f.get(nmsEntity);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 
     static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        if(Main.oneEight) {
-            Object tag = getTag(nmsEntity);
-            if (tag == null) return;
-            setInt(tag, "DisabledSlots", slotsDisabled ? 2039583 : 0);
-            saveTagA(nmsEntity, tag);
-        } else {
-            Field f;
-            try {
-                f = nmsEntity.getClass().getDeclaredField(Main.oneNineFour ? "bA" : (Main.oneTen ? "bB" : "bz"));
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-                return;
-            }
-            f.setAccessible(true);
-            try {
-                f.set(nmsEntity, slotsDisabled ? 2039583 : 0);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        Field f;
+        try {
+            f = nmsEntity.getClass().getDeclaredField(getDisabledSlotsFieldName());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            return;
+        }
+        f.setAccessible(true);
+        try {
+            f.set(nmsEntity, slotsDisabled ? 2039583 : 0);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
     static boolean toggleInvulnerability(ArmorStand as) {
-        boolean isInvulnerable = !isInvulnerable(as);
-        setInvulnerable(as, isInvulnerable);
+        boolean isInvulnerable = !as.isInvulnerable();
+        as.setInvulnerable(isInvulnerable);
         return isInvulnerable;
     }
-
-    static boolean isInvulnerable(ArmorStand as) {
-        if(Main.oneNineFour || Main.oneTen) {
-            return as.isInvulnerable();
-        }
-        Object nmsEntity = getNmsEntity(as);
-        if (nmsEntity == null) return false;
-        if(Main.oneEight) {
-            Object tag = getTag(nmsEntity);
-            return tag != null && getBoolean(tag, "Invulnerable");
-        } else {
-            Field f;
-            try {
-                f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            f.setAccessible(true);
-            try {
-                return (Boolean) f.get(nmsEntity);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-    }
-
-    static void setInvulnerable(ArmorStand as, boolean invulnerable) {
-        if(Main.oneNineFour || Main.oneTen) {
-            as.setInvulnerable(invulnerable);
-        }
-        Object nmsEntity = getNmsEntity(as);
-        if (nmsEntity == null) return;
-        if(Main.oneEight) {
-            Object tag = getTag(nmsEntity);
-            if(tag == null) return;
-            setBoolean(tag, "Invulnerable", invulnerable);
-            saveTagF(nmsEntity, tag);
-        } else {
-            Field f;
-            try {
-                f = Utils.getNMSClass("Entity").getDeclaredField("invulnerable");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            f.setAccessible(true);
-            try {
-                f.set(nmsEntity, invulnerable);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     private static Object getNmsEntity(org.bukkit.entity.Entity entity) {
         try {
             return entity.getClass().getMethod("getHandle").invoke(entity);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static Object getTag(Object nmsEntity) {
-
-        try {
-            Method method = nmsEntity.getClass().getMethod("getNBTTag");
-            Object tag = method.invoke(nmsEntity);
-            if(tag == null) {
-                tag = Utils.getNMSClass("NBTTagCompound").newInstance();
-            }
-            method = nmsEntity.getClass().getMethod("c", Utils.getNMSClass("NBTTagCompound"));
-            method.invoke(nmsEntity, tag);
-            return tag;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -197,60 +125,6 @@ class NBT {
             return ",tag:{SkullOwner:\"" + skull.getOwner() + "\"}";
         } else {
             return "";
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static int getInt(Object tag, String name) {
-        try {
-            return (Integer) tag.getClass().getMethod("getInt", String.class).invoke(tag, name);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static boolean getBoolean(Object tag, String name) {
-        try {
-            return (Boolean) tag.getClass().getMethod("getBoolean", String.class).invoke(tag, name);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void setInt(Object tag, String name, int value) {
-        try {
-            tag.getClass().getMethod("setInt", String.class, int.class).invoke(tag, name, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void setBoolean(Object tag, String name, boolean value) {
-        try {
-            tag.getClass().getMethod("setBoolean", String.class, boolean.class).invoke(tag, name, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveTagA(Object nmsEntity, Object tag) {
-        try {
-            nmsEntity.getClass().getMethod("a", Utils.getNMSClass("NBTTagCompound")).invoke(nmsEntity, tag);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveTagF(Object nmsEntity, Object tag) {
-        try {
-            nmsEntity.getClass().getMethod("f", Utils.getNMSClass("NBTTagCompound")).invoke(nmsEntity, tag);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

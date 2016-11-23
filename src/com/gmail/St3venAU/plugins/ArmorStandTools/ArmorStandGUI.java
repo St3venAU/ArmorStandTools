@@ -42,9 +42,7 @@ class ArmorStandGUI implements Listener {
             im.setDisplayName(" ");
             filler.setItemMeta(im);
             invSlots.add(10);
-            if(!Main.oneEight) {
-                invSlots.add(12);
-            }
+            invSlots.add(12);
             invSlots.add(2);
             invSlots.add(11);
             invSlots.add(20);
@@ -68,12 +66,9 @@ class ArmorStandGUI implements Listener {
                 i.setItem(tool.getSlot(), updateLore(tool));
             }
         }
-        if(Main.oneEight) {
-            i.setItem(10, as.getItemInHand());
-        } else {
-            i.setItem(10, as.getEquipment().getItemInMainHand());
-            i.setItem(12, as.getEquipment().getItemInOffHand());
-        }
+
+        i.setItem(10, as.getEquipment().getItemInMainHand());
+        i.setItem(12, as.getEquipment().getItemInOffHand());
         i.setItem(2,  as.getHelmet());
         i.setItem(11, as.getChestplate());
         i.setItem(20, as.getLeggings());
@@ -96,7 +91,7 @@ class ArmorStandGUI implements Listener {
             case ARMS:
                 return Utils.setLore(item, ChatColor.AQUA + Config.arms + ": " + (as.hasArms() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case INVUL:
-                return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (NBT.isInvulnerable(as) ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+                return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (as.isInvulnerable() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case SLOTS:
                 return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (NBT.getDisabledSlots(as) == 2039583 ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
             case NODEL:
@@ -253,12 +248,8 @@ class ArmorStandGUI implements Listener {
             @Override
             public void run() {
                 if(as == null || i == null) return;
-                if(Main.oneEight) {
-                    as.setItemInHand(i.getItem(10));
-                } else {
-                    as.getEquipment().setItemInMainHand(i.getItem(10));
-                    as.getEquipment().setItemInOffHand(i.getItem(12));
-                }
+                as.getEquipment().setItemInMainHand(i.getItem(10));
+                as.getEquipment().setItemInOffHand(i.getItem(12));
                 as.setHelmet(i.getItem(2));
                 as.setChestplate(i.getItem(11));
                 as.setLeggings(i.getItem(20));
