@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -29,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -237,6 +239,21 @@ public class MainListener implements Listener {
         if(plugin.savedInventories.containsKey(p.getUniqueId())) {
             drops.addAll(Arrays.asList(plugin.savedInventories.get(p.getUniqueId())));
             plugin.savedInventories.remove(p.getUniqueId());
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void onCraftItem(CraftItemEvent event) {
+        if (event.isCancelled()) return;
+        final Player p = (Player) event.getWhoClicked();
+        CraftingInventory inventory = event.getInventory();
+        for(ItemStack is : inventory.getContents()) {
+            if(ArmorStandTool.isTool(is)) {
+                event.setCancelled(true);
+                p.updateInventory();
+                return;
+            }
         }
     }
 
