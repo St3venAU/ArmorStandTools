@@ -78,7 +78,6 @@ class Utils {
         return l;
     }
 
-    @SuppressWarnings("deprecation")
     static void cycleInventory(Player p) {
         Inventory i = p.getInventory();
         ItemStack temp;
@@ -162,11 +161,11 @@ class Utils {
     @SuppressWarnings({"deprecation", "unchecked"})
     static String getNmsName(Material m) {
         try {
-            Class block = getNMSClass("Block");
-            Class item = getNMSClass("Item");
-            Class registryBlocks = getNMSClass("RegistryBlocks");
-            Class registryMaterials = getNMSClass("RegistryMaterials");
-            Class regKey = getNMSClass("MinecraftKey");
+            Class<?> block = getNMSClass("Block");
+            Class<?> item = getNMSClass("Item");
+            Class<?> registryBlocks = getNMSClass("RegistryBlocks");
+            Class<?> registryMaterials = getNMSClass("RegistryMaterials");
+            Class<?> regKey = getNMSClass("MinecraftKey");
             Object registry = block.getDeclaredField("REGISTRY").get(null);
             Set<Object> set = (Set<Object>) registry.getClass().getMethod("keySet").invoke(registry);
             for(Object key : set) {

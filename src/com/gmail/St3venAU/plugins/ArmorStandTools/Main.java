@@ -112,7 +112,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    @SuppressWarnings({"deprecation", "ConstantConditions"})
+    @SuppressWarnings({"deprecation"})
     void generateCmdBlock(Location l, ArmorStand as) {
         Location loc = as.getLocation();
         int dSlots = NBT.getDisabledSlots(as);
@@ -174,7 +174,8 @@ public class Main extends JavaPlugin {
         cb.update();
     }
 
-    ArmorStand clone(ArmorStand as) {
+    @SuppressWarnings("deprecation")
+	ArmorStand clone(ArmorStand as) {
         ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
         clone.setGravity(as.hasGravity());
         clone.setHelmet(as.getHelmet());
@@ -237,8 +238,8 @@ public class Main extends JavaPlugin {
                 return PlotSquaredHook.checkPermission(p, l);
             }
         }
-        if(Config.worldGuardPlugin != null) {
-            return Config.worldGuardPlugin.canBuild(p, b);
+        if(Config.getWGPlugin() != null) {
+            return Config.getWGPlugin().canBuild(p, b);
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);

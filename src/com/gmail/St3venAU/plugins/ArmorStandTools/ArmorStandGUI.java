@@ -77,7 +77,8 @@ class ArmorStandGUI implements Listener {
         p.openInventory(i);
     }
 
-    private ItemStack updateLore(ArmorStandTool tool) {
+    @SuppressWarnings("deprecation")
+	private ItemStack updateLore(ArmorStandTool tool) {
         ItemStack item = tool.getItem();
         switch (tool) {
             case INVIS:
@@ -121,7 +122,8 @@ class ArmorStandGUI implements Listener {
         inUse.remove(as.getEntityId());
     }
 
-    @EventHandler
+    @SuppressWarnings("deprecation")
+	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if(!event.getInventory().equals(i)) return;
         Player p = (Player) event.getWhoClicked();

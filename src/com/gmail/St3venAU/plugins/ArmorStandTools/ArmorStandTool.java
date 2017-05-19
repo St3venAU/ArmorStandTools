@@ -120,7 +120,6 @@ public enum ArmorStandTool {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     static ArmorStandTool get(Player p) {
         return get(p.getInventory().getItemInMainHand());
     }
@@ -129,7 +128,6 @@ public enum ArmorStandTool {
         return get(is) != null;
     }
 
-    @SuppressWarnings("deprecation")
     static boolean isHoldingTool(Player p) {
         return isTool(p.getInventory().getItemInMainHand());
     }
