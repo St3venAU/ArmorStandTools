@@ -51,7 +51,6 @@ public class MainListener implements Listener {
         this.plugin = main;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getRightClicked() instanceof ArmorStand) {
@@ -163,7 +162,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof ItemFrame && ArmorStandTool.isHoldingTool(event.getPlayer())) {
@@ -172,7 +170,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ArmorStandTool.isHoldingTool(event.getPlayer())) {
@@ -180,7 +177,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player p = event.getPlayer();
@@ -242,7 +238,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         if (event.isCancelled()) return;
@@ -257,7 +252,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
@@ -276,7 +270,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
@@ -306,7 +299,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player p = event.getPlayer();
