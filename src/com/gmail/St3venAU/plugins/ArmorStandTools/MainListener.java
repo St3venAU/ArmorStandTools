@@ -51,7 +51,6 @@ public class MainListener implements Listener {
         this.plugin = main;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getRightClicked() instanceof ArmorStand) {
@@ -59,7 +58,7 @@ public class MainListener implements Listener {
             if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
                 if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                     plugin.carryingArmorStand.remove(p.getUniqueId());
-                    Utils.actionBarMsg(p, Config.asDropped);
+                    Main.nms.actionBarMsg(p, Config.asDropped);
                     event.setCancelled(true);
                     return;
                 } else {
@@ -163,16 +162,15 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof ItemFrame && ArmorStandTool.isHoldingTool(event.getPlayer())) {
             event.setCancelled(true);
+            //noinspection deprecation
             event.getPlayer().updateInventory();
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ArmorStandTool.isHoldingTool(event.getPlayer())) {
@@ -180,7 +178,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player p = event.getPlayer();
@@ -188,11 +185,11 @@ public class MainListener implements Listener {
             ArmorStand as = plugin.carryingArmorStand.get(p.getUniqueId());
             if (as == null || as.isDead()) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Utils.actionBarMsg(p, Config.asDropped);
+                Main.nms.actionBarMsg(p, Config.asDropped);
                 return;
             }
             as.teleport(Utils.getLocationFacing(event.getTo()));
-            Utils.actionBarMsg(p, Config.carrying);
+            Main.nms.actionBarMsg(p, Config.carrying);
         }
     }
 
@@ -205,7 +202,7 @@ public class MainListener implements Listener {
             final ArmorStand as = plugin.carryingArmorStand.get(uuid);
             if (as == null || as.isDead()) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Utils.actionBarMsg(p, Config.asDropped);
+                Main.nms.actionBarMsg(p, Config.asDropped);
                 return;
             }
             if(sameWorld || Config.allowMoveWorld) {
@@ -213,7 +210,7 @@ public class MainListener implements Listener {
                     @Override
                     public void run() {
                         as.teleport(Utils.getLocationFacing(p.getLocation()));
-                        Utils.actionBarMsg(p, Config.carrying);
+                        Main.nms.actionBarMsg(p, Config.carrying);
                     }
                 }.runTaskLater(plugin, 1L);
             } else {
@@ -242,7 +239,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         if (event.isCancelled()) return;
@@ -251,13 +247,13 @@ public class MainListener implements Listener {
         for(ItemStack is : inventory.getContents()) {
             if(ArmorStandTool.isTool(is)) {
                 event.setCancelled(true);
+                //noinspection deprecation
                 p.updateInventory();
                 return;
             }
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
@@ -265,24 +261,26 @@ public class MainListener implements Listener {
         ItemStack item = event.getCurrentItem();
         if(event.getInventory().getHolder() != p && ArmorStandTool.isTool(item)) {
             event.setCancelled(true);
+            //noinspection deprecation
             p.updateInventory();
             return;
         }
         if(event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             if(Utils.hasItems(p)) {
                 event.setCancelled(true);
+                //noinspection deprecation
                 p.updateInventory();
             }
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
         final Player p = (Player) event.getWhoClicked();
         if (event.getInventory().getHolder() != p && Utils.containsItems(event.getNewItems().values())) {
             event.setCancelled(true);
+            //noinspection deprecation
             p.updateInventory();
         }
     }
@@ -306,14 +304,13 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player p = event.getPlayer();
         if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
             if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Utils.actionBarMsg(p, Config.asDropped);
+                Main.nms.actionBarMsg(p, Config.asDropped);
                 p.setMetadata("lastDrop", new FixedMetadataValue(plugin, System.currentTimeMillis()));
                 event.setCancelled(true);
             } else {
@@ -334,11 +331,12 @@ public class MainListener implements Listener {
             }
             Location l = Utils.getLocationFacing(p.getLocation());
             plugin.pickUpArmorStand(spawnArmorStand(l), p, true);
-            Utils.actionBarMsg(p, Config.carrying);
+            Main.nms.actionBarMsg(p, Config.carrying);
         }
         new BukkitRunnable() {
             @Override
             public void run() {
+                //noinspection deprecation
                 p.updateInventory();
             }
         }.runTaskLater(plugin, 1L);
@@ -347,7 +345,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
-            if(event.getEntity().isInvulnerable()) {
+            if(Main.nms.isInvulnerable((ArmorStand) event.getEntity())) {
                 event.setCancelled(true);
             }
             if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
@@ -374,8 +372,10 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        as.getEquipment().setItemInMainHand(Config.itemInHand);
-        as.getEquipment().setItemInOffHand(Config.itemInOffHand);
+        Main.nms.setItemInMainHand(as, Config.itemInHand);
+        if(Main.nms.hasOffHand()) {
+            Main.nms.setItemInOffHand(as, Config.itemInOffHand);
+        }
         as.setVisible(Config.isVisible);
         as.setSmall(Config.isSmall);
         as.setArms(Config.hasArms);
@@ -385,8 +385,8 @@ public class MainListener implements Listener {
             as.setCustomName(Config.defaultName);
             as.setCustomNameVisible(true);
         }
-        NBT.setSlotsDisabled(as, Config.equipmentLock);
-        as.setInvulnerable(Config.invulnerable);
+        Main.nms.setSlotsDisabled(as, Config.equipmentLock);
+        Main.nms.setInvulnerable(as, Config.invulnerable);
         return as;
     }
 
@@ -398,7 +398,6 @@ public class MainListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onSignChange(final SignChangeEvent event) {
         if(event.getBlock().hasMetadata("armorStand")) {
@@ -454,6 +453,7 @@ public class MainListener implements Listener {
             b.removeMetadata("setName", plugin);
             b.removeMetadata("setSkull", plugin);
             b.setType(Material.AIR);
+            //noinspection deprecation
             b.setData((byte) 0);
         }
     }

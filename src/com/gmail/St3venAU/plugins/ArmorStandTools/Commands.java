@@ -13,13 +13,13 @@ class Commands implements CommandExecutor {
     private final Main plugin;
 
     Commands(Main main) {
-        plugin = main;
+        this.plugin = main;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            System.out.println(Config.notConsole);
+            plugin.getLogger().warning(Config.notConsole);
             return false;
         }
         Player p = (Player) sender;

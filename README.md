@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game that acts out its
 
 Compatibility
 -------------
-- Spigot/CraftBukkit 1.8.x, 1.9.x, 1.10
+- Spigot/CraftBukkit 1.8.x, 1.9.x, 1.10.x, 1.11.x, 1.12.x
 
 Features
 --------
@@ -37,7 +37,9 @@ Permissions
 - astools.reload : Permission to reload the plugin with /astools reload
 - astools.use : Permission for using any of the tools
 - astools.clone: Permission to use the clone tool
-- astools.cmdblock: Permission to use the save tool (Create a command block)
+- astools.head: Permission to use the player head tool (Ability to specify a player head for an armor stand)
+- astools.summon: Permission to use the summon tool (Summons an armor stand without requiring the materials)
+- astools.cmdblock: Permission to use the save tool (Creates a command block)
 
 Config
 ------

@@ -30,7 +30,7 @@ public enum ArmorStandTool {
     BODYX   ("bodyX",       Material.NETHER_BRICK_ITEM, (short) 0,  9, false, true, "astools.use"),
     BODYY   ("bodyY",       Material.NETHER_BRICK_ITEM, (short) 0, 10, false, true, "astools.use"),
     BODYZ   ("bodyZ",       Material.NETHER_BRICK_ITEM, (short) 0, 11, false, true, "astools.use"),
-    SUMMON  ("summon",      Material.ARMOR_STAND,       (short) 0,  0, false, true, "astools.use"),
+    SUMMON  ("summon",      Material.ARMOR_STAND,       (short) 0,  0, false, true, "astools.summon"),
     GUI     ("gui",         Material.NETHER_STAR,       (short) 0,  1, false, true, "astools.use"),
     ROTAT   ("rotat",       Material.MAGMA_CREAM,       (short) 0,  2, false, true, "astools.use"),
     CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,    (short) 0, 15, true,  true, "astools.clone"),
@@ -42,10 +42,9 @@ public enum ArmorStandTool {
     ARMS    ("gui_arms",    Material.ARROW,             (short) 0, 23, true,  true, "astools.use"),
     NAME    ("gui_name",    Material.NAME_TAG,          (short) 0, 5,  true,  true, "astools.use"),
     SLOTS   ("gui_slots",   Material.IRON_HOE,          (short) 0, 34, true,  true, "astools.use"),
-    PHEAD   ("gui_pHead",   Material.SKULL_ITEM,        (short) 3, 6,  true,  true, "astools.use"),
+    PHEAD   ("gui_pHead",   Material.SKULL_ITEM,        (short) 3, 6,  true,  true, "astools.head"),
     INVUL   ("gui_invul",   Material.GOLDEN_CARROT,     (short) 0, 33, true,  true, "astools.use"),
-    MOVE    ("gui_move",    Material.FEATHER,           (short) 0, 14, true,  true, "astools.use"),
-    NODEL   ("gui_noDel",   Material.WOOD_SPADE,        (short) 0, 35, true, false, "astools.use"); // Developer tool, disabled by default
+    MOVE    ("gui_move",    Material.FEATHER,           (short) 0, 14, true,  true, "astools.use");
 
     private final ItemStack item;
     private final String id;
@@ -78,7 +77,6 @@ public enum ArmorStandTool {
     }
 
     void setEnabled(FileConfiguration config) {
-        if(this == NODEL) return;
         enabled = config.getBoolean("enableTool." + id);
     }
 
@@ -120,17 +118,15 @@ public enum ArmorStandTool {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     static ArmorStandTool get(Player p) {
-        return get(p.getInventory().getItemInMainHand());
+        return get(Main.nms.getItemInMainHand(p));
     }
 
     static boolean isTool(ItemStack is) {
         return get(is) != null;
     }
 
-    @SuppressWarnings("deprecation")
     static boolean isHoldingTool(Player p) {
-        return isTool(p.getInventory().getItemInMainHand());
+        return isTool(Main.nms.getItemInMainHand(p));
     }
 }
