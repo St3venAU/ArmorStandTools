@@ -55,6 +55,7 @@ public class MainListener implements Listener {
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
+            ArmorStand as = (ArmorStand) event.getRightClicked();
             if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
                 if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                     plugin.carryingArmorStand.remove(p.getUniqueId());
@@ -66,99 +67,111 @@ public class MainListener implements Listener {
                 }
             }
             ArmorStandTool tool = ArmorStandTool.get(p);
-            if(tool == null) return;
-            ArmorStand as = (ArmorStand) event.getRightClicked();
-            if (!plugin.playerHasPermission(p, event.getRightClicked().getLocation().getBlock(), tool)) {
-                p.sendMessage(ChatColor.RED + Config.generalNoPerm);
-                event.setCancelled(true);
+            if(tool != null) {
+                if (!plugin.playerHasPermission(p, as.getLocation().getBlock(), tool)) {
+                    p.sendMessage(ChatColor.RED + Config.generalNoPerm);
+                    event.setCancelled(true);
+                    return;
+                }
+                double num = event.getClickedPosition().getY() - 0.05;
+                if (num < 0) {
+                    num = 0;
+                } else if (num > 2) {
+                    num = 2;
+                }
+                num = 2.0 - num;
+                double angle = num * Math.PI;
+                boolean cancel = true;
+
+                switch (tool) {
+                    case HEADX:
+                        as.setHeadPose(as.getHeadPose().setX(angle));
+                        break;
+                    case HEADY:
+                        as.setHeadPose(as.getHeadPose().setY(angle));
+                        break;
+                    case HEADZ:
+                        as.setHeadPose(as.getHeadPose().setZ(angle));
+                        break;
+                    case LARMX:
+                        as.setLeftArmPose(as.getLeftArmPose().setX(angle));
+                        break;
+                    case LARMY:
+                        as.setLeftArmPose(as.getLeftArmPose().setY(angle));
+                        break;
+                    case LARMZ:
+                        as.setLeftArmPose(as.getLeftArmPose().setZ(angle));
+                        break;
+                    case RARMX:
+                        as.setRightArmPose(as.getRightArmPose().setX(angle));
+                        break;
+                    case RARMY:
+                        as.setRightArmPose(as.getRightArmPose().setY(angle));
+                        break;
+                    case RARMZ:
+                        as.setRightArmPose(as.getRightArmPose().setZ(angle));
+                        break;
+                    case LLEGX:
+                        as.setLeftLegPose(as.getLeftLegPose().setX(angle));
+                        break;
+                    case LLEGY:
+                        as.setLeftLegPose(as.getLeftLegPose().setY(angle));
+                        break;
+                    case LLEGZ:
+                        as.setLeftLegPose(as.getLeftLegPose().setZ(angle));
+                        break;
+                    case RLEGX:
+                        as.setRightLegPose(as.getRightLegPose().setX(angle));
+                        break;
+                    case RLEGY:
+                        as.setRightLegPose(as.getRightLegPose().setY(angle));
+                        break;
+                    case RLEGZ:
+                        as.setRightLegPose(as.getRightLegPose().setZ(angle));
+                        break;
+                    case BODYX:
+                        as.setBodyPose(as.getBodyPose().setX(angle));
+                        break;
+                    case BODYY:
+                        as.setBodyPose(as.getBodyPose().setY(angle));
+                        break;
+                    case BODYZ:
+                        as.setBodyPose(as.getBodyPose().setZ(angle));
+                        break;
+                    case MOVEX:
+                        as.teleport(as.getLocation().add(0.05 * (p.isSneaking() ? -1 : 1), 0.0, 0.0));
+                        break;
+                    case MOVEY:
+                        as.teleport(as.getLocation().add(0.0, 0.05 * (p.isSneaking() ? -1 : 1), 0.0));
+                        break;
+                    case MOVEZ:
+                        as.teleport(as.getLocation().add(0.0, 0.0, 0.05 * (p.isSneaking() ? -1 : 1)));
+                        break;
+                    case ROTAT:
+                        Location l = as.getLocation();
+                        l.setYaw(((float) num) * 180F);
+                        as.teleport(l);
+                        break;
+                    case GUI:
+                        new ArmorStandGUI(plugin, as, p);
+                        break;
+                    default:
+                        cancel = tool == ArmorStandTool.SUMMON || tool == ArmorStandTool.SAVE || event.isCancelled();
+                }
+                event.setCancelled(cancel);
                 return;
             }
-            double num = event.getClickedPosition().getY() - 0.05;
-            if (num < 0) {
-                num = 0;
-            } else if (num > 2) {
-                num = 2;
+            if(!p.isSneaking() && Main.nms.supportsScoreboardTags()) {
+                ArmorStandCmd asCmd = ArmorStandCmd.fromAS(as);
+                if (asCmd != null) {
+                    event.setCancelled(true);
+                    if (Utils.hasPermissionNode(p, "astools.ascmd.execute")) {
+                        if (!asCmd.execute(p)) {
+                            p.sendMessage(Config.executeCmdError);
+                        }
+                    }
+                }
             }
-            num = 2.0 - num;
-            double angle = num * Math.PI;
-            boolean cancel = true;
-
-            switch(tool) {
-                case HEADX:
-                    as.setHeadPose(as.getHeadPose().setX(angle));
-                    break;
-                case HEADY:
-                    as.setHeadPose(as.getHeadPose().setY(angle));
-                    break;
-                case HEADZ:
-                    as.setHeadPose(as.getHeadPose().setZ(angle));
-                    break;
-                case LARMX:
-                    as.setLeftArmPose(as.getLeftArmPose().setX(angle));
-                    break;
-                case LARMY:
-                    as.setLeftArmPose(as.getLeftArmPose().setY(angle));
-                    break;
-                case LARMZ:
-                    as.setLeftArmPose(as.getLeftArmPose().setZ(angle));
-                    break;
-                case RARMX:
-                    as.setRightArmPose(as.getRightArmPose().setX(angle));
-                    break;
-                case RARMY:
-                    as.setRightArmPose(as.getRightArmPose().setY(angle));
-                    break;
-                case RARMZ:
-                    as.setRightArmPose(as.getRightArmPose().setZ(angle));
-                    break;
-                case LLEGX:
-                    as.setLeftLegPose(as.getLeftLegPose().setX(angle));
-                    break;
-                case LLEGY:
-                    as.setLeftLegPose(as.getLeftLegPose().setY(angle));
-                    break;
-                case LLEGZ:
-                    as.setLeftLegPose(as.getLeftLegPose().setZ(angle));
-                    break;
-                case RLEGX:
-                    as.setRightLegPose(as.getRightLegPose().setX(angle));
-                    break;
-                case RLEGY:
-                    as.setRightLegPose(as.getRightLegPose().setY(angle));
-                    break;
-                case RLEGZ:
-                    as.setRightLegPose(as.getRightLegPose().setZ(angle));
-                    break;
-                case BODYX:
-                    as.setBodyPose(as.getBodyPose().setX(angle));
-                    break;
-                case BODYY:
-                    as.setBodyPose(as.getBodyPose().setY(angle));
-                    break;
-                case BODYZ:
-                    as.setBodyPose(as.getBodyPose().setZ(angle));
-                    break;
-                case MOVEX:
-                    as.teleport(as.getLocation().add(0.05 * (p.isSneaking() ? -1 : 1), 0.0, 0.0));
-                    break;
-                case MOVEY:
-                    as.teleport(as.getLocation().add(0.0, 0.05 * (p.isSneaking() ? -1 : 1), 0.0));
-                    break;
-                case MOVEZ:
-                    as.teleport(as.getLocation().add(0.0, 0.0, 0.05 * (p.isSneaking() ? -1 : 1)));
-                    break;
-                case ROTAT:
-                    Location l = as.getLocation();
-                    l.setYaw(((float) num) * 180F);
-                    as.teleport(l);
-                    break;
-                case GUI:
-                    new ArmorStandGUI(plugin, as, p);
-                    break;
-                default:
-                    cancel = tool == ArmorStandTool.SUMMON || tool == ArmorStandTool.SAVE  || event.isCancelled();
-            }
-            event.setCancelled(cancel);
         }
     }
 
@@ -214,6 +227,7 @@ public class MainListener implements Listener {
                     }
                 }.runTaskLater(plugin, 1L);
             } else {
+                plugin.returnArmorStand(plugin.carryingArmorStand.get(uuid));
                 plugin.carryingArmorStand.remove(uuid);
                 if (plugin.savedInventories.containsKey(uuid)) {
                     plugin.restoreInventory(p);
@@ -483,9 +497,16 @@ public class MainListener implements Listener {
         PermissionAttachment attachment = p.addAttachment(plugin);
         attachment.setPermission("astools.command", true);
         attachment.setPermission("astools.use", true);
+        attachment.setPermission("astools.summon", true);
         attachment.setPermission("astools.clone", true);
+        attachment.setPermission("astools.head", true);
         attachment.setPermission("astools.reload", true);
         attachment.setPermission("astools.cmdblock", true);
+        attachment.setPermission("astools.ascmd.view", true);
+        attachment.setPermission("astools.ascmd.remove", true);
+        attachment.setPermission("astools.ascmd.assign.player", true);
+        attachment.setPermission("astools.ascmd.assign.console", true);
+        attachment.setPermission("astools.ascmd.execute", true);
     }*/
 
 }

@@ -32,6 +32,7 @@ class Config {
     public static boolean equipmentLock             = false;
     public static boolean allowMoveWorld            = false;
     public static boolean deactivateOnWorldChange   = true;
+    public static boolean debug                     = false;
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -41,7 +42,10 @@ class Config {
             noRelPerm, noAirError, pleaseWait, appliedHead,
             invalidName, wgNoPerm, currently, headFailed,
             noCommandPerm, generalNoPerm, armorStand, none,
-            guiInUse;
+            guiInUse, notSupported, noASNearBy, closestAS,
+            hasNoCmd, hasCmd, type, command, unassignedCmd,
+            assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
+            removeCmd, assignConsole, assignPlayer, executeCmdError;
 
     public static void reload(Main main) {
         plugin = main;
@@ -89,28 +93,45 @@ class Config {
         armorStand = languageConfig.getString("armorStand");
         none = languageConfig.getString("none");
         guiInUse = languageConfig.getString("guiInUse");
+        notSupported = languageConfig.getString("notSupported");
+        noASNearBy = languageConfig.getString("noASNearBy");
+        closestAS = languageConfig.getString("closestAS");
+        hasNoCmd = languageConfig.getString("hasNoCmd");
+        hasCmd = languageConfig.getString("hasCmd");
+        type = languageConfig.getString("type");
+        command = languageConfig.getString("command");
+        unassignedCmd = languageConfig.getString("unassignedCmd");
+        assignedCmdToAS = languageConfig.getString("assignedCmdToAS");
+        assignCmdError = languageConfig.getString("assignCmdError");
+        ascmdHelp = languageConfig.getString("ascmdHelp");
+        viewCmd = languageConfig.getString("viewCmd");
+        removeCmd = languageConfig.getString("removeCmd");
+        assignConsole = languageConfig.getString("assignConsole");
+        assignPlayer = languageConfig.getString("assignPlayer");
+        executeCmdError = languageConfig.getString("executeCmdError");
     }
 
     private static void reloadMainConfig() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
-        FileConfiguration config = plugin.getConfig();
-        helmet        = toItemStack(config.getString("helmet"));
-        chest         = toItemStack(config.getString("chest"));
-        pants         = toItemStack(config.getString("pants"));
-        boots         = toItemStack(config.getString("boots"));
-        itemInHand    = toItemStack(config.getString("inHand"));
-        itemInOffHand = toItemStack(config.getString("inOffHand"));
-        isVisible     = config.getBoolean("isVisible");
-        isSmall       = config.getBoolean("isSmall");
-        hasArms       = config.getBoolean("hasArms");
-        hasBasePlate  = config.getBoolean("hasBasePlate");
-        hasGravity    = config.getBoolean("hasGravity");
-        defaultName   = config.getString("name");
-        invulnerable  = config.getBoolean("invulnerable");
-        equipmentLock = config.getBoolean("equipmentLock");
-        allowMoveWorld = config.getBoolean("allowMovingStandsBetweenWorlds");
+        FileConfiguration config= plugin.getConfig();
+        helmet                  = toItemStack(config.getString("helmet"));
+        chest                   = toItemStack(config.getString("chest"));
+        pants                   = toItemStack(config.getString("pants"));
+        boots                   = toItemStack(config.getString("boots"));
+        itemInHand              = toItemStack(config.getString("inHand"));
+        itemInOffHand           = toItemStack(config.getString("inOffHand"));
+        isVisible               = config.getBoolean("isVisible");
+        isSmall                 = config.getBoolean("isSmall");
+        hasArms                 = config.getBoolean("hasArms");
+        hasBasePlate            = config.getBoolean("hasBasePlate");
+        hasGravity              = config.getBoolean("hasGravity");
+        defaultName             = config.getString("name");
+        invulnerable            = config.getBoolean("invulnerable");
+        equipmentLock           = config.getBoolean("equipmentLock");
+        allowMoveWorld          = config.getBoolean("allowMovingStandsBetweenWorlds");
         deactivateOnWorldChange = config.getBoolean("deactivateToolsOnWorldChange");
+        debug                   = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
 
         for(ArmorStandTool tool : ArmorStandTool.values()) {
@@ -121,10 +142,14 @@ class Config {
         if (plotSquared != null && plotSquared.isEnabled()) {
             try {
                 new PlotSquaredHook(plugin);
+                plugin.getLogger().log(Level.INFO, "PlotSquared plugin was found. PlotSquared support enabled.");
             }
             catch (Throwable e) {
                 e.printStackTrace();
+                plugin.getLogger().log(Level.WARNING, "PlotSquared plugin was found, but there was an error initializing PlotSquared support enabled.");
             }
+        } else {
+            plugin.getLogger().log(Level.INFO, "PlotSquared plugin not found. Continuing without PlotSquared support.");
         }
         
         Plugin worldGuard = plugin.getServer().getPluginManager().getPlugin("WorldGuard");

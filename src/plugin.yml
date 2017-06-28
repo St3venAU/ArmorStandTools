@@ -1,6 +1,6 @@
 main: com.gmail.St3venAU.plugins.ArmorStandTools.Main
 name: ArmorStandTools
-version: 2.3.0
+version: 2.4.0
 author: St3venAU
 description: Armor stand manipulation tools
 softdepend: [WorldGuard, PlotSquared]
@@ -9,3 +9,6 @@ commands:
       description: Give yourself the armor stand tools
       aliases: ast
       usage: Usage /astools or /astools reload
+   ascmd:
+      description: View/Remove/Assign the command assigned to the nearest armor stand
+      usage: Usage /ascmd view, /ascmd remove, /ascmd assign <player/console> <command>

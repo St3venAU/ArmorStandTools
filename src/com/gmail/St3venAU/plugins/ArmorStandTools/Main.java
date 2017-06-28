@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -17,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
@@ -34,8 +34,10 @@ public class Main extends JavaPlugin {
             return;
         }
         getServer().getPluginManager().registerEvents(new  MainListener(this), this);
-        CommandExecutor ce = new Commands(this);
-        getCommand("astools").setExecutor(ce);
+        Commands cmds = new Commands(this);
+        getCommand("astools").setExecutor(cmds);
+        getCommand("ascmd").setExecutor(cmds);
+        getCommand("ascmd").setTabCompleter(cmds);
         Config.reload(this);
     }
 
@@ -75,7 +77,7 @@ public class Main extends JavaPlugin {
             getLogger().warning("Support for " + nmsVersion + " not found, trying " + usingVersion + ". Please check for possible updates to the plugin.");
         }
         try {
-            nms = (NMS) Class.forName("com.gmail.St3venAU.plugins.ArmorStandTools.NMS_" + usingVersion).getConstructor().newInstance();
+            nms = (NMS) Class.forName("com.gmail.St3venAU.plugins.ArmorStandTools.NMS_" + usingVersion).getConstructor(String.class).newInstance(nmsVersion);
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().warning("A fatal error occurred while attempting to load support for this version of Craftbukkit/Spigot");
@@ -165,8 +167,10 @@ public class Main extends JavaPlugin {
 
     boolean checkBlockPermission(Player p, Block b) {
         if(b == null) return true;
+        debug("PlotSquaredHook.api: " + PlotSquaredHook.api);
         if (PlotSquaredHook.api != null) {
             Location l = b.getLocation();
+            debug("PlotSquaredHook.isPlotWorld(l): " + PlotSquaredHook.isPlotWorld(l));
             if(PlotSquaredHook.isPlotWorld(l)) {
                 return PlotSquaredHook.checkPermission(p, l);
             }
@@ -180,6 +184,17 @@ public class Main extends JavaPlugin {
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+        debug("tool: " + tool);
+        if(tool != null) {
+            debug("en: " + tool.isEnabled());
+            debug("perm: " + Utils.hasPermissionNode(p, tool.getPermission()));
+        }
         return (tool == null || (tool.isEnabled() && Utils.hasPermissionNode(p, tool.getPermission()))) && checkBlockPermission(p, b);
+    }
+
+    void debug(String msg) {
+        if(Config.debug) {
+            getLogger().log(Level.INFO, "[DEBUG] " + msg);
+        }
     }
 }

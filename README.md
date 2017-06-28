@@ -5,7 +5,7 @@ Spigot resource page with plugin download: http://www.spigotmc.org/resources/arm
 
 Inspiration
 -----------
-I wanted to create an armor stand for each kit in my mini-game that acts out its special ability. I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Among other features you can create any pose you wish just by holding right click on the tools and moving your cursor up and down on the armor stand. The plugin can also generate a summon command that will re-create the armor stand at any time.
+I wanted to create an armor stand for each kit in my mini-game, and I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Among other features you can create any pose you wish just by holding right click on the tools and moving your cursor up and down on the armor stand. The plugin can also generate a summon command that will re-create the armor stand at any time.
 
 Compatibility
 -------------
@@ -24,12 +24,28 @@ Features
 - Player head tool: Give an armor stand the head of a specific player.
 - WorldGuard region support.
 - Customizable language config file.
+- Assign commands to armor stands that are run when a player right clicks that armor stand (see below).
+
+Assigning Commands
+------------------
+- This feature is in beta. Please use with caution.
+- This feature is available for Craftbukkit/Spigot 1.9.x and later only
+- Use the /ascmd command to assign a command to an armor stand (see usage and permissions below)
+- When using /ascmd assign player <command>, the command will be run by the player
+- When using /ascmd assign console <command>, the command will be run by the console (see Warning below!)
+- When a player with the astools.ascmd.execute permission right clicks on an armor stand, it's command is run.
+- If a player is crouching when they right click the armor stand, the command will not be run.
+- Warning: Make sure you are careful when assigning console commands. Any player with the astools.ascmd.execute permission will be able to execute the command.
 
 Commands
 --------
 - /astools : Give yourself all of the armor stand tools (Note: Clears your inventory)
 - /astools reload : Reload the config file
 - /ast : Alias for /astools
+- /ascmd assign console <command> : Assign a console command to the nearest armor stand (within 4 blocks)
+- /ascmd assign player <command> : Assign a player command to the nearest armor stand
+- /ascmd remove : Remove the command assigned to the nearest armor stand
+- /ascmd view : View the command assigned to the nearest armor stand
 
 Permissions
 -----------
@@ -40,6 +56,11 @@ Permissions
 - astools.head: Permission to use the player head tool (Ability to specify a player head for an armor stand)
 - astools.summon: Permission to use the summon tool (Summons an armor stand without requiring the materials)
 - astools.cmdblock: Permission to use the save tool (Creates a command block)
+- astools.ascmd.assign.console: Permission to assign a console command to an armor stand
+- astools.ascmd.assign.player: Permission to assign a player command to an armor stand
+- astools.ascmd.remove: Permission to remove a command from an armor stand
+- astools.ascmd.view: Permission to view the command assigned to an armor stand
+- astools.ascmd.execute: Permission to execute a command assigned to an armor stand by (on right click)
 
 Config
 ------

@@ -7,14 +7,15 @@ import java.lang.reflect.Constructor;
 @SuppressWarnings("unused")
 class NMS_v1_12_R1 extends NMS {
 
-    public NMS_v1_12_R1() {
+    public NMS_v1_12_R1(String nmsVersion) {
         super(
-                "v1_12_R1",                             // NMS Version
+                nmsVersion,                             // NMS Version
                 "minecraft:armor_stand",                // Armor Stand summon name
                 "bB",                                   // Disabled slots field name
                 "getKey",                               // getKey field name
                 "IChatBaseComponent$ChatSerializer",    // ChatSerializer field name
-                true                                    // Version has an off hand
+                true,                                  // Version has an off hand
+                true                                   // Version supports scoreboard tags
         );
     }
 

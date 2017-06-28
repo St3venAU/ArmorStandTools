@@ -22,7 +22,7 @@ abstract class NMS {
 
     private final static EulerAngle zero = new EulerAngle(0D, 0D, 0D);
 
-    private final boolean offHand;
+    private final boolean offHand, scoreboardTags;
 
     private final String
             nmsVersion,
@@ -31,17 +31,22 @@ abstract class NMS {
             keyFieldName,
             chatSerializerFieldName;
 
-    NMS(String nmsVersion, String summonEntityName, String disabledSlotsFieldName, String keyFieldName, String chatSerializerFieldName, boolean offHand) {
+    NMS(String nmsVersion, String summonEntityName, String disabledSlotsFieldName, String keyFieldName, String chatSerializerFieldName, boolean offHand, boolean scoreboardTags) {
         this.nmsVersion = nmsVersion;
         this.summonEntityName = summonEntityName;
         this.disabledSlotsFieldName = disabledSlotsFieldName;
         this.keyFieldName = keyFieldName;
         this.chatSerializerFieldName = chatSerializerFieldName;
         this.offHand = offHand;
+        this.scoreboardTags = scoreboardTags;
     }
 
     public boolean hasOffHand() {
         return offHand;
+    }
+
+    public boolean supportsScoreboardTags() {
+        return scoreboardTags;
     }
 
     boolean isInvulnerable(ArmorStand as) {
@@ -379,6 +384,7 @@ abstract class NMS {
         clone.setSmall(as.isSmall());
         setSlotsDisabled(clone, getDisabledSlots(as) == 2039583);
         setInvulnerable(clone, isInvulnerable(as));
+        ArmorStandCmd.cloneASCommand(as, clone);
         return clone;
     }
 
@@ -459,6 +465,18 @@ abstract class NMS {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    boolean addScoreboardTag(ArmorStand as, String tag) {
+        return as.addScoreboardTag(tag);
+    }
+
+    void removeScoreboardTag(ArmorStand as, String tag) {
+        as.removeScoreboardTag(tag);
+    }
+
+    Set<String> getScoreboardTags(ArmorStand as) {
+        return as.getScoreboardTags();
     }
 
 }

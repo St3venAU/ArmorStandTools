@@ -5,14 +5,15 @@ import org.bukkit.entity.ArmorStand;
 @SuppressWarnings("unused")
 class NMS_v1_8_R1 extends NMS {
 
-    public NMS_v1_8_R1() {
+    public NMS_v1_8_R1(String nmsVersion) {
         super(
-                "v1_8_R1",                              // NMS Version
+                nmsVersion,                             // NMS Version
                 "ArmorStand",                           // Armor Stand summon name
                 "bg",                                   // Disabled slots field name
                 "a",                                    // getKey field name
                 "ChatSerializer",                       // ChatSerializer field name
-                false                                   // Version has an off hand
+                false,                                  // Version has an off hand
+                false                                   // Version supports scoreboard tags
         );
     }
 
