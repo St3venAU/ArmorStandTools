@@ -384,7 +384,9 @@ abstract class NMS {
         clone.setSmall(as.isSmall());
         setSlotsDisabled(clone, getDisabledSlots(as) == 2039583);
         setInvulnerable(clone, isInvulnerable(as));
-        ArmorStandCmd.cloneASCommand(as, clone);
+        if(Main.nms.supportsScoreboardTags()) {
+            ArmorStandCmd.cloneASCommand(as, clone);
+        }
         return clone;
     }
 
