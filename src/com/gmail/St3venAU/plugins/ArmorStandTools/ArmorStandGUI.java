@@ -97,7 +97,7 @@ class ArmorStandGUI implements Listener {
             case INVUL:
                 return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (Main.nms.isInvulnerable(as) ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case SLOTS:
-                return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (Main.nms.getDisabledSlots(as) == 2039583 ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
+                return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (Main.nms.equipmentLocked(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
             case NAME:
                 return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + as.getCustomName())));
             case PHEAD:

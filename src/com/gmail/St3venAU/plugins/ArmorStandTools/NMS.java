@@ -100,10 +100,14 @@ abstract class NMS {
         }
         f.setAccessible(true);
         try {
-            f.set(nmsEntity, slotsDisabled ? 2039583 : 0);
+            f.set(nmsEntity, slotsDisabled ? 0xFFFFFF : 0);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    boolean equipmentLocked(ArmorStand as) {
+        return getDisabledSlots(as) == 0xFFFFFF;
     }
 
     Object getNmsEntity(org.bukkit.entity.Entity entity) {
@@ -382,7 +386,7 @@ abstract class NMS {
         clone.setCustomName(as.getCustomName());
         clone.setCustomNameVisible(as.isCustomNameVisible());
         clone.setSmall(as.isSmall());
-        setSlotsDisabled(clone, getDisabledSlots(as) == 2039583);
+        setSlotsDisabled(clone, getDisabledSlots(as) == 0xFFFFFF);
         setInvulnerable(clone, isInvulnerable(as));
         if(Main.nms.supportsScoreboardTags()) {
             ArmorStandCmd.cloneASCommand(as, clone);
