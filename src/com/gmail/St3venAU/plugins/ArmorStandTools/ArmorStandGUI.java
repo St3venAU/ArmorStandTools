@@ -32,7 +32,7 @@ class ArmorStandGUI implements Listener {
     private Main plugin;
 
     ArmorStandGUI(Main plugin, ArmorStand as, Player p) {
-        if(inUse.contains(as.getEntityId())) {
+        if(isInUse(as)) {
             p.sendMessage(ChatColor.RED + Config.guiInUse);
             return;
         }
@@ -81,6 +81,10 @@ class ArmorStandGUI implements Listener {
         p.openInventory(i);
     }
 
+    public static boolean isInUse(ArmorStand as) {
+        return inUse.contains(as.getEntityId());
+    }
+
     private ItemStack updateLore(ArmorStandTool tool) {
         ItemStack item = tool.getItem();
         switch (tool) {
@@ -117,7 +121,7 @@ class ArmorStandGUI implements Listener {
     }
 
     @EventHandler
-    public void inInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
         if(!event.getInventory().equals(i)) return;
         HandlerList.unregisterAll(this);
         inUse.remove(as.getEntityId());

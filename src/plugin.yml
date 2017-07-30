@@ -1,6 +1,6 @@
 main: com.gmail.St3venAU.plugins.ArmorStandTools.Main
 name: ArmorStandTools
-version: 2.4.2
+version: 2.4.3
 author: St3venAU
 description: Armor stand manipulation tools
 softdepend: [WorldGuard, PlotSquared]

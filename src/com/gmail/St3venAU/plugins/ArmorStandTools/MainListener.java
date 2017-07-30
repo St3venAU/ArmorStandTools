@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
@@ -56,6 +57,11 @@ public class MainListener implements Listener {
         if (event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
             ArmorStand as = (ArmorStand) event.getRightClicked();
+            if(ArmorStandGUI.isInUse(as)) {
+                Main.nms.actionBarMsg(p, Config.guiInUse);
+                event.setCancelled(true);
+                return;
+            }
             if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
                 if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                     plugin.carryingArmorStand.remove(p.getUniqueId());
@@ -359,7 +365,8 @@ public class MainListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
-            if(Main.nms.isInvulnerable((ArmorStand) event.getEntity())) {
+            ArmorStand as = (ArmorStand) event.getEntity();
+            if(ArmorStandGUI.isInUse(as) || Main.nms.isInvulnerable(as)) {
                 event.setCancelled(true);
             }
             if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
@@ -367,6 +374,16 @@ public class MainListener implements Listener {
                 if(noCooldown(event.getDamager())) {
                     Utils.cycleInventory((Player) event.getDamager());
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if(event.getEntity() instanceof ArmorStand) {
+            ArmorStand as = (ArmorStand) event.getEntity();
+            if(ArmorStandGUI.isInUse(as) || Main.nms.isInvulnerable(as)) {
+                event.setCancelled(true);
             }
         }
     }
