@@ -9,7 +9,8 @@ I wanted to create an armor stand for each kit in my mini-game, and I quickly be
 
 Compatibility
 -------------
-- Spigot/CraftBukkit 1.8.x, 1.9.x, 1.10.x, 1.11.x, 1.12.x
+- Armor Stand Tools v3.0.0 - Spigot/CraftBukkit 1.13 only
+- Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8, 1.9, 1.10, 1.11, 1.12
 
 Features
 --------
@@ -28,14 +29,13 @@ Features
 
 Assigning Commands
 ------------------
-- This feature is in beta. Please use with caution.
-- This feature is available for Craftbukkit/Spigot 1.9.x and later only
-- Use the /ascmd command to assign a command to an armor stand (see usage and permissions below)
+- Use /ascmd to assign a command to an armor stand (see usage and permissions below)
 - When using /ascmd assign player <command>, the command will be run by the player
 - When using /ascmd assign console <command>, the command will be run by the console (see Warning below!)
 - When a player with the astools.ascmd.execute permission right clicks on an armor stand, it's command is run.
 - If a player is crouching when they right click the armor stand, the command will not be run.
 - Warning: Make sure you are careful when assigning console commands. Any player with the astools.ascmd.execute permission will be able to execute the command.
+- Note: Commands may include a %player% placeholder, which will get replaced by the executing player's name at time of execution.
 
 Commands
 --------

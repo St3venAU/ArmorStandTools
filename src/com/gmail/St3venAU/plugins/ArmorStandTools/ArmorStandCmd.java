@@ -18,7 +18,7 @@ class ArmorStandCmd {
     }
 
     static ArmorStandCmd fromAS(ArmorStand as) {
-        for(String tag : Main.nms.getScoreboardTags(as)) {
+        for(String tag : as.getScoreboardTags()) {
             if(tag.startsWith("ast-cmd-")) {
                 String cmd = tag.substring(8);
                 if(cmd.startsWith("con:")) {
@@ -50,10 +50,11 @@ class ArmorStandCmd {
     }
 
     boolean execute(Player p) {
+        String cmd = command.contains("%player%") ? command.replaceAll("%player%", p.getName()) : command;
         if(console) {
-            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
         } else {
-            return p.performCommand(command);
+            return p.performCommand(cmd);
         }
     }
 
@@ -67,7 +68,7 @@ class ArmorStandCmd {
         removeAssignedCommand(as);
         if (command == null) return false;
         cleanUpCommand();
-        return command.length() != 0 && Main.nms.addScoreboardTag(as, getTag());
+        return command.length() != 0 && as.addScoreboardTag(getTag());
     }
 
     static void cloneASCommand(ArmorStand original, ArmorStand clone) {
@@ -82,13 +83,13 @@ class ArmorStandCmd {
 
     static boolean removeAssignedCommand(ArmorStand as) {
         List<String> tags = new ArrayList<String>();
-        for(String tag :  Main.nms.getScoreboardTags(as)) {
+        for(String tag : as.getScoreboardTags()) {
             if(tag.startsWith("ast-cmd-")) {
                 tags.add(tag);
             }
         }
         for(String tag : tags) {
-            Main.nms.removeScoreboardTag(as, tag);
+            as.removeScoreboardTag(tag);
         }
         return tags.size() > 0;
     }

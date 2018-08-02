@@ -58,14 +58,14 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ArmorStand as = (ArmorStand) event.getRightClicked();
             if(ArmorStandGUI.isInUse(as)) {
-                Main.nms.actionBarMsg(p, Config.guiInUse);
+                Utils.actionBarMsg(p, Config.guiInUse);
                 event.setCancelled(true);
                 return;
             }
             if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
                 if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                     plugin.carryingArmorStand.remove(p.getUniqueId());
-                    Main.nms.actionBarMsg(p, Config.asDropped);
+                    Utils.actionBarMsg(p, Config.asDropped);
                     event.setCancelled(true);
                     return;
                 } else {
@@ -167,7 +167,7 @@ public class MainListener implements Listener {
                 event.setCancelled(cancel);
                 return;
             }
-            if(!p.isSneaking() && Main.nms.supportsScoreboardTags()) {
+            if(!p.isSneaking()) {
                 ArmorStandCmd asCmd = ArmorStandCmd.fromAS(as);
                 if (asCmd != null) {
                     event.setCancelled(true);
@@ -204,11 +204,11 @@ public class MainListener implements Listener {
             ArmorStand as = plugin.carryingArmorStand.get(p.getUniqueId());
             if (as == null || as.isDead()) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Main.nms.actionBarMsg(p, Config.asDropped);
+                Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
             as.teleport(Utils.getLocationFacing(event.getTo()));
-            Main.nms.actionBarMsg(p, Config.carrying);
+            Utils.actionBarMsg(p, Config.carrying);
         }
     }
 
@@ -221,7 +221,7 @@ public class MainListener implements Listener {
             final ArmorStand as = plugin.carryingArmorStand.get(uuid);
             if (as == null || as.isDead()) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Main.nms.actionBarMsg(p, Config.asDropped);
+                Utils.actionBarMsg(p, Config.asDropped);
                 return;
             }
             if(sameWorld || Config.allowMoveWorld) {
@@ -229,7 +229,7 @@ public class MainListener implements Listener {
                     @Override
                     public void run() {
                         as.teleport(Utils.getLocationFacing(p.getLocation()));
-                        Main.nms.actionBarMsg(p, Config.carrying);
+                        Utils.actionBarMsg(p, Config.carrying);
                     }
                 }.runTaskLater(plugin, 1L);
             } else {
@@ -330,7 +330,7 @@ public class MainListener implements Listener {
         if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
             if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                 plugin.carryingArmorStand.remove(p.getUniqueId());
-                Main.nms.actionBarMsg(p, Config.asDropped);
+                Utils.actionBarMsg(p, Config.asDropped);
                 p.setMetadata("lastDrop", new FixedMetadataValue(plugin, System.currentTimeMillis()));
                 event.setCancelled(true);
             } else {
@@ -351,7 +351,7 @@ public class MainListener implements Listener {
             }
             Location l = Utils.getLocationFacing(p.getLocation());
             plugin.pickUpArmorStand(spawnArmorStand(l), p, true);
-            Main.nms.actionBarMsg(p, Config.carrying);
+            Utils.actionBarMsg(p, Config.carrying);
         }
         new BukkitRunnable() {
             @Override
@@ -366,7 +366,7 @@ public class MainListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
             ArmorStand as = (ArmorStand) event.getEntity();
-            if(ArmorStandGUI.isInUse(as) || Main.nms.isInvulnerable(as)) {
+            if(ArmorStandGUI.isInUse(as) || as.isInvulnerable()) {
                 event.setCancelled(true);
             }
             if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
@@ -382,7 +382,7 @@ public class MainListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
             ArmorStand as = (ArmorStand) event.getEntity();
-            if(ArmorStandGUI.isInUse(as) || Main.nms.isInvulnerable(as)) {
+            if(ArmorStandGUI.isInUse(as) || as.isInvulnerable()) {
                 event.setCancelled(true);
             }
         }
@@ -403,28 +403,26 @@ public class MainListener implements Listener {
         as.setChestplate(Config.chest);
         as.setLeggings(Config.pants);
         as.setBoots(Config.boots);
-        Main.nms.setItemInMainHand(as, Config.itemInHand);
-        if(Main.nms.hasOffHand()) {
-            Main.nms.setItemInOffHand(as, Config.itemInOffHand);
-        }
+        as.getEquipment().setItemInMainHand(Config.itemInHand);
+        as.getEquipment().setItemInOffHand(Config.itemInOffHand);
         as.setVisible(Config.isVisible);
         as.setSmall(Config.isSmall);
         as.setArms(Config.hasArms);
         as.setBasePlate(Config.hasBasePlate);
         as.setGravity(Config.hasGravity);
+        as.setInvulnerable(Config.invulnerable);
         if(Config.defaultName.length() > 0) {
             as.setCustomName(Config.defaultName);
             as.setCustomNameVisible(true);
         }
         Main.nms.setSlotsDisabled(as, Config.equipmentLock);
-        Main.nms.setInvulnerable(as, Config.invulnerable);
         return as;
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block b = event.getBlock();
-        if((b.getType() == Material.SKULL && b.hasMetadata("protected")) || (b.getType() == Material.SIGN_POST && b.hasMetadata("armorStand"))) {
+        if((b.getType() == Material.PLAYER_HEAD && b.hasMetadata("protected")) || (b.getType() == Material.SIGN && b.hasMetadata("armorStand"))) {
             event.setCancelled(true);
         }
     }
@@ -454,16 +452,16 @@ public class MainListener implements Listener {
                     if(MC_USERNAME_PATTERN.matcher(input).matches()) {
                         b.setMetadata("protected", new FixedMetadataValue(plugin, true));
                         event.getPlayer().sendMessage(ChatColor.GOLD + Config.pleaseWait);
-                        String cmd = "minecraft:give " + event.getPlayer().getName() + " minecraft:skull 1 3 {SkullOwner:\"" + input + "\"}";
+                        String cmd = "minecraft:give " + event.getPlayer().getName() + " minecraft:player_head{SkullOwner:\"" + input + "\"} 1";
                         String current = b.getWorld().getGameRuleValue("sendCommandFeedback");
                         b.getWorld().setGameRuleValue("sendCommandFeedback", "false");
                         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
                         b.getWorld().setGameRuleValue("sendCommandFeedback", current);
                         boolean found = false;
-                        for(int slot : event.getPlayer().getInventory().all(Material.SKULL_ITEM).keySet()) {
+                        for(int slot : event.getPlayer().getInventory().all(Material.PLAYER_HEAD).keySet()) {
                             ItemStack skull = event.getPlayer().getInventory().getItem(slot);
                             SkullMeta sm = (SkullMeta) skull.getItemMeta();
-                            if(sm.hasOwner() && input.equalsIgnoreCase(sm.getOwner())) {
+                            if(sm.hasOwner() && input.equalsIgnoreCase(sm.getOwningPlayer().getName())) {
                                 as.setHelmet(skull);
                                 event.getPlayer().sendMessage(ChatColor.GREEN + Config.appliedHead + ChatColor.GOLD + " " + input);
                                 event.getPlayer().getInventory().setItem(slot, null);
@@ -484,8 +482,6 @@ public class MainListener implements Listener {
             b.removeMetadata("setName", plugin);
             b.removeMetadata("setSkull", plugin);
             b.setType(Material.AIR);
-            //noinspection deprecation
-            b.setData((byte) 0);
         }
     }
     

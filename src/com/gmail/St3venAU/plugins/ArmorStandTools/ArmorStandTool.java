@@ -15,9 +15,9 @@ public enum ArmorStandTool {
     LARMX   ("lArmX",       Material.TORCH,             (short) 0, 27, false, true, "astools.use"),
     LARMY   ("lArmY",       Material.TORCH,             (short) 0, 28, false, true, "astools.use"),
     LARMZ   ("lArmZ",       Material.TORCH,             (short) 0, 29, false, true, "astools.use"),
-    RARMX   ("rArmX",       Material.REDSTONE_TORCH_ON, (short) 0, 30, false, true, "astools.use"),
-    RARMY   ("rArmY",       Material.REDSTONE_TORCH_ON, (short) 0, 31, false, true, "astools.use"),
-    RARMZ   ("rArmZ",       Material.REDSTONE_TORCH_ON, (short) 0, 32, false, true, "astools.use"),
+    RARMX   ("rArmX",       Material.REDSTONE_TORCH,    (short) 0, 30, false, true, "astools.use"),
+    RARMY   ("rArmY",       Material.REDSTONE_TORCH,    (short) 0, 31, false, true, "astools.use"),
+    RARMZ   ("rArmZ",       Material.REDSTONE_TORCH,    (short) 0, 32, false, true, "astools.use"),
     MOVEX   ("moveX",       Material.SHEARS,            (short) 0,  3, false, true, "astools.use"),
     MOVEY   ("moveY",       Material.SHEARS,            (short) 0,  4, false, true, "astools.use"),
     MOVEZ   ("moveZ",       Material.SHEARS,            (short) 0,  5, false, true, "astools.use"),
@@ -27,9 +27,9 @@ public enum ArmorStandTool {
     RLEGX   ("rLegX",       Material.BLAZE_ROD,         (short) 0, 21, false, true, "astools.use"),
     RLEGY   ("rLegY",       Material.BLAZE_ROD,         (short) 0, 22, false, true, "astools.use"),
     RLEGZ   ("rLegZ",       Material.BLAZE_ROD,         (short) 0, 23, false, true, "astools.use"),
-    BODYX   ("bodyX",       Material.NETHER_BRICK_ITEM, (short) 0,  9, false, true, "astools.use"),
-    BODYY   ("bodyY",       Material.NETHER_BRICK_ITEM, (short) 0, 10, false, true, "astools.use"),
-    BODYZ   ("bodyZ",       Material.NETHER_BRICK_ITEM, (short) 0, 11, false, true, "astools.use"),
+    BODYX   ("bodyX",       Material.NETHER_BRICKS,     (short) 0,  9, false, true, "astools.use"),
+    BODYY   ("bodyY",       Material.NETHER_BRICKS,     (short) 0, 10, false, true, "astools.use"),
+    BODYZ   ("bodyZ",       Material.NETHER_BRICKS,     (short) 0, 11, false, true, "astools.use"),
     SUMMON  ("summon",      Material.ARMOR_STAND,       (short) 0,  0, false, true, "astools.summon"),
     GUI     ("gui",         Material.NETHER_STAR,       (short) 0,  1, false, true, "astools.use"),
     ROTAT   ("rotat",       Material.MAGMA_CREAM,       (short) 0,  2, false, true, "astools.use"),
@@ -42,7 +42,7 @@ public enum ArmorStandTool {
     ARMS    ("gui_arms",    Material.ARROW,             (short) 0, 23, true,  true, "astools.use"),
     NAME    ("gui_name",    Material.NAME_TAG,          (short) 0, 5,  true,  true, "astools.use"),
     SLOTS   ("gui_slots",   Material.IRON_HOE,          (short) 0, 34, true,  true, "astools.use"),
-    PHEAD   ("gui_pHead",   Material.SKULL_ITEM,        (short) 3, 6,  true,  true, "astools.head"),
+    PHEAD   ("gui_pHead",   Material.PLAYER_HEAD,       (short) 3, 6,  true,  true, "astools.head"),
     INVUL   ("gui_invul",   Material.GOLDEN_CARROT,     (short) 0, 33, true,  true, "astools.use"),
     MOVE    ("gui_move",    Material.FEATHER,           (short) 0, 14, true,  true, "astools.use");
 
@@ -119,7 +119,7 @@ public enum ArmorStandTool {
     }
 
     static ArmorStandTool get(Player p) {
-        return get(Main.nms.getItemInMainHand(p));
+        return get(p.getInventory().getItemInMainHand());
     }
 
     static boolean isTool(ItemStack is) {
@@ -127,6 +127,6 @@ public enum ArmorStandTool {
     }
 
     static boolean isHoldingTool(Player p) {
-        return isTool(Main.nms.getItemInMainHand(p));
+        return isTool(p.getInventory().getItemInMainHand());
     }
 }

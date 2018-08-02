@@ -20,7 +20,7 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
-    private static final String LATEST_VERSION = "v1_12_R1";
+    private static final String LATEST_VERSION = "v1_13_R1";
 
     static NMS nms;
 
@@ -60,8 +60,10 @@ public class Main extends JavaPlugin {
     private boolean loadSpigotVersionSupport() {
         String nmsVersion = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         String usingVersion;
-        if(nmsVersion.startsWith("v1_7") || nmsVersion.startsWith("v1_6") || nmsVersion.startsWith("v1_5") || nmsVersion.startsWith("v1_4")) {
-            getLogger().warning("This Craftbukkit/Spigot version is not supported. Craftbukkit/Spigot 1.8+ required. Loading plugin failed.");
+        if(nmsVersion.startsWith("v1_4")  || nmsVersion.startsWith("v1_5")  || nmsVersion.startsWith("v1_6") ||
+           nmsVersion.startsWith("v1_7")  || nmsVersion.startsWith("v1_8")  || nmsVersion.startsWith("v1_9") ||
+           nmsVersion.startsWith("v1_10") || nmsVersion.startsWith("v1_11") || nmsVersion.startsWith("v1_12")) {
+            getLogger().warning("This Craftbukkit/Spigot version is not supported. Craftbukkit/Spigot 1.13+ required. Loading plugin failed.");
             return false;
         }
         try {
@@ -80,7 +82,7 @@ public class Main extends JavaPlugin {
             nms = (NMS) Class.forName("com.gmail.St3venAU.plugins.ArmorStandTools.NMS_" + usingVersion).getConstructor(String.class).newInstance(nmsVersion);
         } catch (Exception e) {
             e.printStackTrace();
-            getLogger().warning("A fatal error occurred while attempting to load support for this version of Craftbukkit/Spigot");
+            getLogger().warning("An error occurred while attempting to load support for this version of Craftbukkit/Spigot. Loading plugin failed.");
             return false;
         }
         return true;
@@ -143,9 +145,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        //noinspection deprecation
-        b.setData((byte) 0);
-        b.setType(Material.SIGN_POST);
+        b.setType(Material.SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setName", new FixedMetadataValue(this, true));
@@ -157,9 +157,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        //noinspection deprecation
-        b.setData((byte) 0);
-        b.setType(Material.SIGN_POST);
+        b.setType(Material.SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));

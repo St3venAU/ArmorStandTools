@@ -37,14 +37,12 @@ class ArmorStandGUI implements Listener {
             return;
         }
         if(filler == null) {
-            filler = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+            filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
             ItemMeta im = filler.getItemMeta();
             im.setDisplayName(" ");
             filler.setItemMeta(im);
             invSlots.add(10);
-            if(Main.nms.hasOffHand()) {
-                invSlots.add(12);
-            }
+            invSlots.add(12);
             invSlots.add(2);
             invSlots.add(11);
             invSlots.add(20);
@@ -68,11 +66,8 @@ class ArmorStandGUI implements Listener {
                 i.setItem(tool.getSlot(), updateLore(tool));
             }
         }
-
-        i.setItem(10, Main.nms.getItemInMainHand(as));
-        if(Main.nms.hasOffHand()) {
-            i.setItem(12, Main.nms.getItemInOffHand(as));
-        }
+        i.setItem(10, as.getEquipment().getItemInMainHand());
+        i.setItem(12, as.getEquipment().getItemInOffHand());
         i.setItem(2,  as.getHelmet());
         i.setItem(11, as.getChestplate());
         i.setItem(20, as.getLeggings());
@@ -99,7 +94,7 @@ class ArmorStandGUI implements Listener {
             case ARMS:
                 return Utils.setLore(item, ChatColor.AQUA + Config.arms + ": " + (as.hasArms() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case INVUL:
-                return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (Main.nms.isInvulnerable(as) ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+                return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (as.isInvulnerable() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case SLOTS:
                 return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (Main.nms.equipmentLocked(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
             case NAME:
@@ -117,7 +112,7 @@ class ArmorStandGUI implements Listener {
         if(!(as.getHelmet().getItemMeta() instanceof SkullMeta)) return null;
         SkullMeta meta = (SkullMeta) as.getHelmet().getItemMeta();
         if(!meta.hasOwner()) return null;
-        return meta.getOwner();
+        return meta.getOwningPlayer().getName();
     }
 
     @EventHandler
@@ -157,32 +152,32 @@ class ArmorStandGUI implements Listener {
         switch (t) {
             case INVIS:
                 as.setVisible(!as.isVisible());
-                Main.nms.actionBarMsg(p, Config.asVisible + ": " + (as.isVisible() ? Config.isTrue : Config.isFalse));
+                Utils.actionBarMsg(p, Config.asVisible + ": " + (as.isVisible() ? Config.isTrue : Config.isFalse));
                 break;
             case CLONE:
                 p.closeInventory();
                 plugin.pickUpArmorStand(Main.nms.clone(as), p, true);
-                Main.nms.actionBarMsg(p, Config.carrying);
+                Utils.actionBarMsg(p, Config.carrying);
                 break;
             case SAVE:
                 Main.nms.generateCmdBlock(p.getLocation(), as);
-                Main.nms.actionBarMsg(p, Config.cbCreated);
+                Utils.actionBarMsg(p, Config.cbCreated);
                 break;
             case SIZE:
                 as.setSmall(!as.isSmall());
-                Main.nms.actionBarMsg(p, Config.size + ": " + (as.isSmall() ? Config.small : Config.normal));
+                Utils.actionBarMsg(p, Config.size + ": " + (as.isSmall() ? Config.small : Config.normal));
                 break;
             case BASE:
                 as.setBasePlate(!as.hasBasePlate());
-                Main.nms.actionBarMsg(p, Config.basePlate + ": " + (as.hasBasePlate() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.basePlate + ": " + (as.hasBasePlate() ? Config.isOn : Config.isOff));
                 break;
             case GRAV:
                 as.setGravity(!as.hasGravity());
-                Main.nms.actionBarMsg(p, Config.gravity + ": " + (as.hasGravity() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.gravity + ": " + (as.hasGravity() ? Config.isOn : Config.isOff));
                 break;
             case ARMS:
                 as.setArms(!as.hasArms());
-                Main.nms.actionBarMsg(p, Config.arms + ": " + (as.hasArms() ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.arms + ": " + (as.hasArms() ? Config.isOn : Config.isOff));
                 break;
             case NAME:
                 p.closeInventory();
@@ -193,20 +188,20 @@ class ArmorStandGUI implements Listener {
                 plugin.setPlayerSkull(p, as);
                 break;
             case INVUL:
-                Main.nms.actionBarMsg(p, Config.invul + ": " + (Main.nms.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
+                Utils.actionBarMsg(p, Config.invul + ": " + (Utils.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
                 break;
             case SLOTS:
-                Main.nms.actionBarMsg(p, Config.equip + ": " + (Main.nms.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
+                Utils.actionBarMsg(p, Config.equip + ": " + (Main.nms.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
                 break;
             case MOVE:
                 p.closeInventory();
                 UUID uuid = p.getUniqueId();
                 if(plugin.carryingArmorStand.containsKey(uuid)) {
                     plugin.carryingArmorStand.remove(uuid);
-                    Main.nms.actionBarMsg(p, Config.asDropped);
+                    Utils.actionBarMsg(p, Config.asDropped);
                 } else {
                     plugin.pickUpArmorStand(as, p, false);
-                    Main.nms.actionBarMsg(p, Config.carrying);
+                    Utils.actionBarMsg(p, Config.carrying);
                 }
                 break;
             default:
@@ -245,10 +240,8 @@ class ArmorStandGUI implements Listener {
             @Override
             public void run() {
                 if(as == null || i == null) return;
-                Main.nms.setItemInMainHand(as, i.getItem(10));
-                if(Main.nms.hasOffHand()) {
-                    Main.nms.setItemInOffHand(as, i.getItem(12));
-                }
+                as.getEquipment().setItemInMainHand(i.getItem(10));
+                as.getEquipment().setItemInOffHand(i.getItem(12));
                 as.setHelmet(i.getItem(2));
                 as.setChestplate(i.getItem(11));
                 as.setLeggings(i.getItem(20));

@@ -3,6 +3,7 @@ package com.gmail.St3venAU.plugins.ArmorStandTools;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -119,4 +120,13 @@ class Utils {
         return is;
     }
 
+    static boolean toggleInvulnerability(ArmorStand as) {
+        boolean inv = !as.isInvulnerable();
+        as.setInvulnerable(inv);
+        return inv;
+    }
+
+    static void actionBarMsg(Player p, String msg) {
+        p.sendTitle("", msg, 0, 70, 0);
+    }
 }

@@ -42,7 +42,7 @@ class Config {
             noRelPerm, noAirError, pleaseWait, appliedHead,
             invalidName, wgNoPerm, currently, headFailed,
             noCommandPerm, generalNoPerm, armorStand, none,
-            guiInUse, notSupported, noASNearBy, closestAS,
+            guiInUse, noASNearBy, closestAS,
             hasNoCmd, hasCmd, type, command, unassignedCmd,
             assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
             removeCmd, assignConsole, assignPlayer, executeCmdError;
@@ -93,7 +93,6 @@ class Config {
         armorStand = languageConfig.getString("armorStand");
         none = languageConfig.getString("none");
         guiInUse = languageConfig.getString("guiInUse");
-        notSupported = languageConfig.getString("notSupported");
         noASNearBy = languageConfig.getString("noASNearBy");
         closestAS = languageConfig.getString("closestAS");
         hasNoCmd = languageConfig.getString("hasNoCmd");

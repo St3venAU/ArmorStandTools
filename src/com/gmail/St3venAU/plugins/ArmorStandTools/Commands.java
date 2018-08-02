@@ -59,10 +59,6 @@ class Commands implements CommandExecutor, TabCompleter {
                 }
             }
         } else if(cmd.equals("ascmd")) {
-            if(!Main.nms.supportsScoreboardTags()) {
-                p.sendMessage(Config.notSupported);
-                return true;
-            }
             ArmorStand as = getNearbyArmorStand(p);
             if(as == null) {
                 p.sendMessage("\n" + Config.noASNearBy);

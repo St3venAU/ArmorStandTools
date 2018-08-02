@@ -4,25 +4,22 @@ import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotPlayer;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-@SuppressWarnings("deprecation")
 class PlotSquaredHook {
     
     public static PlotAPI api = null;
     private static Main plugin;
     
     public PlotSquaredHook(Main main) {
-        PlotSquaredHook.api = new PlotAPI(plugin);
+        PlotSquaredHook.api = new PlotAPI();
         plugin = main;
     }
     
     public static boolean isPlotWorld(Location loc) {
-        World world = loc.getWorld();
-        return api.isPlotWorld(world);
+        return api.getPlotSquared().hasPlotArea(loc.getWorld().getName());
     }
 
     public static boolean checkPermission(Player player, Location loc) {
