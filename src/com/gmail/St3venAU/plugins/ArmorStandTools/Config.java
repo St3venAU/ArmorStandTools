@@ -152,11 +152,14 @@ class Config {
         }
         
         Plugin worldGuard = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-        worldGuardPlugin = worldGuard == null || !(worldGuard instanceof WorldGuardPlugin) ? null : (WorldGuardPlugin) worldGuard;
+        if(worldGuard instanceof WorldGuardPlugin) {
+            worldGuardPlugin = (WorldGuardPlugin) worldGuard;
+        }
         if(config.getBoolean("integrateWithWorldGuard")) {
             plugin.getLogger().log(Level.INFO, worldGuardPlugin == null ? "WorldGuard plugin not found. Continuing without WorldGuard support." : "WorldGuard plugin found. WorldGuard support enabled.");
         } else if(worldGuardPlugin != null) {
             plugin.getLogger().log(Level.WARNING, "WorldGuard plugin was found, but integrateWithWorldGuard is set to false in config.yml. Continuing without WorldGuard support.");
+            worldGuardPlugin = null;
         }
     }
 

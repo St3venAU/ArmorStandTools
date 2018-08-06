@@ -24,8 +24,8 @@ public class Main extends JavaPlugin {
 
     static NMS nms;
 
-    public final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
-    public final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
+    final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
+    final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
 
     @Override
     public void onEnable() {
@@ -108,7 +108,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public void saveInventoryAndClear(Player p) {
+    void saveInventoryAndClear(Player p) {
         ItemStack[] inv = p.getInventory().getContents().clone();
         savedInventories.put(p.getUniqueId(), inv);
         p.getInventory().clear();
@@ -174,7 +174,7 @@ public class Main extends JavaPlugin {
             }
         }
         if(Config.worldGuardPlugin != null) {
-            return Config.worldGuardPlugin.canBuild(p, b);
+            return Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b);
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);

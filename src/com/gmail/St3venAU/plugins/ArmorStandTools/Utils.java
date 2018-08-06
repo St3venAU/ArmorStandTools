@@ -28,7 +28,7 @@ class Utils {
         return false;
     }
     
-    public static boolean hasPermissionNode(Player player, String perm) {
+    static boolean hasPermissionNode(Player player, String perm) {
         if ((player == null) || player.isOp()) {
             return true;
         }

@@ -433,12 +433,13 @@ public class MainListener implements Listener {
             final Block b = event.getBlock();
             final ArmorStand as = getArmorStand(b);
             if (as != null) {
-                String input = "";
+                StringBuilder sb = new StringBuilder();
                 for (String line : event.getLines()) {
                     if (line != null && line.length() > 0) {
-                        input += ChatColor.translateAlternateColorCodes('&', line);
+                        sb.append(ChatColor.translateAlternateColorCodes('&', line));
                     }
                 }
+                String input = sb.toString();
                 if(b.hasMetadata("setName")) {
                     if (input.length() > 0) {
                         as.setCustomName(input);

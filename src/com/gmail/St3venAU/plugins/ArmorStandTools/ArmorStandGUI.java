@@ -76,7 +76,7 @@ class ArmorStandGUI implements Listener {
         p.openInventory(i);
     }
 
-    public static boolean isInUse(ArmorStand as) {
+    static boolean isInUse(ArmorStand as) {
         return inUse.contains(as.getEntityId());
     }
 
