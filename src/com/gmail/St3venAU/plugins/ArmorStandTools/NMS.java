@@ -11,17 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
 abstract class NMS {
 
+    private Main plugin;
+
     private final String
             nmsVersion,
             disabledSlotsFieldName;
 
-    NMS(String nmsVersion, String disabledSlotsFieldName) {
+    NMS(Main plugin, String nmsVersion, String disabledSlotsFieldName) {
+        this.plugin = plugin;
         this.nmsVersion = nmsVersion;
         this.disabledSlotsFieldName = disabledSlotsFieldName;
     }
@@ -39,16 +43,21 @@ abstract class NMS {
         }
     }
 
-    void openSign(Player p, Block b) {
-        try {
-            Object world = b.getWorld().getClass().getMethod("getHandle").invoke(b.getWorld());
-            Object blockPos = getNMSClass("BlockPosition").getConstructor(int.class, int.class, int.class).newInstance(b.getX(), b.getY(), b.getZ());
-            Object sign = world.getClass().getMethod("getTileEntity", getNMSClass("BlockPosition")).invoke(world, blockPos);
-            Object player = p.getClass().getMethod("getHandle").invoke(p);
-            player.getClass().getMethod("openSign", getNMSClass("TileEntitySign")).invoke(player, sign);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    void openSign(final Player p, final Block b) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Object world = b.getWorld().getClass().getMethod("getHandle").invoke(b.getWorld());
+                    Object blockPos = getNMSClass("BlockPosition").getConstructor(int.class, int.class, int.class).newInstance(b.getX(), b.getY(), b.getZ());
+                    Object sign = world.getClass().getMethod("getTileEntity", getNMSClass("BlockPosition")).invoke(world, blockPos);
+                    Object player = p.getClass().getMethod("getHandle").invoke(p);
+                    player.getClass().getMethod("openSign", getNMSClass("TileEntitySign")).invoke(player, sign);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskLater(plugin, 2L);
     }
 
     boolean toggleSlotsDisabled(ArmorStand as) {
@@ -102,7 +111,7 @@ abstract class NMS {
         if(is == null) {
             return "";
         }
-        StringBuilder tags = new StringBuilder("");
+        StringBuilder tags = new StringBuilder();
         if(is.getItemMeta() != null && is.getItemMeta() instanceof LeatherArmorMeta) {
             LeatherArmorMeta armorMeta = (LeatherArmorMeta) is.getItemMeta();
             tags.append("display:{color:");
