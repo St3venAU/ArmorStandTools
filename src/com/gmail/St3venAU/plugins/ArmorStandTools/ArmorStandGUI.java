@@ -2,6 +2,7 @@ package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -160,8 +161,12 @@ class ArmorStandGUI implements Listener {
                 Utils.actionBarMsg(p, Config.carrying);
                 break;
             case SAVE:
-                Main.nms.generateCmdBlock(p.getLocation(), as);
-                Utils.actionBarMsg(p, Config.cbCreated);
+                if(Config.requireCreative && p.getGameMode() != GameMode.CREATIVE) {
+                    p.sendMessage(ChatColor.RED + Config.creativeRequired);
+                } else {
+                    Main.nms.generateCmdBlock(p.getLocation(), as);
+                    Utils.actionBarMsg(p, Config.cbCreated);
+                }
                 break;
             case SIZE:
                 as.setSmall(!as.isSmall());

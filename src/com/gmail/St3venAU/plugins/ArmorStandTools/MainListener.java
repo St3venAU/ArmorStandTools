@@ -54,7 +54,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        if (event.getRightClicked() instanceof ArmorStand) {
+        if(!event.isCancelled() && event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
             ArmorStand as = (ArmorStand) event.getRightClicked();
             if(ArmorStandGUI.isInUse(as)) {

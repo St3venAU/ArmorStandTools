@@ -1,6 +1,6 @@
 main: com.gmail.St3venAU.plugins.ArmorStandTools.Main
 name: ArmorStandTools
-version: 3.0.2
+version: 3.2.0
 api-version: 1.13
 author: St3venAU
 description: Armor stand manipulation tools

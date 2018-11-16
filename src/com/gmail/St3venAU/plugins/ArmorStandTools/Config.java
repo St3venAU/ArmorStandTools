@@ -33,6 +33,7 @@ class Config {
     public static boolean allowMoveWorld            = false;
     public static boolean deactivateOnWorldChange   = true;
     public static boolean debug                     = false;
+    public static boolean requireCreative           = false;
 
     public static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -42,7 +43,7 @@ class Config {
             noRelPerm, noAirError, pleaseWait, appliedHead,
             invalidName, wgNoPerm, currently, headFailed,
             noCommandPerm, generalNoPerm, armorStand, none,
-            guiInUse, noASNearBy, closestAS,
+            guiInUse, noASNearBy, closestAS, creativeRequired,
             hasNoCmd, hasCmd, type, command, unassignedCmd,
             assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
             removeCmd, assignConsole, assignPlayer, executeCmdError;
@@ -108,6 +109,7 @@ class Config {
         assignConsole = languageConfig.getString("assignConsole");
         assignPlayer = languageConfig.getString("assignPlayer");
         executeCmdError = languageConfig.getString("executeCmdError");
+        creativeRequired = languageConfig.getString("creativeRequired");
     }
 
     private static void reloadMainConfig() {
@@ -130,6 +132,7 @@ class Config {
         equipmentLock           = config.getBoolean("equipmentLock");
         allowMoveWorld          = config.getBoolean("allowMovingStandsBetweenWorlds");
         deactivateOnWorldChange = config.getBoolean("deactivateToolsOnWorldChange");
+        requireCreative         = config.getBoolean("requireCreativeForSaveAsCmdBlock");
         debug                   = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
 

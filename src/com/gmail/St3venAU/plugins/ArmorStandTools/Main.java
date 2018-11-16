@@ -20,7 +20,7 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
-    private static final String LATEST_VERSION = "v1_13_R1";
+    private static final String LATEST_VERSION = "v1_13_R2";
 
     static NMS nms;
 
