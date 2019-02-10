@@ -1,8 +1,10 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
-import com.intellectualcrafters.plot.api.PlotAPI;
-import com.intellectualcrafters.plot.object.Plot;
-import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.github.intellectualsites.plotsquared.api.PlotAPI;
+import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
+import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,7 +12,7 @@ import java.util.UUID;
 
 class PlotSquaredHook {
     
-    public static PlotAPI api = null;
+    public static PlotAPI api;
     private static Main plugin;
     
     public PlotSquaredHook(Main main) {
@@ -22,8 +24,14 @@ class PlotSquaredHook {
         return api.getPlotSquared().hasPlotArea(loc.getWorld().getName());
     }
 
-    public static boolean checkPermission(Player player, Location loc) {
-        Plot plot = api.getPlot(loc);
+    public static boolean checkPermission(Player player, Location location) {
+        com.github.intellectualsites.plotsquared.plot.object.Location plotLocation = BukkitUtil.getLocation(location);
+        PlotArea plotArea = plotLocation.getPlotArea();
+        if(plotArea == null) {
+            plugin.debug("plots.admin.build.road: " + player.hasPermission("plots.admin.build.road"));
+            return player.hasPermission("plots.admin.build.road");
+        }
+        Plot plot = plotArea.getPlot(plotLocation);
         PlotPlayer pp = PlotPlayer.wrap(player);
         plugin.debug("Plot: " + plot);
         if (plot == null) {
