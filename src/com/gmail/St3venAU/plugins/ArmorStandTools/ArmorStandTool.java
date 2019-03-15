@@ -66,7 +66,7 @@ public enum ArmorStandTool {
         return item;
     }
 
-    boolean is(ItemStack is) {
+    private boolean is(ItemStack is) {
         return is != null && is.getType() == item.getType() && is.hasItemMeta() &&
                 is.getItemMeta().hasDisplayName() &&
                 is.getItemMeta().getDisplayName().equals(item.getItemMeta().getDisplayName());

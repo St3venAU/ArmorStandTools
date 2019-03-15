@@ -74,8 +74,8 @@ class Commands implements CommandExecutor, TabCompleter {
                     p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                     return true;
                 }
-                ArmorStandCmd asCmd = ArmorStandCmd.fromAS(as);
-                if(asCmd == null) {
+                ArmorStandCmd asCmd = new ArmorStandCmd(as);
+                if(asCmd.getCommand() == null) {
                     p.sendMessage("\n" + Config.closestAS + name + Config.hasNoCmd);
                 } else {
                     p.sendMessage("\n" + Config.closestAS + name + Config.hasCmd);
@@ -95,8 +95,8 @@ class Commands implements CommandExecutor, TabCompleter {
                 }
             } else if(args.length >= 3 && args[0].equalsIgnoreCase("assign")) {
                 // ascmd assign <player/console> (command)
-                ArmorStandCmd asCmd = ArmorStandCmd.fromAS(as);
-                if(asCmd != null) {
+                ArmorStandCmd asCmd = new ArmorStandCmd(as);
+                if(asCmd.getCommand() != null) {
                     p.sendMessage("\n" + Config.closestAS + name + Config.hasCmd);
                     p.sendMessage(Config.removeCmd + ": " + ChatColor.YELLOW + " /ascmd remove");
                     return true;
@@ -129,13 +129,39 @@ class Commands implements CommandExecutor, TabCompleter {
                     ascmdHelp(p);
                     return true;
                 }
-                asCmd = new ArmorStandCmd(c, isConsole);
-                if(asCmd.assignTo(as)) {
+                asCmd = new ArmorStandCmd(as, c, isConsole);
+                if(asCmd.save()) {
                     p.sendMessage("\n" + Config.assignedCmdToAS + name);
                     p.sendMessage(Config.type + ": " + ChatColor.YELLOW + asCmd.getType());
                     p.sendMessage(Config.command + ": " + ChatColor.YELLOW + asCmd.getCommand());
                 } else {
                     p.sendMessage("\n" + Config.assignCmdError + name);
+                }
+            } else if(args.length >= 2 && args[0].equalsIgnoreCase("cooldown")) { //ascmd cooldown <ticks>/remove
+                ArmorStandCmd asCmd = new ArmorStandCmd(as);
+                if(asCmd.getCommand() == null) {
+                    p.sendMessage(Config.closestAS + name + Config.hasNoCmd);
+                    return true;
+                }
+                if(args[1].equalsIgnoreCase("remove")) {
+                    asCmd.setCooldownTime(-1);
+                    p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
+                    return true;
+                } else {
+                    int ticks;
+                    try {
+                        ticks = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException e) {
+                        p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
+                        return true;
+                    }
+                    if(ticks < 0) {
+                        p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
+                        return true;
+                    }
+                    asCmd.setCooldownTime(ticks);
+                    p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
+                    return true;
                 }
             } else {
                 ascmdHelp(p);
@@ -154,6 +180,10 @@ class Commands implements CommandExecutor, TabCompleter {
         p.sendMessage(ChatColor.YELLOW + "/ascmd assign console <command>");
         p.sendMessage(Config.assignPlayer + ":");
         p.sendMessage(ChatColor.YELLOW + "/ascmd assign player <command>");
+        p.sendMessage(Config.setCooldown + ":");
+        p.sendMessage(ChatColor.YELLOW + "/ascmd cooldown <ticks>");
+        p.sendMessage(Config.removeCooldown + ":");
+        p.sendMessage(ChatColor.YELLOW + "/ascmd cooldown remove");
     }
 
     private ArmorStand getNearbyArmorStand(Player p) {
@@ -176,16 +206,21 @@ class Commands implements CommandExecutor, TabCompleter {
         }
         if (cmd.equals("ascmd")) {
             if (args.length == 1) {
-                for(String s : Arrays.asList("view", "remove", "assign")) {
+                for(String s : Arrays.asList("view", "remove", "assign", "cooldown")) {
                     if(s.startsWith(typed)) {
                         list.add(s);
                     }
                 }
-            } else if (args.length == 2 && args[0].toLowerCase().equals("assign")) {
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("assign")) {
                 for(String s : Arrays.asList("player", "console")) {
                     if(s.startsWith(typed)) {
                         list.add(s);
                     }
+                }
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("cooldown")) {
+                String s = "remove";
+                if(s.startsWith(typed)) {
+                    list.add(s);
                 }
             }
         }

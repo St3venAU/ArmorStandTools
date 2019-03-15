@@ -18,14 +18,11 @@ import java.util.Map;
 
 abstract class NMS {
 
-    private Main plugin;
-
     private final String
             nmsVersion,
             disabledSlotsFieldName;
 
-    NMS(Main plugin, String nmsVersion, String disabledSlotsFieldName) {
-        this.plugin = plugin;
+    NMS(String nmsVersion, String disabledSlotsFieldName) {
         this.nmsVersion = nmsVersion;
         this.disabledSlotsFieldName = disabledSlotsFieldName;
     }
@@ -57,7 +54,7 @@ abstract class NMS {
                     e.printStackTrace();
                 }
             }
-        }.runTaskLater(plugin, 2L);
+        }.runTaskLater(Main.plugin, 2L);
     }
 
     boolean toggleSlotsDisabled(ArmorStand as) {
@@ -212,7 +209,10 @@ abstract class NMS {
         clone.setSmall(as.isSmall());
         clone.setInvulnerable(as.isInvulnerable());
         setSlotsDisabled(clone, getDisabledSlots(as) == 0xFFFFFF);
-        ArmorStandCmd.cloneASCommand(as, clone);
+        ArmorStandCmd asCmd = new ArmorStandCmd(as);
+        if(asCmd.getCommand() != null) {
+            asCmd.cloneTo(clone);
+        }
         return clone;
     }
 

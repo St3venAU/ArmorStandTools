@@ -27,8 +27,11 @@ public class Main extends JavaPlugin {
     final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
     final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
 
+    static Main plugin;
+
     @Override
     public void onEnable() {
+        plugin = this;
         if(!loadSpigotVersionSupport()) {
             setEnabled(false);
             return;
@@ -79,7 +82,7 @@ public class Main extends JavaPlugin {
             getLogger().warning("Support for " + nmsVersion + " not found, trying " + usingVersion + ". Please check for possible updates to the plugin.");
         }
         try {
-            nms = (NMS) Class.forName("com.gmail.St3venAU.plugins.ArmorStandTools.NMS_" + usingVersion).getConstructor(Main.class, String.class).newInstance(this, nmsVersion);
+            nms = (NMS) Class.forName("com.gmail.St3venAU.plugins.ArmorStandTools.NMS_" + usingVersion).getConstructor(String.class).newInstance(nmsVersion);
         } catch (Exception e) {
             e.printStackTrace();
             getLogger().warning("An error occurred while attempting to load support for this version of Craftbukkit/Spigot. Loading plugin failed.");

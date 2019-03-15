@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 
 class Config {
@@ -19,23 +19,25 @@ class Config {
     private static File languageConfigFile;
     private static FileConfiguration languageConfig;
 
-    public static WorldGuardPlugin worldGuardPlugin;
+    static WorldGuardPlugin worldGuardPlugin;
 
-    public static ItemStack helmet, chest, pants, boots, itemInHand, itemInOffHand;
-    public static boolean isVisible                 = true;
-    public static boolean isSmall                   = false;
-    public static boolean hasArms                   = true;
-    public static boolean hasBasePlate              = false;
-    public static boolean hasGravity                = false;
-    public static String  defaultName               = "";
-    public static boolean invulnerable              = false;
-    public static boolean equipmentLock             = false;
-    public static boolean allowMoveWorld            = false;
-    public static boolean deactivateOnWorldChange   = true;
-    public static boolean debug                     = false;
-    public static boolean requireCreative           = false;
+    static ItemStack helmet, chest, pants, boots, itemInHand, itemInOffHand;
 
-    public static String
+    static boolean isVisible                 = true;
+    static boolean isSmall                   = false;
+    static boolean hasArms                   = true;
+    static boolean hasBasePlate              = false;
+    static boolean hasGravity                = false;
+    static String  defaultName               = "";
+    static boolean invulnerable              = false;
+    static boolean equipmentLock             = false;
+    static boolean allowMoveWorld            = false;
+    static boolean deactivateOnWorldChange   = true;
+    static boolean debug                     = false;
+    static boolean requireCreative           = false;
+    static int defaultASCmdCooldownTicks     = 0;
+
+    static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
             carrying, cbCreated, size, small, normal, basePlate,
             isOn, isOff, gravity, arms, invul, equip, locked,
@@ -46,14 +48,16 @@ class Config {
             guiInUse, noASNearBy, closestAS, creativeRequired,
             hasNoCmd, hasCmd, type, command, unassignedCmd,
             assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
-            removeCmd, assignConsole, assignPlayer, executeCmdError;
+            removeCmd, assignConsole, assignPlayer, executeCmdError,
+            cmdOnCooldown, cooldownRemovedFrom, isAnInvalidCooldown,
+            cooldownSetTo, ticksFor, setCooldown, removeCooldown;
 
-    public static void reload(Main main) {
+    static void reload(Main main) {
         plugin = main;
         reload();
     }
 
-    public static void reload() {
+    static void reload() {
         reloadMainConfig();
         saveDefaultLanguageConfig();
         reloadLanguageConfig();
@@ -110,30 +114,38 @@ class Config {
         assignPlayer = languageConfig.getString("assignPlayer");
         executeCmdError = languageConfig.getString("executeCmdError");
         creativeRequired = languageConfig.getString("creativeRequired");
+        cmdOnCooldown = languageConfig.getString("cmdOnCooldown");
+        cooldownRemovedFrom = languageConfig.getString("cooldownRemovedFrom");
+        isAnInvalidCooldown = languageConfig.getString("isAnInvalidCooldown");
+        cooldownSetTo = languageConfig.getString("cooldownSetTo");
+        ticksFor = languageConfig.getString("ticksFor");
+        setCooldown = languageConfig.getString("setCooldown");
+        ticksFor = languageConfig.getString("ticksFor");
     }
 
     private static void reloadMainConfig() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
-        FileConfiguration config= plugin.getConfig();
-        helmet                  = toItemStack(config.getString("helmet"));
-        chest                   = toItemStack(config.getString("chest"));
-        pants                   = toItemStack(config.getString("pants"));
-        boots                   = toItemStack(config.getString("boots"));
-        itemInHand              = toItemStack(config.getString("inHand"));
-        itemInOffHand           = toItemStack(config.getString("inOffHand"));
-        isVisible               = config.getBoolean("isVisible");
-        isSmall                 = config.getBoolean("isSmall");
-        hasArms                 = config.getBoolean("hasArms");
-        hasBasePlate            = config.getBoolean("hasBasePlate");
-        hasGravity              = config.getBoolean("hasGravity");
-        defaultName             = config.getString("name");
-        invulnerable            = config.getBoolean("invulnerable");
-        equipmentLock           = config.getBoolean("equipmentLock");
-        allowMoveWorld          = config.getBoolean("allowMovingStandsBetweenWorlds");
-        deactivateOnWorldChange = config.getBoolean("deactivateToolsOnWorldChange");
-        requireCreative         = config.getBoolean("requireCreativeForSaveAsCmdBlock");
-        debug                   = config.getBoolean("debug", false);
+        FileConfiguration config = plugin.getConfig();
+        helmet                      = toItemStack(config.getString("helmet"));
+        chest                       = toItemStack(config.getString("chest"));
+        pants                       = toItemStack(config.getString("pants"));
+        boots                       = toItemStack(config.getString("boots"));
+        itemInHand                  = toItemStack(config.getString("inHand"));
+        itemInOffHand               = toItemStack(config.getString("inOffHand"));
+        isVisible                   = config.getBoolean("isVisible");
+        isSmall                     = config.getBoolean("isSmall");
+        hasArms                     = config.getBoolean("hasArms");
+        hasBasePlate                = config.getBoolean("hasBasePlate");
+        hasGravity                  = config.getBoolean("hasGravity");
+        defaultName                 = config.getString("name");
+        invulnerable                = config.getBoolean("invulnerable");
+        equipmentLock               = config.getBoolean("equipmentLock");
+        allowMoveWorld              = config.getBoolean("allowMovingStandsBetweenWorlds");
+        deactivateOnWorldChange     = config.getBoolean("deactivateToolsOnWorldChange");
+        requireCreative             = config.getBoolean("requireCreativeForSaveAsCmdBlock");
+        defaultASCmdCooldownTicks   = config.getInt("defaultASCmdCooldownTicks");
+        debug                       = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
 
         for(ArmorStandTool tool : ArmorStandTool.values()) {
@@ -148,7 +160,7 @@ class Config {
             }
             catch (Throwable e) {
                 e.printStackTrace();
-                plugin.getLogger().log(Level.WARNING, "PlotSquared plugin was found, but there was an error initializing PlotSquared support enabled.");
+                plugin.getLogger().log(Level.WARNING, "PlotSquared plugin was found, but there was an error initializing PlotSquared support.");
             }
         } else {
             plugin.getLogger().log(Level.INFO, "PlotSquared plugin not found. Continuing without PlotSquared support.");
@@ -171,7 +183,7 @@ class Config {
         languageConfig = YamlConfiguration.loadConfiguration(languageConfigFile);
         InputStream defConfigStream = plugin.getResource("language.yml");
         if (defConfigStream != null) {
-            languageConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
+            languageConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charset.forName("UTF-8"))));
         }
     }
 

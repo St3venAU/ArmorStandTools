@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game, and I quickly be
 
 Compatibility
 -------------
-- Armor Stand Tools v3.2.0 - Spigot/CraftBukkit 1.13 only
+- Armor Stand Tools v3.x.x - Spigot/CraftBukkit 1.13.x only
 - Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8, 1.9, 1.10, 1.11, 1.12 (https://www.spigotmc.org/resources/armor-stand-tools.2237/download?version=175162)
 
 Features
@@ -35,6 +35,7 @@ Assigning Commands
 - When a player with the astools.ascmd.execute permission right clicks on an armor stand, it's command is run.
 - If a player is crouching when they right click the armor stand, the command will not be run.
 - Warning: Make sure you are careful when assigning console commands. Any player with the astools.ascmd.execute permission will be able to execute the command.
+- By default any armor stands command will use the cooldown set in config.yml. This can be set on an individual basis using the /ascmd cooldown <ticks> command.
 
 Commands
 --------
@@ -45,6 +46,8 @@ Commands
 - /ascmd assign player <command> : Assign a player command to the nearest armor stand
 - /ascmd remove : Remove the command assigned to the nearest armor stand
 - /ascmd view : View the command assigned to the nearest armor stand
+- /ascmd cooldown <ticks> : Sets the cooldown (in ticks) for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
+- /ascmd cooldown remove : Removes the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
 
 Permissions
 -----------

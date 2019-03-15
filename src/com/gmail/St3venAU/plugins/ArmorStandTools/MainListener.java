@@ -168,8 +168,8 @@ public class MainListener implements Listener {
                 return;
             }
             if(!p.isSneaking()) {
-                ArmorStandCmd asCmd = ArmorStandCmd.fromAS(as);
-                if (asCmd != null) {
+                ArmorStandCmd asCmd = new ArmorStandCmd(as);
+                if (asCmd.getCommand() != null) {
                     event.setCancelled(true);
                     if (Utils.hasPermissionNode(p, "astools.ascmd.execute")) {
                         if (!asCmd.execute(p)) {
