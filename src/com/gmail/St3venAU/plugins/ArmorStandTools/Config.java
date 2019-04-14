@@ -36,6 +36,7 @@ class Config {
     static boolean debug                     = false;
     static boolean requireCreative           = false;
     static int defaultASCmdCooldownTicks     = 0;
+    static boolean ignoreWGForASCmdExecution = false;
 
     static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -145,6 +146,7 @@ class Config {
         deactivateOnWorldChange     = config.getBoolean("deactivateToolsOnWorldChange");
         requireCreative             = config.getBoolean("requireCreativeForSaveAsCmdBlock");
         defaultASCmdCooldownTicks   = config.getInt("defaultASCmdCooldownTicks");
+        ignoreWGForASCmdExecution   = config.getBoolean("bypassWorldguardForASCmdExecution");
         debug                       = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
 

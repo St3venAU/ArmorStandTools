@@ -54,15 +54,15 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        if(!event.isCancelled() && event.getRightClicked() instanceof ArmorStand) {
+        if(event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
             ArmorStand as = (ArmorStand) event.getRightClicked();
-            if(ArmorStandGUI.isInUse(as)) {
+            if(!event.isCancelled() && ArmorStandGUI.isInUse(as)) {
                 Utils.actionBarMsg(p, Config.guiInUse);
                 event.setCancelled(true);
                 return;
             }
-            if(plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
+            if(!event.isCancelled() && plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
                 if (plugin.playerHasPermission(p, plugin.carryingArmorStand.get(p.getUniqueId()).getLocation().getBlock(), null)) {
                     plugin.carryingArmorStand.remove(p.getUniqueId());
                     Utils.actionBarMsg(p, Config.asDropped);
@@ -73,7 +73,7 @@ public class MainListener implements Listener {
                 }
             }
             ArmorStandTool tool = ArmorStandTool.get(p);
-            if(tool != null) {
+            if(!event.isCancelled() && tool != null) {
                 if (!plugin.playerHasPermission(p, as.getLocation().getBlock(), tool)) {
                     p.sendMessage(ChatColor.RED + Config.generalNoPerm);
                     event.setCancelled(true);
@@ -167,7 +167,7 @@ public class MainListener implements Listener {
                 event.setCancelled(cancel);
                 return;
             }
-            if(!p.isSneaking()) {
+            if((Config.ignoreWGForASCmdExecution || !event.isCancelled()) && !p.isSneaking()) {
                 ArmorStandCmd asCmd = new ArmorStandCmd(as);
                 if (asCmd.getCommand() != null) {
                     event.setCancelled(true);
