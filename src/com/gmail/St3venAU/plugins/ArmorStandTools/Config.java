@@ -1,17 +1,22 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommandYamlParser;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.logging.Level;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 class Config {
 
@@ -37,6 +42,7 @@ class Config {
     static boolean requireCreative           = false;
     static int defaultASCmdCooldownTicks     = 0;
     static boolean ignoreWGForASCmdExecution = false;
+    static List<String> commandsBlocked       = new ArrayList<String>();
 
     static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
@@ -51,7 +57,7 @@ class Config {
             assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
             removeCmd, assignConsole, assignPlayer, executeCmdError,
             cmdOnCooldown, cooldownRemovedFrom, isAnInvalidCooldown,
-            cooldownSetTo, ticksFor, setCooldown, removeCooldown;
+            cooldownSetTo, ticksFor, setCooldown, removeCooldown, commandBlocked;
 
     static void reload(Main main) {
         plugin = main;
@@ -122,6 +128,7 @@ class Config {
         ticksFor = languageConfig.getString("ticksFor");
         setCooldown = languageConfig.getString("setCooldown");
         ticksFor = languageConfig.getString("ticksFor");
+        commandBlocked = languageConfig.getString("commandBlocked");
     }
 
     private static void reloadMainConfig() {
@@ -149,6 +156,20 @@ class Config {
         ignoreWGForASCmdExecution   = config.getBoolean("bypassWorldguardForASCmdExecution");
         debug                       = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
+
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        for (String blocked : config.getStringList("commandBlocked")) {
+        	for (Plugin plugin : plugin.getServer().getPluginManager().getPlugins()) {
+        		command: for (Command command : PluginCommandYamlParser.parse(plugin)) {
+        			if (command.getAliases().contains(blocked)) {
+						commandsBlocked.addAll(command.getAliases());
+	        			break command;
+        			}
+        		}
+        	}
+
+        	commandsBlocked.add(blocked);
+        }});
 
         for(ArmorStandTool tool : ArmorStandTool.values()) {
             tool.setEnabled(config);

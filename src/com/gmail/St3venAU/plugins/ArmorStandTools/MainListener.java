@@ -52,6 +52,23 @@ public class MainListener implements Listener {
         this.plugin = main;
     }
 
+	@EventHandler(ignoreCancelled = true)
+	public void onCommandProcess(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+		if (!plugin.carryingArmorStand.containsKey(player.getUniqueId()))
+			return;
+
+		String command = event.getMessage().split(" ")[0].toLowerCase();
+		for (String block : Config.commandsBlocked) {
+			if (!command.contains(block))
+				continue;
+
+			player.sendMessage(ChatColor.RED + Config.commandBlocked);
+			event.setCancelled(true);
+			return;
+		}
+	}
+
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if(event.getRightClicked() instanceof ArmorStand) {
