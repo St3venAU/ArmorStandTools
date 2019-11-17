@@ -107,8 +107,11 @@ public class Main extends JavaPlugin {
     private void removeAllTools(Player p) {
         PlayerInventory i = p.getInventory();
         for(ArmorStandTool t : ArmorStandTool.values()) {
-            i.remove(t.getItem());
-        }
+			i.remove(t.getItem());
+
+			if (i.getHelmet() != null && i.getHelmet().equals(t.getItem()))
+				i.setHelmet(null);
+		}
     }
 
     void saveInventoryAndClear(Player p) {
