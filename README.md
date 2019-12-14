@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game, and I quickly be
 
 Compatibility
 -------------
-- Armor Stand Tools v3.x.x - Spigot/CraftBukkit 1.13.x and 1.14.x only
+- Armor Stand Tools v3.x.x - Spigot/CraftBukkit 1.13 to 1.15 only
 - Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8, 1.9, 1.10, 1.11, 1.12 (https://www.spigotmc.org/resources/armor-stand-tools.2237/download?version=175162)
 
 Features
@@ -23,7 +23,7 @@ Features
 - Armor stand cloning tool.
 - Save tool: Automatically generate a command block with the command to summon that armor stand in its current state.
 - Player head tool: Give an armor stand the head of a specific player.
-- WorldGuard region support.
+- WorldGuard region support, including a custom WorldGuard flag. Set the 'ast' flag for a region to deny to turn off AST use in that region.
 - Customizable language config file.
 - Assign commands to armor stands that are run when a player right clicks that armor stand (see below).
 
@@ -49,6 +49,13 @@ Commands
 - /ascmd cooldown <ticks> : Sets the cooldown (in ticks) for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
 - /ascmd cooldown remove : Removes the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
 
+WorldGuard Integration
+----------------------
+ - If a player does not have build permission for the region, that player will also be denied the use of AST in that region.
+ - Additionally, there is a custom region flag named 'ast' which defaults to Allow, this can be changed to Deny if you wish to have a  region in which players have build permission, but not permission to use AST.
+ - The ast worldguard flag is ignored for any player with the permission node 'astools.bypass-wg-flag'. This means that a player with  this permission can use AST in worldguard regions even if the ast flag for that region is set to Deny.
+ - The ast worldguard flag is also ignored for players that have op.
+
 Permissions
 -----------
 - astools.command : Permission for the /astools command
@@ -63,6 +70,7 @@ Permissions
 - astools.ascmd.remove: Permission to remove a command from an armor stand
 - astools.ascmd.view: Permission to view the command assigned to an armor stand
 - astools.ascmd.execute: Permission to execute a command assigned to an armor stand by (on right click)
+- astools.bypass-wg-flag: Permission to bypass the WorldGuard ast flag, allowing the player to use AST even in regions that ast flag is set to deny.
 
 Config
 ------

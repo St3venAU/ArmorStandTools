@@ -159,6 +159,7 @@ abstract class NMS {
                 + (as.hasArms()                    ? "ShowArms:1,"          : ""                                                              )
                 + (as.isSmall()                    ? "Small:1,"             : ""                                                              )
                 + (as.isInvulnerable()             ? "Invulnerable:1,"      : ""                                                              )
+                + (as.isGlowing()                  ? "Glowing:1,"           : ""                                                              )
                 + (getDisabledSlots(as) == 0       ? ""                     : ("DisabledSlots:" + getDisabledSlots(as) + ",")                 )
                 + (as.isCustomNameVisible()        ? "CustomNameVisible:1," : ""                                                              )
                 + (as.getCustomName() == null      ? ""                     : ("CustomName:\"\\\"" + as.getCustomName() + "\\\"\",")          )
@@ -208,6 +209,7 @@ abstract class NMS {
         clone.setCustomNameVisible(as.isCustomNameVisible());
         clone.setSmall(as.isSmall());
         clone.setInvulnerable(as.isInvulnerable());
+        clone.setGlowing(as.isGlowing());
         setSlotsDisabled(clone, getDisabledSlots(as) == 0xFFFFFF);
         ArmorStandCmd asCmd = new ArmorStandCmd(as);
         if(asCmd.getCommand() != null) {

@@ -1,5 +1,9 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,12 +26,32 @@ public class Main extends JavaPlugin {
 
     private static final String LATEST_VERSION = "v1_14_R1";
 
+    private static Object WG_AST_FLAG;
+
     static NMS nms;
 
     final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
     final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
 
     static Main plugin;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onLoad() {
+        if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+            try {
+                // Need to do this with reflection for some reason, otherwise plugin load fails when worldguard is not present, even though this code block is not actually executed unless worldguard is present ???
+                WG_AST_FLAG = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag").getConstructor(String.class, boolean.class).newInstance("ast", true);
+                Class worldGuardClass = Class.forName("com.sk89q.worldguard.WorldGuard");
+                Object worldGuard = worldGuardClass.getMethod("getInstance").invoke(worldGuardClass);
+                Object flagRegistry = worldGuardClass.getMethod("getFlagRegistry").invoke(worldGuard);
+                flagRegistry.getClass().getMethod("register", Class.forName("com.sk89q.worldguard.protection.flags.Flag")).invoke(flagRegistry, WG_AST_FLAG);
+                getLogger().info("Registered custom WorldGuard flag: ast");
+            } catch (Exception e) {
+                getLogger().info("Failed to register custom WorldGuard flag");
+            }
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -177,11 +201,20 @@ public class Main extends JavaPlugin {
             }
         }
         if(Config.worldGuardPlugin != null) {
+            if(!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
+                return false;
+            }
             return Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b);
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);
         return !breakEvent.isCancelled();
+    }
+
+    private boolean getWorldGuardAstFlag(Location l) {
+        RegionManager regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(l.getWorld()));
+        if(regions == null) return true;
+        return regions.getApplicableRegions(BukkitAdapter.asBlockVector(l)).testState(null, (StateFlag) WG_AST_FLAG);
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {

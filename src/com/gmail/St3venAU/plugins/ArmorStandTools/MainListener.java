@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -248,11 +249,12 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         final Player p = event.getEntity();
-        if(p.getWorld().getGameRuleValue("keepInventory").equalsIgnoreCase("true")) return;
         List<ItemStack> drops = event.getDrops();
         for(ArmorStandTool t : ArmorStandTool.values()) {
             drops.remove(t.getItem());
         }
+        if(p.getWorld().getGameRuleValue("keepInventory").equalsIgnoreCase("true")) return;
+        if(Bukkit.getServer().getPluginManager().getPermission("essentials.keepinv") != null && Utils.hasPermissionNode(p, "essentials.keepinv", true)) return;
         if(plugin.savedInventories.containsKey(p.getUniqueId())) {
             drops.addAll(Arrays.asList(plugin.savedInventories.get(p.getUniqueId())));
             plugin.savedInventories.remove(p.getUniqueId());
@@ -286,7 +288,7 @@ public class MainListener implements Listener {
             return;
         }
         if(event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
-            if(Utils.hasItems(p)) {
+            if(Utils.hasAnyTools(p)) {
                 event.setCancelled(true);
                 //noinspection deprecation
                 p.updateInventory();
@@ -485,7 +487,20 @@ public class MainListener implements Listener {
             b.setType(Material.AIR);
         }
     }
-    
+
+    @EventHandler
+    public void onPlayerCommand(final PlayerCommandPreprocessEvent event) {
+        Player p = event.getPlayer();
+        String cmd = event.getMessage().split(" ")[0].toLowerCase();
+        while(cmd.length() > 0 && cmd.charAt(0) == '/') {
+            cmd = cmd.substring(1);
+        }
+        if(cmd.length() > 0 && Config.deniedCommands.contains(cmd) && Utils.hasAnyTools(p)) {
+            event.setCancelled(true);
+            p.sendMessage(ChatColor.RED + Config.cmdNotAllowed);
+        }
+    }
+
     private ArmorStand getArmorStand(Block b) {
         UUID uuid = null;
         for (MetadataValue value : b.getMetadata("armorStand")) {
@@ -521,6 +536,7 @@ public class MainListener implements Listener {
         attachment.setPermission("astools.ascmd.assign.player", true);
         attachment.setPermission("astools.ascmd.assign.console", true);
         attachment.setPermission("astools.ascmd.execute", true);
+        //attachment.setPermission("astools.bypass-wg-flag", true);
     }*/
 
 }

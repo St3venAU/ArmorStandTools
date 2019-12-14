@@ -27,9 +27,9 @@ class Utils {
         }
         return false;
     }
-    
-    static boolean hasPermissionNode(Player player, String perm) {
-        if ((player == null) || player.isOp()) {
+
+    static boolean hasPermissionNode(Player player, String perm, boolean ignoreOp) {
+        if (!ignoreOp && ((player == null) || player.isOp())) {
             return true;
         }
         if (player.hasPermission(perm)) {
@@ -46,7 +46,11 @@ class Utils {
         return false;
     }
 
-    static boolean hasItems(Player p) {
+    static boolean hasPermissionNode(Player player, String perm) {
+        return hasPermissionNode(player, perm, false);
+    }
+
+    static boolean hasAnyTools(Player p) {
         for(ItemStack i : p.getInventory()) {
             if(ArmorStandTool.isTool(i)) {
                 return true;
@@ -128,5 +132,11 @@ class Utils {
 
     static void actionBarMsg(Player p, String msg) {
         p.sendTitle("", msg, 0, 70, 0);
+    }
+
+    static boolean toggleGlow(ArmorStand as) {
+        boolean glowing = !as.isGlowing();
+        as.setGlowing(glowing);
+        return glowing;
     }
 }

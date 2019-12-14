@@ -103,6 +103,8 @@ class ArmorStandGUI implements Listener {
             case PHEAD:
                 String name = plrHeadName(as);
                 return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (name == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + name)));
+            case GLOW:
+                return Utils.setLore(item, ChatColor.AQUA + Config.glow + ": " + (as.isGlowing() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             default:
                 return item;
         }
@@ -208,6 +210,9 @@ class ArmorStandGUI implements Listener {
                     plugin.pickUpArmorStand(as, p, false);
                     Utils.actionBarMsg(p, Config.carrying);
                 }
+                break;
+            case GLOW:
+                Utils.actionBarMsg(p, Config.glow + ": " + (Utils.toggleGlow(as) ? Config.isOn : Config.isOff));
                 break;
             default:
                 return;

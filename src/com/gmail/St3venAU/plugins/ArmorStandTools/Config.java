@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 class Config {
@@ -38,6 +39,8 @@ class Config {
     static int defaultASCmdCooldownTicks     = 0;
     static boolean ignoreWGForASCmdExecution = false;
 
+    static final ArrayList<String> deniedCommands = new ArrayList<String>();
+
     static String
             invReturned, asDropped, asVisible, isTrue, isFalse,
             carrying, cbCreated, size, small, normal, basePlate,
@@ -51,7 +54,8 @@ class Config {
             assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
             removeCmd, assignConsole, assignPlayer, executeCmdError,
             cmdOnCooldown, cooldownRemovedFrom, isAnInvalidCooldown,
-            cooldownSetTo, ticksFor, setCooldown, removeCooldown;
+            cooldownSetTo, ticksFor, setCooldown, removeCooldown,
+            cmdNotAllowed, glow;
 
     static void reload(Main main) {
         plugin = main;
@@ -122,6 +126,8 @@ class Config {
         ticksFor = languageConfig.getString("ticksFor");
         setCooldown = languageConfig.getString("setCooldown");
         ticksFor = languageConfig.getString("ticksFor");
+        cmdNotAllowed = languageConfig.getString("cmdNotAllowed");
+        glow = languageConfig.getString("glow");
     }
 
     private static void reloadMainConfig() {
@@ -150,6 +156,17 @@ class Config {
         debug                       = config.getBoolean("debug", false);
         plugin.carryingArmorStand.clear();
 
+        deniedCommands.clear();
+        for(String deniedCmd : config.getStringList("deniedCommandsWhileUsingTools")) {
+            deniedCmd = deniedCmd.split(" ")[0].toLowerCase();
+            while(deniedCmd.length() > 0 && deniedCmd.charAt(0) == '/') {
+                deniedCmd = deniedCmd.substring(1);
+            }
+            if(deniedCmd.length() > 0) {
+                deniedCommands.add(deniedCmd);
+            }
+        }
+
         for(ArmorStandTool tool : ArmorStandTool.values()) {
             tool.setEnabled(config);
         }
@@ -168,9 +185,9 @@ class Config {
             plugin.getLogger().log(Level.INFO, "PlotSquared plugin not found. Continuing without PlotSquared support.");
         }
         
-        Plugin worldGuard = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-        if(worldGuard instanceof WorldGuardPlugin) {
-            worldGuardPlugin = (WorldGuardPlugin) worldGuard;
+        Plugin wgp = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+        if(wgp != null && wgp instanceof WorldGuardPlugin) {
+            worldGuardPlugin = (WorldGuardPlugin) wgp;
         }
         if(config.getBoolean("integrateWithWorldGuard")) {
             plugin.getLogger().log(Level.INFO, worldGuardPlugin == null ? "WorldGuard plugin not found. Continuing without WorldGuard support." : "WorldGuard plugin found. WorldGuard support enabled.");
