@@ -138,29 +138,34 @@ class Commands implements CommandExecutor, TabCompleter {
                     p.sendMessage("\n" + Config.assignCmdError + name);
                 }
             } else if(args.length >= 2 && args[0].equalsIgnoreCase("cooldown")) { //ascmd cooldown <ticks>/remove
-                ArmorStandCmd asCmd = new ArmorStandCmd(as);
-                if(asCmd.getCommand() == null) {
-                    p.sendMessage(Config.closestAS + name + Config.hasNoCmd);
-                    return true;
-                }
-                if(args[1].equalsIgnoreCase("remove")) {
-                    asCmd.setCooldownTime(-1);
-                    p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
-                    return true;
+                if (p.hasPermission("astools.ascmd.cooldown")) {
+                    ArmorStandCmd asCmd = new ArmorStandCmd(as);
+                    if(asCmd.getCommand() == null) {
+                        p.sendMessage(Config.closestAS + name + Config.hasNoCmd);
+                        return true;
+                    }
+                    if(args[1].equalsIgnoreCase("remove")) {
+                        asCmd.setCooldownTime(-1);
+                        p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
+                        return true;
+                    } else {
+                        int ticks;
+                        try {
+                            ticks = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException e) {
+                            p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
+                            return true;
+                        }
+                        if(ticks < 0) {
+                            p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
+                            return true;
+                        }
+                        asCmd.setCooldownTime(ticks);
+                        p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
+                        return true;
+                    }
                 } else {
-                    int ticks;
-                    try {
-                        ticks = Integer.parseInt(args[1]);
-                    } catch (NumberFormatException e) {
-                        p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
-                        return true;
-                    }
-                    if(ticks < 0) {
-                        p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
-                        return true;
-                    }
-                    asCmd.setCooldownTime(ticks);
-                    p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
+                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                     return true;
                 }
             } else {
