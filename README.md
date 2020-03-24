@@ -1,3 +1,4 @@
+
 # ArmorStandTools
 A full suite of Armor Stand tools for CraftBukkit/Spigot
 
@@ -70,6 +71,7 @@ Permissions
 - astools.ascmd.remove: Permission to remove a command from an armor stand
 - astools.ascmd.view: Permission to view the command assigned to an armor stand
 - astools.ascmd.execute: Permission to execute a command assigned to an armor stand by (on right click)
+- astools.ascmd.cooldown: Permission to be able to modify cooldown on an armor stand
 - astools.bypass-wg-flag: Permission to bypass the WorldGuard ast flag, allowing the player to use AST even in regions that ast flag is set to deny.
 
 Config
