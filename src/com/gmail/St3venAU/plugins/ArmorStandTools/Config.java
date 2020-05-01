@@ -185,6 +185,20 @@ class Config {
             plugin.getLogger().log(Level.INFO, "PlotSquared plugin not found. Continuing without PlotSquared support.");
         }
         
+        Plugin vehicles = plugin.getServer().getPluginManager().getPlugin("Vehicles");
+        if (vehicles != null && vehicles.isEnabled()) {
+            try {
+                new VehiclesHook(vehicles);
+                plugin.getLogger().log(Level.INFO, "Vehicles plugin was found. Vehicles support enabled.");
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+                plugin.getLogger().log(Level.WARNING, "Vehicles plugin was found, but there was an error initializing Vehicles support.");
+            }
+        } else {
+            plugin.getLogger().log(Level.INFO, "Vehicles plugin not found. Continuing without Vehicles support.");
+        }
+        
         Plugin wgp = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
         if(wgp != null && wgp instanceof WorldGuardPlugin) {
             worldGuardPlugin = (WorldGuardPlugin) wgp;

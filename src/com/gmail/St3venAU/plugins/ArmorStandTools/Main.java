@@ -200,6 +200,7 @@ public class Main extends JavaPlugin {
                 return PlotSquaredHook.checkPermission(p, l);
             }
         }
+        
         if(Config.worldGuardPlugin != null) {
             if(!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
                 return false;
@@ -210,7 +211,16 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);
         return !breakEvent.isCancelled();
     }
-
+    
+    boolean checkArmorStandPermission(Player p, ArmorStand as) {
+        if (VehiclesHook.plugin != null) {
+        	if(VehiclesHook.isVehicleArmorStand(as)) {
+        		return false;
+        	}
+        }
+        return true;
+    }
+    
     private boolean getWorldGuardAstFlag(Location l) {
         RegionManager regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(l.getWorld()));
         if(regions == null) return true;
