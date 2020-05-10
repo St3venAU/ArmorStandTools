@@ -172,7 +172,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        b.setType(Material.OAK_WALL_SIGN);
+        b.setType(Material.OAK_SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setName", new FixedMetadataValue(this, true));
@@ -184,7 +184,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        b.setType(Material.OAK_WALL_SIGN);
+        b.setType(Material.OAK_SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));
