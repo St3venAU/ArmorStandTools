@@ -4,7 +4,7 @@ version: 3.5.0
 api-version: 1.15
 author: St3venAU
 description: Armor stand manipulation tools
-softdepend: [WorldGuard, PlotSquared]
+softdepend: [WorldGuard, PlotSquared, Vehicles]
 commands:
    astools:
       description: Give yourself the armor stand tools

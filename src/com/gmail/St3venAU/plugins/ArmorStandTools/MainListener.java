@@ -58,9 +58,14 @@ public class MainListener implements Listener {
         if(event.getRightClicked() instanceof ArmorStand) {
             Player p = event.getPlayer();
             ArmorStand as = (ArmorStand) event.getRightClicked();
+
             if(!event.isCancelled() && ArmorStandGUI.isInUse(as)) {
                 Utils.actionBarMsg(p, Config.guiInUse);
                 event.setCancelled(true);
+                return;
+            }
+            if(!event.isCancelled() && !plugin.checkArmorStandPermission(p, as)) {
+            	event.setCancelled(true);
                 return;
             }
             if(!event.isCancelled() && plugin.carryingArmorStand.containsKey(p.getUniqueId())) {
@@ -368,10 +373,14 @@ public class MainListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof ArmorStand) {
             ArmorStand as = (ArmorStand) event.getEntity();
+
             if(ArmorStandGUI.isInUse(as) || as.isInvulnerable()) {
                 event.setCancelled(true);
             }
             if(event.getDamager() instanceof Player && ArmorStandTool.isHoldingTool((Player) event.getDamager())) {
+                if(!plugin.checkArmorStandPermission((Player)event.getDamager(), as)) {
+                	return;
+                }
                 event.setCancelled(true);
                 if(noCooldown(event.getDamager())) {
                     Utils.cycleInventory((Player) event.getDamager());
@@ -424,7 +433,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block b = event.getBlock();
-        if((b.getType() == Material.PLAYER_HEAD && b.hasMetadata("protected")) || (b.getType() == Material.SIGN && b.hasMetadata("armorStand"))) {
+        if((b.getType() == Material.PLAYER_HEAD && b.hasMetadata("protected")) || (b.getType().toString().endsWith("_SIGN") && b.hasMetadata("armorStand"))) {
             event.setCancelled(true);
         }
     }
