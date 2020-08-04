@@ -424,7 +424,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block b = event.getBlock();
-        if((b.getType() == Material.PLAYER_HEAD && b.hasMetadata("protected")) || (b.getType() == Material.SIGN && b.hasMetadata("armorStand"))) {
+        if((b.getType() == Material.PLAYER_HEAD && b.hasMetadata("protected")) || (b.getType() == Material.OAK_SIGN && b.hasMetadata("armorStand"))) {
             event.setCancelled(true);
         }
     }
