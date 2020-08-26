@@ -10,8 +10,8 @@
 
 <repositories>
     <repository>
-        <id>paper-repo</id>
-        <url>https://papermc.io/repo/repository/maven-public</url>
+        <id>spigot-repo</id>
+        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <!-- WorldEdit -->
     <repository>
@@ -28,8 +28,8 @@
 <dependencies>
     <dependency>
         <groupId>org.spigotmc</groupId>
-        <artifactId>spigot</artifactId>
-        <version>1.16.1-R0.1-SNAPSHOT</version>
+        <artifactId>spigot-api</artifactId>
+        <version>1.16.2-R0.1-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
     <dependency>
