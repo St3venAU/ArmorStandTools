@@ -1,10 +1,9 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
-import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
-import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
-import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotArea;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -25,7 +24,10 @@ class PlotSquaredHook {
     }
 
     public static boolean checkPermission(Player player, Location location) {
-        com.github.intellectualsites.plotsquared.plot.object.Location plotLocation = BukkitUtil.getLocation(location);
+        com.plotsquared.core.location.Location plotLocation = new com.plotsquared.core.location.Location(location.getWorld().getName(),
+                                                                                                         location.getBlockX(),
+                                                                                                         location.getBlockY(),
+                                                                                                         location.getBlockZ());
         PlotArea plotArea = plotLocation.getPlotArea();
         if(plotArea == null) {
             plugin.debug("plots.admin.build.road: " + player.hasPermission("plots.admin.build.road"));

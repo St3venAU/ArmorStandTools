@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
-    private static final String LATEST_VERSION = "v1_14_R1";
+    private static final String LATEST_VERSION = "v1_16_R4";
 
     private static Object WG_AST_FLAG;
 
@@ -172,7 +173,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        b.setType(Material.SIGN);
+        b.setType(Material.OAK_SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setName", new FixedMetadataValue(this, true));
@@ -184,7 +185,7 @@ public class Main extends JavaPlugin {
             p.sendMessage(ChatColor.RED + Config.noAirError);
             return;
         }
-        b.setType(Material.SIGN);
+        b.setType(Material.OAK_SIGN);
         nms.openSign(p, b);
         b.setMetadata("armorStand", new FixedMetadataValue(this, as.getUniqueId()));
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));
@@ -212,9 +213,14 @@ public class Main extends JavaPlugin {
     }
 
     private boolean getWorldGuardAstFlag(Location l) {
-        RegionManager regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(l.getWorld()));
-        if(regions == null) return true;
-        return regions.getApplicableRegions(BukkitAdapter.asBlockVector(l)).testState(null, (StateFlag) WG_AST_FLAG);
+        if (l != null) {
+            RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regions = regionContainer.get(BukkitAdapter.adapt(l.getWorld()));
+            if (regions == null) return true;
+            return regions.getApplicableRegions(BukkitAdapter.asBlockVector(l)).testState(null, (StateFlag) WG_AST_FLAG);
+        } else {
+            return false;
+        }
     }
 
     boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {

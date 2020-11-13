@@ -165,10 +165,10 @@ abstract class NMS {
                 + (as.getCustomName() == null      ? ""                     : ("CustomName:\"\\\"" + as.getCustomName() + "\\\"\",")          )
                 + (as.getLocation().getYaw() == 0F ? ""                     : ("Rotation:[" + Utils.twoDec(as.getLocation().getYaw()) + "f],"))
                 + "ArmorItems:["
-                    + (as.getBoots()      == null ? "{}," : ("{id:" + as.getBoots().getType().getKey().getKey()      + ",Count:" + as.getBoots().getAmount()      + ",tag:{Damage:" + as.getBoots().getDurability()      + getItemStackTags(as.getBoots())                               + "}},"))
-                    + (as.getLeggings()   == null ? "{}," : ("{id:" + as.getLeggings().getType().getKey().getKey()   + ",Count:" + as.getLeggings().getAmount()   + ",tag:{Damage:" + as.getLeggings().getDurability()   + getItemStackTags(as.getLeggings())                            + "}},"))
-                    + (as.getChestplate() == null ? "{}," : ("{id:" + as.getChestplate().getType().getKey().getKey() + ",Count:" + as.getChestplate().getAmount() + ",tag:{Damage:" + as.getChestplate().getDurability() + getItemStackTags(as.getChestplate())                          + "}},"))
-                    + (as.getHelmet()     == null ? "{}"  : ("{id:" + as.getHelmet().getType().getKey().getKey()     + ",Count:" + as.getHelmet().getAmount()     + ",tag:{Damage:" + as.getHelmet().getDurability()     + getItemStackTags(as.getHelmet()) + skullOwner(as.getHelmet()) + "}}" ))
+                    + (as.getEquipment() != null && as.getEquipment().getBoots()      == null ? "{}," : ("{id:" + as.getEquipment().getBoots().getType().getKey().getKey()      + ",Count:" + as.getEquipment().getBoots().getAmount()      + ",tag:{Damage:" + as.getEquipment().getBoots().getDurability()      + getItemStackTags(as.getEquipment().getBoots())                                              + "}},"))
+                    + (as.getEquipment() != null && as.getEquipment().getLeggings()   == null ? "{}," : ("{id:" + as.getEquipment().getLeggings().getType().getKey().getKey()   + ",Count:" + as.getEquipment().getLeggings().getAmount()   + ",tag:{Damage:" + as.getEquipment().getLeggings().getDurability()   + getItemStackTags(as.getEquipment().getLeggings())                                           + "}},"))
+                    + (as.getEquipment() != null && as.getEquipment().getChestplate() == null ? "{}," : ("{id:" + as.getEquipment().getChestplate().getType().getKey().getKey() + ",Count:" + as.getEquipment().getChestplate().getAmount() + ",tag:{Damage:" + as.getEquipment().getChestplate().getDurability() + getItemStackTags(as.getEquipment().getChestplate())                                         + "}},"))
+                    + (as.getEquipment() != null && as.getEquipment().getHelmet()     == null ? "{}"  : ("{id:" + as.getEquipment().getHelmet().getType().getKey().getKey()     + ",Count:" + as.getEquipment().getHelmet().getAmount()     + ",tag:{Damage:" + as.getEquipment().getHelmet().getDurability()     + getItemStackTags(as.getEquipment().getHelmet()) + skullOwner(as.getEquipment().getHelmet()) + "}}" ))
                 + "],"
                 + "HandItems:["
                     + (as.getEquipment().getItemInMainHand() == null ? "{}," : ("{id:" + as.getEquipment().getItemInMainHand().getType().getKey().getKey() + ",Count:" + as.getEquipment().getItemInMainHand().getAmount() + ",tag:{Damage:" + as.getEquipment().getItemInMainHand().getDurability() + getItemStackTags(as.getEquipment().getItemInMainHand()) + "}},"))
@@ -190,10 +190,10 @@ abstract class NMS {
     ArmorStand clone(ArmorStand as) {
         ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
         clone.setGravity(as.hasGravity());
-        clone.setHelmet(as.getHelmet());
-        clone.setChestplate(as.getChestplate());
-        clone.setLeggings(as.getLeggings());
-        clone.setBoots(as.getBoots());
+        clone.getEquipment().setHelmet(as.getEquipment().getHelmet());
+        clone.getEquipment().setChestplate(as.getEquipment().getChestplate());
+        clone.getEquipment().setLeggings(as.getEquipment().getLeggings());
+        clone.getEquipment().setBoots(as.getEquipment().getBoots());
         clone.getEquipment().setItemInMainHand(as.getEquipment().getItemInMainHand());
         clone.getEquipment().setItemInOffHand(as.getEquipment().getItemInOffHand());
         clone.setHeadPose(as.getHeadPose());
