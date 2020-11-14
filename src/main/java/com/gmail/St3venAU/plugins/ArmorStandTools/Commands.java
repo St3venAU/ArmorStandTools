@@ -36,11 +36,7 @@ class Commands implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length == 0) {
-                if (plugin.savedInventories.containsKey(p.getUniqueId())) {
-                    plugin.revokeToolsSoft(p);
-                } else {
-                    plugin.giveTools(p);
-                }
+                plugin.toggleTools(p);
                 return true;
             }
             if (args[0].equalsIgnoreCase("reload")) {

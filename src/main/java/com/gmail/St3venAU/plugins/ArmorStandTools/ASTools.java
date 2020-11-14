@@ -151,6 +151,42 @@ public class ASTools extends JavaPlugin {
     }
 
     /**
+     * Toggles whether the player in question has tools active, and upon completion
+     * returns the result of toggling. False being that the tools have been revoked,
+     * and True being that the tools have been added.
+     * @param p The player in question.
+     * @param hard Whether or not to use the hard method if revoking tools.
+     * @return The toggle result.
+     */
+    public boolean toggleTools(Player p, boolean hard) {
+        if (savedInventories.containsKey(p.getUniqueId())) {
+            if (hard) {
+                revokeToolsHard(p);
+            } else {
+                revokeToolsSoft(p);
+            }
+            return false;
+        } else {
+            giveTools(p);
+            return true;
+        }
+    }
+
+    /**
+     * Saves the given player's inventory, clears it, then gives them the ASTools.
+     * If the player already has ASTools this will do nothing.
+     * @param p The player in question.
+     */
+    public void giveTools(Player p) {
+        if (!savedInventories.containsKey(p.getUniqueId())) {
+            saveInventoryAndClear(p);
+            ArmorStandTool.give(p);
+            p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
+            p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
+        }
+    }
+
+    /**
      * Restores the inventory of the player in question while keeping any non-tool
      * items the player had in their inventory. If restoring creates too many then
      * it drops the extra on the ground.
@@ -190,19 +226,6 @@ public class ASTools extends JavaPlugin {
         }
         savedInventories.remove(uuid);
         p.sendMessage(ChatColor.GREEN + Config.invReturned);
-    }
-
-    /**
-     * Saves the given player's inventory, clears it, then gives them the ASTools.
-     * @param p The player in question.
-     */
-    public void giveTools(Player p) {
-        if (!savedInventories.containsKey(p.getUniqueId())) {
-            saveInventoryAndClear(p);
-            ArmorStandTool.give(p);
-            p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
-            p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
-        }
     }
 
     protected void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
