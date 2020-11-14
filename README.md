@@ -76,3 +76,7 @@ Config
 ------
 - config.yml - The main config file allows you to set the default starting settings for newly summoned armor stands. This is useful if you plan on creating a lot of armor stands with similar equipment.
 - language.yml - Contains all of the strings of text that the player will see. Edit this file if you wish to change the text or translate it into a different language.
+
+Plugin Hooks
+------
+If you wish to hook in and control parts of ASTools directly you simply need to import it as a dependency to your plugin and grab an instance. This can be done with `ASTools.get()`, and from there you can add tools, remove tools, and toggle tools. Currently plugin hooks are rather shallow as they are a new feature. If you have any specific requests please do use the issue tracker on GitHub to request them.
