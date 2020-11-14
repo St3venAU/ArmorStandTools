@@ -5,7 +5,7 @@
 <modelVersion>4.0.0</modelVersion>
 <groupId>com.gmail.St3venAU.plugins</groupId>
 <artifactId>ArmorStandTools</artifactId>
-<version>3.7.0</version>
+<version>3.7.1</version>
 <name>ArmorStandTools</name>
 
 <repositories>
@@ -35,7 +35,7 @@
     <dependency>
         <groupId>com.sk89q.worldguard</groupId>
         <artifactId>worldguard-bukkit</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.4</version>
         <scope>provided</scope>
     </dependency>
     <dependency>
@@ -48,7 +48,7 @@
     <dependency>
         <groupId>com.plotsquared</groupId>
         <artifactId>PlotSquared-Core</artifactId>
-        <version>5.13.0</version>
+        <version>5.13.3</version>
     </dependency>
 </dependencies>
 
