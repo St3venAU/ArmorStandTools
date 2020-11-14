@@ -44,12 +44,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class MainListener implements Listener {
+public class ASToolsListener implements Listener {
 
     private final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
-    private final Main plugin;
+    private final ASTools plugin;
 
-    MainListener(Main main) {
+    ASToolsListener(ASTools main) {
         this.plugin = main;
     }
 
@@ -237,12 +237,12 @@ public class MainListener implements Listener {
                 plugin.returnArmorStand(plugin.carryingArmorStand.get(uuid));
                 plugin.carryingArmorStand.remove(uuid);
                 if (plugin.savedInventories.containsKey(uuid)) {
-                    plugin.restoreInventory(p);
+                    plugin.restoreInventorySoft(p);
                 }
             }
         }
         if(Config.deactivateOnWorldChange && !sameWorld && plugin.savedInventories.containsKey(p.getUniqueId())) {
-            plugin.restoreInventory(p);
+            plugin.restoreInventorySoft(p);
         }
     }
 
@@ -322,7 +322,7 @@ public class MainListener implements Listener {
             plugin.carryingArmorStand.remove(uuid);
         }
         if(plugin.savedInventories.containsKey(uuid)) {
-            plugin.restoreInventory(event.getPlayer());
+            plugin.restoreInventorySoft(event.getPlayer());
         }
     }
 
@@ -417,7 +417,7 @@ public class MainListener implements Listener {
             as.setCustomName(Config.defaultName);
             as.setCustomNameVisible(true);
         }
-        Main.nms.setSlotsDisabled(as, Config.equipmentLock);
+        ASTools.nms.setSlotsDisabled(as, Config.equipmentLock);
         return as;
     }
 

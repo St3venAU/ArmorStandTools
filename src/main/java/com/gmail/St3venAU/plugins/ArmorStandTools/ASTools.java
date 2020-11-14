@@ -23,18 +23,18 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Main extends JavaPlugin {
+public class ASTools extends JavaPlugin {
 
     private static final String LATEST_VERSION = "v1_16_R4";
 
     private static Object WG_AST_FLAG;
 
-    static NMS nms;
+    protected static NMS nms;
 
-    final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
-    final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
+    protected final HashMap<UUID, ArmorStand> carryingArmorStand = new HashMap<UUID, ArmorStand>();
+    protected final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<UUID, ItemStack[]>();
 
-    static Main plugin;
+    protected static ASTools plugin;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -61,7 +61,7 @@ public class Main extends JavaPlugin {
             setEnabled(false);
             return;
         }
-        getServer().getPluginManager().registerEvents(new  MainListener(this), this);
+        getServer().getPluginManager().registerEvents(new ASToolsListener(this), this);
         Commands cmds = new Commands(this);
         getCommand("astools").setExecutor(cmds);
         getCommand("ascmd").setExecutor(cmds);
@@ -79,10 +79,18 @@ public class Main extends JavaPlugin {
         for(UUID uuid : savedInventories.keySet()) {
             p = getServer().getPlayer(uuid);
             if(p != null && p.isOnline()) {
-                restoreInventory(p);
+                restoreInventorySoft(p);
             }
         }
         savedInventories.clear();
+    }
+
+    /**
+     * @return The current instance of ASTools for hooking into the
+     * {@link #restoreInventorySoft(Player)} and {@link #restoreInventoryHard(Player)} methods.
+     */
+    public static ASTools get() {
+        return plugin;
     }
 
     private boolean loadSpigotVersionSupport() {
@@ -116,7 +124,7 @@ public class Main extends JavaPlugin {
         return true;
     }
 
-    void returnArmorStand(ArmorStand as) {
+    protected void returnArmorStand(ArmorStand as) {
         if(as.hasMetadata("startLoc")) {
             for (MetadataValue value : as.getMetadata("startLoc")) {
                 if (value.getOwningPlugin() == this) {
@@ -136,14 +144,19 @@ public class Main extends JavaPlugin {
         }
     }
 
-    void saveInventoryAndClear(Player p) {
+    protected void saveInventoryAndClear(Player p) {
         ItemStack[] inv = p.getInventory().getContents().clone();
         savedInventories.put(p.getUniqueId(), inv);
         p.getInventory().clear();
     }
 
-    void restoreInventory(Player p) {
-        removeAllTools(p);
+    /**
+     * Restores the inventory of the player in question while keeping any non-tool
+     * items the player had in their inventory. If restoring creates too many then
+     * it drops the extra on the ground.
+     * @param p The player in question.
+     */
+    public void restoreInventorySoft(Player p) {
         UUID uuid = p.getUniqueId();
         ItemStack[] savedInv = savedInventories.get(uuid);
         if(savedInv == null) return;
@@ -161,13 +174,30 @@ public class Main extends JavaPlugin {
         p.sendMessage(ChatColor.GREEN + Config.invReturned);
     }
 
-    void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
+    /**
+     * Restores the inventory of the player in question, destroying all items
+     * spawned or collected while in their ASTools inventory.
+     * @param p The player in question.
+     */
+    public void restoreInventoryHard(Player p) {
+        UUID uuid = p.getUniqueId();
+        ItemStack[] savedInv = savedInventories.get(uuid);
+        if(savedInv != null) {
+            p.getInventory().setContents(savedInv);
+        } else {
+            removeAllTools(p);
+        }
+        savedInventories.remove(uuid);
+        p.sendMessage(ChatColor.GREEN + Config.invReturned);
+    }
+
+    protected void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
         carryingArmorStand.put(p.getUniqueId(), as);
         if(newlySummoned) return;
         as.setMetadata("startLoc", new FixedMetadataValue(this, as.getLocation()));
     }
 
-    void setName(Player p, ArmorStand as) {
+    protected void setName(Player p, ArmorStand as) {
         Block b = Utils.findAnAirBlock(p.getLocation());
         if(b == null) {
             p.sendMessage(ChatColor.RED + Config.noAirError);
@@ -179,7 +209,7 @@ public class Main extends JavaPlugin {
         b.setMetadata("setName", new FixedMetadataValue(this, true));
     }
 
-    void setPlayerSkull(Player p, ArmorStand as) {
+    protected void setPlayerSkull(Player p, ArmorStand as) {
         Block b = Utils.findAnAirBlock(p.getLocation());
         if(b == null) {
             p.sendMessage(ChatColor.RED + Config.noAirError);
@@ -191,7 +221,7 @@ public class Main extends JavaPlugin {
         b.setMetadata("setSkull", new FixedMetadataValue(this, true));
     }
 
-    boolean checkBlockPermission(Player p, Block b) {
+    protected boolean checkBlockPermission(Player p, Block b) {
         if(b == null) return true;
         debug("PlotSquaredHook.api: " + PlotSquaredHook.api);
         if (PlotSquaredHook.api != null) {
@@ -223,7 +253,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+    protected boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
         debug("tool: " + tool);
         if(tool != null) {
             debug("en: " + tool.isEnabled());
@@ -232,7 +262,7 @@ public class Main extends JavaPlugin {
         return (tool == null || (tool.isEnabled() && Utils.hasPermissionNode(p, tool.getPermission()))) && checkBlockPermission(p, b);
     }
 
-    void debug(String msg) {
+    protected void debug(String msg) {
         if(Config.debug) {
             getLogger().log(Level.INFO, "[DEBUG] " + msg);
         }

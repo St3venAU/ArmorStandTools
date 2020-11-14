@@ -54,7 +54,7 @@ abstract class NMS {
                     e.printStackTrace();
                 }
             }
-        }.runTaskLater(Main.plugin, 2L);
+        }.runTaskLater(ASTools.plugin, 2L);
     }
 
     boolean toggleSlotsDisabled(ArmorStand as) {

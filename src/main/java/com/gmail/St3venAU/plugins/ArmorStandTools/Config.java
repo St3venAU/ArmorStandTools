@@ -16,7 +16,7 @@ import java.util.logging.Level;
 
 class Config {
 
-    private static Main plugin;
+    private static ASTools plugin;
     private static File languageConfigFile;
     private static FileConfiguration languageConfig;
 
@@ -57,7 +57,7 @@ class Config {
             cooldownSetTo, ticksFor, setCooldown, removeCooldown,
             cmdNotAllowed, glow;
 
-    static void reload(Main main) {
+    static void reload(ASTools main) {
         plugin = main;
         reload();
     }

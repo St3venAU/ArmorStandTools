@@ -30,9 +30,9 @@ class ArmorStandGUI implements Listener {
 
     private Inventory i;
     private ArmorStand as;
-    private Main plugin;
+    private ASTools plugin;
 
-    ArmorStandGUI(Main plugin, ArmorStand as, Player p) {
+    ArmorStandGUI(ASTools plugin, ArmorStand as, Player p) {
         if(isInUse(as)) {
             p.sendMessage(ChatColor.RED + Config.guiInUse);
             return;
@@ -97,7 +97,7 @@ class ArmorStandGUI implements Listener {
             case INVUL:
                 return Utils.setLore(item, ChatColor.AQUA + Config.invul + ": " + (as.isInvulnerable() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
             case SLOTS:
-                return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (Main.nms.equipmentLocked(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
+                return Utils.setLore(item, ChatColor.AQUA + Config.equip + ": " + (ASTools.nms.equipmentLocked(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
             case NAME:
                 return Utils.setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + as.getCustomName())));
             case PHEAD:
@@ -159,14 +159,14 @@ class ArmorStandGUI implements Listener {
                 break;
             case CLONE:
                 p.closeInventory();
-                plugin.pickUpArmorStand(Main.nms.clone(as), p, true);
+                plugin.pickUpArmorStand(ASTools.nms.clone(as), p, true);
                 Utils.actionBarMsg(p, Config.carrying);
                 break;
             case SAVE:
                 if(Config.requireCreative && p.getGameMode() != GameMode.CREATIVE) {
                     p.sendMessage(ChatColor.RED + Config.creativeRequired);
                 } else {
-                    Main.nms.generateCmdBlock(p.getLocation(), as);
+                    ASTools.nms.generateCmdBlock(p.getLocation(), as);
                     Utils.actionBarMsg(p, Config.cbCreated);
                 }
                 break;
@@ -198,7 +198,7 @@ class ArmorStandGUI implements Listener {
                 Utils.actionBarMsg(p, Config.invul + ": " + (Utils.toggleInvulnerability(as) ? Config.isOn : Config.isOff));
                 break;
             case SLOTS:
-                Utils.actionBarMsg(p, Config.equip + ": " + (Main.nms.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
+                Utils.actionBarMsg(p, Config.equip + ": " + (ASTools.nms.toggleSlotsDisabled(as) ? Config.locked : Config.unLocked));
                 break;
             case MOVE:
                 p.closeInventory();

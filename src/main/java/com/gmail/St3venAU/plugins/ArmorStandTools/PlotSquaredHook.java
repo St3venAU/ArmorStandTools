@@ -12,9 +12,9 @@ import java.util.UUID;
 class PlotSquaredHook {
     
     public static PlotAPI api;
-    private static Main plugin;
+    private static ASTools plugin;
     
-    public PlotSquaredHook(Main main) {
+    public PlotSquaredHook(ASTools main) {
         PlotSquaredHook.api = new PlotAPI();
         plugin = main;
     }

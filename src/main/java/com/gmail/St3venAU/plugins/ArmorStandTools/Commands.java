@@ -16,9 +16,9 @@ import java.util.UUID;
 
 class Commands implements CommandExecutor, TabCompleter {
 
-    private final Main plugin;
+    private final ASTools plugin;
 
-    Commands(Main main) {
+    Commands(ASTools main) {
         this.plugin = main;
     }
 
@@ -38,7 +38,7 @@ class Commands implements CommandExecutor, TabCompleter {
             if (args.length == 0) {
                 UUID uuid = p.getUniqueId();
                 if (plugin.savedInventories.containsKey(uuid)) {
-                    plugin.restoreInventory(p);
+                    plugin.restoreInventorySoft(p);
                     return true;
                 } else {
                     plugin.saveInventoryAndClear(p);

@@ -116,13 +116,13 @@ class ArmorStandCmd {
             cooldownTime = Config.defaultASCmdCooldownTicks;
         }
         if(cooldownTime < 1) return;
-        armorStand.setMetadata("ast-cmd-cooldown", new FixedMetadataValue(Main.plugin, true));
+        armorStand.setMetadata("ast-cmd-cooldown", new FixedMetadataValue(ASTools.plugin, true));
         new BukkitRunnable() {
             @Override
             public void run() {
-                armorStand.removeMetadata("ast-cmd-cooldown", Main.plugin);
+                armorStand.removeMetadata("ast-cmd-cooldown", ASTools.plugin);
             }
-        }.runTaskLater(Main.plugin, cooldownTime);
+        }.runTaskLater(ASTools.plugin, cooldownTime);
     }
 
     private boolean isOnCooldown() {
