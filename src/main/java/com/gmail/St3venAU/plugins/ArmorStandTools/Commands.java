@@ -39,24 +39,22 @@ class Commands implements CommandExecutor, TabCompleter {
                 UUID uuid = p.getUniqueId();
                 if (plugin.savedInventories.containsKey(uuid)) {
                     plugin.restoreInventorySoft(p);
-                    return true;
                 } else {
                     plugin.saveInventoryAndClear(p);
                     ArmorStandTool.give(p);
                     p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
                     p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
-                    return true;
                 }
+                return true;
             }
             if (args[0].equalsIgnoreCase("reload")) {
                 if (Utils.hasPermissionNode(p, "astools.reload")) {
                     Config.reload();
                     p.sendMessage(ChatColor.GREEN + Config.conReload);
-                    return true;
                 } else {
                     p.sendMessage(ChatColor.RED + Config.noRelPerm);
-                    return true;
                 }
+                return true;
             }
         } else if(cmd.equals("ascmd")) {
             ArmorStand as = getNearbyArmorStand(p);
@@ -146,7 +144,6 @@ class Commands implements CommandExecutor, TabCompleter {
                 if(args[1].equalsIgnoreCase("remove")) {
                     asCmd.setCooldownTime(-1);
                     p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
-                    return true;
                 } else {
                     int ticks;
                     try {
@@ -161,8 +158,8 @@ class Commands implements CommandExecutor, TabCompleter {
                     }
                     asCmd.setCooldownTime(ticks);
                     p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
-                    return true;
                 }
+                return true;
             } else {
                 ascmdHelp(p);
                 return true;
