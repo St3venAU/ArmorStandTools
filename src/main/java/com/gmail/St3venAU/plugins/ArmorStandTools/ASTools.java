@@ -150,6 +150,13 @@ public class ASTools extends JavaPlugin {
         p.getInventory().clear();
     }
 
+    private void giveToolsUnsafe(Player p) {
+        saveInventoryAndClear(p);
+        ArmorStandTool.give(p);
+        p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
+        p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
+    }
+
     /**
      * Toggles whether the player in question has tools active, and upon completion
      * returns the result of toggling. False being that the tools have been revoked,
@@ -167,7 +174,7 @@ public class ASTools extends JavaPlugin {
             }
             return false;
         } else {
-            giveTools(p);
+            giveToolsUnsafe(p);
             return true;
         }
     }
@@ -179,10 +186,7 @@ public class ASTools extends JavaPlugin {
      */
     public void giveTools(Player p) {
         if (!savedInventories.containsKey(p.getUniqueId())) {
-            saveInventoryAndClear(p);
-            ArmorStandTool.give(p);
-            p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
-            p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
+            giveToolsUnsafe(p);
         }
     }
 
