@@ -36,7 +36,7 @@ class Commands implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length == 0) {
-                plugin.toggleTools(p);
+                plugin.toggleTools(p, false);
                 return true;
             }
             if (args[0].equalsIgnoreCase("reload")) {
