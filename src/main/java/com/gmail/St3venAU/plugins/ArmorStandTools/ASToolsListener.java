@@ -237,12 +237,12 @@ public class ASToolsListener implements Listener {
                 plugin.returnArmorStand(plugin.carryingArmorStand.get(uuid));
                 plugin.carryingArmorStand.remove(uuid);
                 if (plugin.savedInventories.containsKey(uuid)) {
-                    plugin.restoreInventorySoft(p);
+                    plugin.revokeToolsSoft(p);
                 }
             }
         }
         if(Config.deactivateOnWorldChange && !sameWorld && plugin.savedInventories.containsKey(p.getUniqueId())) {
-            plugin.restoreInventorySoft(p);
+            plugin.revokeToolsSoft(p);
         }
     }
 
@@ -322,7 +322,7 @@ public class ASToolsListener implements Listener {
             plugin.carryingArmorStand.remove(uuid);
         }
         if(plugin.savedInventories.containsKey(uuid)) {
-            plugin.restoreInventorySoft(event.getPlayer());
+            plugin.revokeToolsSoft(event.getPlayer());
         }
     }
 

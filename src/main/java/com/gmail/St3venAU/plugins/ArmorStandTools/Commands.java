@@ -36,9 +36,8 @@ class Commands implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length == 0) {
-                UUID uuid = p.getUniqueId();
-                if (plugin.savedInventories.containsKey(uuid)) {
-                    plugin.restoreInventorySoft(p);
+                if (plugin.savedInventories.containsKey(p.getUniqueId())) {
+                    plugin.revokeToolsSoft(p);
                 } else {
                     plugin.giveTools(p);
                 }
