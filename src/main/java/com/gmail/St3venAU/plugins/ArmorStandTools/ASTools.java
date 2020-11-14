@@ -191,6 +191,17 @@ public class ASTools extends JavaPlugin {
         p.sendMessage(ChatColor.GREEN + Config.invReturned);
     }
 
+    /**
+     * Saves the given player's inventory, clears it, then gives them the ASTools.
+     * @param p The player in question.
+     */
+    public void giveTools(Player p) {
+        saveInventoryAndClear(p);
+        ArmorStandTool.give(p);
+        p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
+        p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
+    }
+
     protected void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
         carryingArmorStand.put(p.getUniqueId(), as);
         if(newlySummoned) return;

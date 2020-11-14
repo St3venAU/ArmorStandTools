@@ -40,10 +40,7 @@ class Commands implements CommandExecutor, TabCompleter {
                 if (plugin.savedInventories.containsKey(uuid)) {
                     plugin.restoreInventorySoft(p);
                 } else {
-                    plugin.saveInventoryAndClear(p);
-                    ArmorStandTool.give(p);
-                    p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
-                    p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
+                    plugin.giveTools(p);
                 }
                 return true;
             }
