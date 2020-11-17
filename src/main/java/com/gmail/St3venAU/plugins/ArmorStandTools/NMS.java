@@ -18,13 +18,12 @@ import java.util.Map;
 
 abstract class NMS {
 
-    private final String
-            nmsVersion,
-            disabledSlotsFieldName;
+    private final String nmsVersion;
+    private final String[] disabledSlotsFieldNames;
 
-    NMS(String nmsVersion, String disabledSlotsFieldName) {
+    NMS(String nmsVersion, String... disabledSlotsFieldNames) {
         this.nmsVersion = nmsVersion;
-        this.disabledSlotsFieldName = disabledSlotsFieldName;
+        this.disabledSlotsFieldNames = disabledSlotsFieldNames;
     }
 
     private Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
@@ -63,17 +62,24 @@ abstract class NMS {
         return slotsDisabled;
     }
 
+    private Field getDisabledSlotsField(Object nmsEntity) {
+        if(nmsEntity == null) return null;
+        for(String field : disabledSlotsFieldNames) {
+            try {
+                Field f = nmsEntity.getClass().getDeclaredField(field);
+                f.setAccessible(true);
+                return f;
+            } catch (NoSuchFieldException e) {
+            }
+        }
+        return null;
+    }
+
     private int getDisabledSlots(ArmorStand as) {
         Object nmsEntity = getNmsEntity(as);
         if(nmsEntity == null) return 0;
-        Field f;
-        try {
-            f = nmsEntity.getClass().getDeclaredField(disabledSlotsFieldName);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        f.setAccessible(true);
+        Field f = getDisabledSlotsField(nmsEntity);
+        if(f == null) return 0;
         try {
             return (Integer) f.get(nmsEntity);
         } catch (IllegalAccessException e) {
@@ -85,14 +91,7 @@ abstract class NMS {
     void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
         Object nmsEntity = getNmsEntity(as);
         if (nmsEntity == null) return;
-        Field f;
-        try {
-            f = nmsEntity.getClass().getDeclaredField(disabledSlotsFieldName);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return;
-        }
-        f.setAccessible(true);
+        Field f = getDisabledSlotsField(nmsEntity);
         try {
             f.set(nmsEntity, slotsDisabled ? 0xFFFFFF : 0);
         } catch (IllegalAccessException e) {
