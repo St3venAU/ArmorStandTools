@@ -195,6 +195,19 @@ class Config {
             plugin.getLogger().log(Level.WARNING, "WorldGuard plugin was found, but integrateWithWorldGuard is set to false in config.yml. Continuing without WorldGuard support.");
             worldGuardPlugin = null;
         }
+
+        Plugin chestShop = plugin.getServer().getPluginManager().getPlugin("ChestShop");
+        if (chestShop != null && chestShop.isEnabled()) {
+            try {
+                new ChestShopHook(plugin);
+                plugin.getLogger().log(Level.INFO, "ChestShop plugin was found. ChestShop support enabled.");
+            } catch (Throwable e) {
+                e.printStackTrace();
+                plugin.getLogger().log(Level.WARNING, "ChestShop plugin was found, but there was an error initializing ChestShop support.");
+            }
+        } else {
+            plugin.getLogger().log(Level.INFO, "ChestShop plugin not found. Continuing without ChestShop support.");
+        }
     }
 
     private static void reloadLanguageConfig() {

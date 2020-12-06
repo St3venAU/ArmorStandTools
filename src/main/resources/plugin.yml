@@ -4,7 +4,7 @@ version: ${project.version}
 api-version: 1.13
 author: St3venAU
 description: Armor stand manipulation tools
-softdepend: [WorldGuard, PlotSquared]
+softdepend: [WorldGuard, PlotSquared, Chestshop]
 commands:
    astools:
       description: Give yourself the armor stand tools
