@@ -256,7 +256,7 @@ public class Main extends JavaPlugin {
                 return PlotSquaredHook.checkPermission(p, l);
             }
         }
-        if (Config.worldGuardPlugin != null) {
+        if (Config.worldGuardPlugin != null && TownyAPI.getInstance() == null) {
 
             if (!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
                 return false;
