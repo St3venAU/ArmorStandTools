@@ -215,15 +215,39 @@ public class Main extends JavaPlugin {
         if (b == null)
             return true;
         debug("PlotSquaredHook.api: " + PlotSquaredHook.api);
+
         if (TownyAPI.getInstance() != null) {
-            if (!Utils.hasPermissionNode(p, "astools.bypass-wg-flag")
-                    && TownyAPI.getInstance().isWilderness(b.getLocation())) {
-                return false;
+            if (!Utils.hasPermissionNode(p, "astools.bypass-wg-flag")) {
+                if (Config.worldGuardPlugin != null) {
+                    // If in the wilderness and AST disabled
+                    if (TownyAPI.getInstance().isWilderness(b.getLocation())
+                            && !getWorldGuardAstFlag(b.getLocation())) {
+                        System.out.println("AST Disabled");
+                        return false;
+                    }
+
+                    // If in the wilderness and cannot break with WorldGuard
+                    if (TownyAPI.getInstance().isWilderness(b.getLocation())
+                            && !Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b)) {
+                        System.out.println("Cannot break");
+                        return false;
+                    }
+                }
+
+                // If in the wilderness and cannot break with Towny
+                if (TownyAPI.getInstance().isWilderness(b.getLocation())
+                        && !TownyActionEventExecutor.canDestroy(p, b.getLocation(), Material.ARMOR_STAND)) {
+                    System.out.println("Cannot break");
+                    return false;
+                }
+
+                // If not inside their own town
+                if (!TownyAPI.getInstance().isWilderness(b.getLocation())
+                        && !TownyActionEventExecutor.canDestroy(p, b.getLocation(), Material.ARMOR_STAND)) {
+                    System.out.println("Not in own town");
+                    return false;
+                }
             }
-
-            if (!TownyActionEventExecutor.canDestroy(p, b.getLocation(), Material.ARMOR_STAND))
-                return false;
-
         }
         if (PlotSquaredHook.api != null) {
             Location l = b.getLocation();
@@ -233,6 +257,7 @@ public class Main extends JavaPlugin {
             }
         }
         if (Config.worldGuardPlugin != null) {
+
             if (!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
                 return false;
             }

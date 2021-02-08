@@ -98,6 +98,9 @@ local.properties
 # IntelliJ
 /out/
 
+# VSC
+.vscode/
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
