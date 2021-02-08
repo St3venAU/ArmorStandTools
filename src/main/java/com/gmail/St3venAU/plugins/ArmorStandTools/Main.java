@@ -222,14 +222,12 @@ public class Main extends JavaPlugin {
                     // If in the wilderness and AST disabled
                     if (TownyAPI.getInstance().isWilderness(b.getLocation())
                             && !getWorldGuardAstFlag(b.getLocation())) {
-                        System.out.println("AST Disabled");
                         return false;
                     }
 
                     // If in the wilderness and cannot break with WorldGuard
                     if (TownyAPI.getInstance().isWilderness(b.getLocation())
                             && !Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b)) {
-                        System.out.println("Cannot break");
                         return false;
                     }
                 }
@@ -237,14 +235,12 @@ public class Main extends JavaPlugin {
                 // If in the wilderness and cannot break with Towny
                 if (TownyAPI.getInstance().isWilderness(b.getLocation())
                         && !TownyActionEventExecutor.canDestroy(p, b.getLocation(), Material.ARMOR_STAND)) {
-                    System.out.println("Cannot break");
                     return false;
                 }
 
                 // If not inside their own town
                 if (!TownyAPI.getInstance().isWilderness(b.getLocation())
                         && !TownyActionEventExecutor.canDestroy(p, b.getLocation(), Material.ARMOR_STAND)) {
-                    System.out.println("Not in own town");
                     return false;
                 }
             }
