@@ -1,6 +1,7 @@
 ### Java template
 target/classes/io/github/archemedes/knockoutplus/corpse/CorpseRegistry.class
 /.idea
+/libs
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

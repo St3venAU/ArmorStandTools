@@ -1,9 +1,10 @@
-package com.gmail.St3venAU.plugins.ArmorStandTools;
+package com.gmail.st3venau.plugins.armorstandtools;
 
-import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
+import com.sk89q.worldedit.math.BlockVector3;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -11,38 +12,36 @@ import java.util.UUID;
 
 class PlotSquaredHook {
     
-    public static PlotAPI api;
-    private static Main plugin;
-    
-    public PlotSquaredHook(Main main) {
-        PlotSquaredHook.api = new PlotAPI();
-        plugin = main;
+    public static PlotAPI api = null;
+
+    public static void init() {
+        if(api != null) return;
+        api = new PlotAPI();
     }
     
-    public static boolean isPlotWorld(Location loc) {
-        return api.getPlotSquared().hasPlotArea(loc.getWorld().getName());
+    public static boolean isPlotWorld(Location l) {
+        return l.getWorld() != null && api.getPlotSquared().getPlotAreaManager().hasPlotArea(l.getWorld().getName());
     }
 
-    public static boolean checkPermission(Player player, Location location) {
-        com.plotsquared.core.location.Location plotLocation = new com.plotsquared.core.location.Location(location.getWorld().getName(),
-                                                                                                         location.getBlockX(),
-                                                                                                         location.getBlockY(),
-                                                                                                         location.getBlockZ());
+    public static boolean checkPermission(Player p, Location l) {
+        if(l.getWorld() == null) return true;
+        com.plotsquared.core.location.Location plotLocation
+                = com.plotsquared.core.location.Location.at(l.getWorld().getName(), BlockVector3.at(l.getBlockX(), l.getBlockY(), l.getBlockZ()));
         PlotArea plotArea = plotLocation.getPlotArea();
         if(plotArea == null) {
-            plugin.debug("plots.admin.build.road: " + player.hasPermission("plots.admin.build.road"));
-            return player.hasPermission("plots.admin.build.road");
+            AST.debug("plots.admin.build.road: " + p.hasPermission("plots.admin.build.road"));
+            return p.hasPermission("plots.admin.build.road");
         }
         Plot plot = plotArea.getPlot(plotLocation);
-        PlotPlayer pp = PlotPlayer.wrap(player);
-        plugin.debug("Plot: " + plot);
+        PlotPlayer<?> pp = api.wrapPlayer(p.getUniqueId());
+        AST.debug("Plot: " + plot);
         if (plot == null) {
-            plugin.debug("plots.admin.build.road: " + pp.hasPermission("plots.admin.build.road"));
+            AST.debug("plots.admin.build.road: " + pp.hasPermission("plots.admin.build.road"));
             return pp.hasPermission("plots.admin.build.road");
         }
         UUID uuid = pp.getUUID();
-        plugin.debug("plot.isAdded: " + plot.isAdded(uuid));
-        plugin.debug("plots.admin.build.other: " + pp.hasPermission("plots.admin.build.other"));
+        AST.debug("plot.isAdded: " + plot.isAdded(uuid));
+        AST.debug("plots.admin.build.other: " + pp.hasPermission("plots.admin.build.other"));
         return plot.isAdded(uuid) || pp.hasPermission("plots.admin.build.other");
     }
 }

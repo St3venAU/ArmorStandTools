@@ -1,4 +1,4 @@
-package com.gmail.St3venAU.plugins.ArmorStandTools;
+package com.gmail.st3venau.plugins.armorstandtools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -98,7 +98,7 @@ class ArmorStandCmd {
     }
 
     static boolean removeAssignedCommand(ArmorStand as) {
-        List<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<>();
         for(String tag : as.getScoreboardTags()) {
             if(tag.startsWith("ast-cmd-")) {
                 tags.add(tag);
@@ -116,13 +116,13 @@ class ArmorStandCmd {
             cooldownTime = Config.defaultASCmdCooldownTicks;
         }
         if(cooldownTime < 1) return;
-        armorStand.setMetadata("ast-cmd-cooldown", new FixedMetadataValue(Main.plugin, true));
+        armorStand.setMetadata("ast-cmd-cooldown", new FixedMetadataValue(AST.plugin, true));
         new BukkitRunnable() {
             @Override
             public void run() {
-                armorStand.removeMetadata("ast-cmd-cooldown", Main.plugin);
+                armorStand.removeMetadata("ast-cmd-cooldown", AST.plugin);
             }
-        }.runTaskLater(Main.plugin, cooldownTime);
+        }.runTaskLater(AST.plugin, cooldownTime);
     }
 
     private boolean isOnCooldown() {
@@ -132,7 +132,7 @@ class ArmorStandCmd {
     // Positive cooldown: Set cooldown time, Negative cooldown: Remove cooldown time
     void setCooldownTime(int cooldown) {
         if(armorStand == null) return;
-        List<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<>();
         for(String tag : armorStand.getScoreboardTags()) {
             if(tag.startsWith("ast-cdn-")) {
                 tags.add(tag);

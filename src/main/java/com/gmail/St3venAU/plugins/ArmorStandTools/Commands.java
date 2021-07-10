@@ -1,4 +1,4 @@
-package com.gmail.St3venAU.plugins.ArmorStandTools;
+package com.gmail.st3venau.plugins.armorstandtools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,52 +12,24 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 class Commands implements CommandExecutor, TabCompleter {
-
-    private final Main plugin;
-
-    Commands(Main main) {
-        this.plugin = main;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            plugin.getLogger().warning(Config.notConsole);
+            AST.plugin.getLogger().warning(Config.notConsole);
             return false;
         }
         String cmd = command.getName().toLowerCase();
         Player p = (Player) sender;
         if(cmd.equals("astools") || cmd.equals("ast")) {
-            if (!Utils.hasPermissionNode(p, "astools.command")) {
+            if (!Utils.hasPermissionNode(p, "astools.use")) {
                 p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                 return true;
             }
-            if (args.length == 0) {
-                UUID uuid = p.getUniqueId();
-                if (plugin.savedInventories.containsKey(uuid)) {
-                    plugin.restoreInventory(p);
-                    return true;
-                } else {
-                    plugin.saveInventoryAndClear(p);
-                    ArmorStandTool.give(p);
-                    p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
-                    p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
-                    return true;
-                }
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                if (Utils.hasPermissionNode(p, "astools.reload")) {
-                    Config.reload();
-                    p.sendMessage(ChatColor.GREEN + Config.conReload);
-                    return true;
-                } else {
-                    p.sendMessage(ChatColor.RED + Config.noRelPerm);
-                    return true;
-                }
-            }
+            p.sendMessage(ChatColor.AQUA + Config.instructions);
+            return true;
         } else if(cmd.equals("ascmd")) {
             ArmorStand as = getNearbyArmorStand(p);
             if(as == null) {
@@ -124,7 +96,7 @@ class Commands implements CommandExecutor, TabCompleter {
                     sb.append(args[i]).append(" ");
                 }
                 int startAt = sb.charAt(0) == '/' ? 1 : 0;
-                String c = sb.toString().substring(startAt, sb.length() - 1);
+                String c = sb.substring(startAt, sb.length() - 1);
                 if(c.length() == 0) {
                     ascmdHelp(p);
                     return true;
@@ -146,7 +118,6 @@ class Commands implements CommandExecutor, TabCompleter {
                 if(args[1].equalsIgnoreCase("remove")) {
                     asCmd.setCooldownTime(-1);
                     p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
-                    return true;
                 } else {
                     int ticks;
                     try {
@@ -161,8 +132,8 @@ class Commands implements CommandExecutor, TabCompleter {
                     }
                     asCmd.setCooldownTime(ticks);
                     p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
-                    return true;
                 }
+                return true;
             } else {
                 ascmdHelp(p);
                 return true;
@@ -198,7 +169,7 @@ class Commands implements CommandExecutor, TabCompleter {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         String cmd = command.getName().toLowerCase();
         String typed = "";
         if (args.length > 0) {
