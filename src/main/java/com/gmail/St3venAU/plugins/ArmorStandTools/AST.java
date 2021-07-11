@@ -176,7 +176,10 @@ public class AST extends JavaPlugin {
             Location l = b.getLocation();
             debug("PlotSquaredHook.isPlotWorld(l): " + PlotSquaredHook.isPlotWorld(l));
             if(PlotSquaredHook.isPlotWorld(l)) {
-                return PlotSquaredHook.checkPermission(p, l);
+                Boolean hasPermission = PlotSquaredHook.checkPermission(p, l);
+                if(hasPermission != null) {
+                    return hasPermission;
+                }
             }
         }
         if(Config.worldGuardPlugin != null) {

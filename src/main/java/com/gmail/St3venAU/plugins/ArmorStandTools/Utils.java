@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
@@ -42,34 +43,50 @@ class Utils {
         }.runTaskLater(AST.plugin, 2L);
     }
 
-    static final EquipmentSlot[] equipmentSlots = {
-            EquipmentSlot.HAND,
-            EquipmentSlot.OFF_HAND,
-            EquipmentSlot.HEAD,
-            EquipmentSlot.CHEST,
-            EquipmentSlot.LEGS,
-            EquipmentSlot.FEET
-    };
-
     static boolean hasDisabledSlots(ArmorStand as) {
-        for(EquipmentSlot slot : equipmentSlots) {
-            if(as.hasEquipmentLock(slot, ArmorStand.LockType.REMOVING_OR_CHANGING)) {
-                return true;
+        for(EquipmentSlot slot : EquipmentSlot.values()) {
+            for(ArmorStand.LockType lockType : ArmorStand.LockType.values()) {
+                if(!as.hasEquipmentLock(slot, lockType)) {
+                    return false;
+                }
             }
         }
-        return false;
+        return true;
     }
 
     static void setSlotsDisabled(ArmorStand as, boolean slotsDisabled) {
-        if(slotsDisabled) {
-            for(EquipmentSlot slot : equipmentSlots) {
-                as.addEquipmentLock(slot, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            }
-        } else {
-            for(EquipmentSlot slot : equipmentSlots) {
-                as.removeEquipmentLock(slot, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        for(EquipmentSlot slot : EquipmentSlot.values()) {
+            for(ArmorStand.LockType lockType : ArmorStand.LockType.values()) {
+                if(slotsDisabled) {
+                    as.addEquipmentLock(slot, lockType);
+                } else {
+                    as.removeEquipmentLock(slot, lockType);
+                }
             }
         }
+    }
+
+    static int disabledSlotsAsInteger(ArmorStand as) {
+        return    (as.hasEquipmentLock(EquipmentSlot.HAND,     ArmorStand.LockType.ADDING_OR_CHANGING) ? 1 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.FEET,     ArmorStand.LockType.ADDING_OR_CHANGING) ? 2 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.LEGS,     ArmorStand.LockType.ADDING_OR_CHANGING) ? 4 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.CHEST,    ArmorStand.LockType.ADDING_OR_CHANGING) ? 8 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.HEAD,     ArmorStand.LockType.ADDING_OR_CHANGING) ? 16 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING_OR_CHANGING) ? 32 : 0)
+
+                + (as.hasEquipmentLock(EquipmentSlot.HAND,     ArmorStand.LockType.REMOVING_OR_CHANGING) ? 256 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.FEET,     ArmorStand.LockType.REMOVING_OR_CHANGING) ? 512 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.LEGS,     ArmorStand.LockType.REMOVING_OR_CHANGING) ? 1024 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.CHEST,    ArmorStand.LockType.REMOVING_OR_CHANGING) ? 2048 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.HEAD,     ArmorStand.LockType.REMOVING_OR_CHANGING) ? 4096 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING) ? 8192 : 0)
+
+                + (as.hasEquipmentLock(EquipmentSlot.HAND,     ArmorStand.LockType.ADDING) ? 65536 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.FEET,     ArmorStand.LockType.ADDING) ? 131072 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.LEGS,     ArmorStand.LockType.ADDING) ? 262144 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.CHEST,    ArmorStand.LockType.ADDING) ? 524288 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.HEAD,     ArmorStand.LockType.ADDING) ? 1048576 : 0)
+                + (as.hasEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING) ? 2097152 : 0);
     }
 
     static boolean toggleSlotsDisabled(ArmorStand as) {
@@ -105,7 +122,13 @@ class Utils {
         clone.setSmall(as.isSmall());
         clone.setInvulnerable(as.isInvulnerable());
         clone.setGlowing(as.isGlowing());
-        Utils.setSlotsDisabled(clone, Utils.hasDisabledSlots(as));
+        for(EquipmentSlot slot : EquipmentSlot.values()) {
+            for(ArmorStand.LockType lockType : ArmorStand.LockType.values()) {
+                if(as.hasEquipmentLock(slot, lockType)) {
+                    clone.addEquipmentLock(slot, lockType);
+                }
+            }
+        }
         ArmorStandCmd asCmd = new ArmorStandCmd(as);
         if(asCmd.getCommand() != null) {
             asCmd.cloneTo(clone);
@@ -188,52 +211,119 @@ class Utils {
 
             tags.setCharAt(tags.length() - 1, ']');
         }
-        return tags.length() == 0 ? "" : ("," + tags.toString());
+        return tags.length() == 0 ? "" : tags.toString();
     }
 
     static private String skullOwner(ItemStack is) {
         if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta)) return "";
         SkullMeta skull = (SkullMeta) is.getItemMeta();
-        return  skull.getOwningPlayer() == null ? "" : ",SkullOwner:\"" + skull.getOwningPlayer().getName() + "\"";
+        return  skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwningPlayer().getName() + "\"";
+    }
+
+    static private boolean isEmpty(ItemStack is) {
+        return is == null || is.getType() == Material.AIR;
+    }
+
+    static private String itemInfo(ItemStack is) {
+        if(isEmpty(is)) return "{}";
+        StringBuilder sb = new StringBuilder("{id:");
+        sb.append(is.getType().getKey().getKey());
+        if(is.getAmount() > 0) {
+            sb.append(",Count:").append(is.getAmount());
+        }
+        String itemStackTags = getItemStackTags(is);
+        short durability = is.getDurability();
+        String skullOwner = skullOwner(is);
+        int n = 0;
+        if(itemStackTags.length() > 0 || durability > 0 || skullOwner.length() > 0) {
+            sb.append(",tag:{");
+            if(durability > 0) {
+                sb.append("Damage:").append(durability);
+                n++;
+            }
+            if(itemStackTags.length() > 0) {
+                if(n > 0) sb.append(",");
+                sb.append(itemStackTags);
+                n++;
+            }
+            if(skullOwner.length() > 0) {
+                if(n > 0) sb.append(",");
+                sb.append(skullOwner);
+            }
+            sb.append("}");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    static private String armorItems(EntityEquipment e) {
+        if(e == null || (isEmpty(e.getBoots()) && isEmpty(e.getLeggings()) && isEmpty(e.getChestplate()) && isEmpty(e.getHelmet()))) {
+            return "";
+        }
+        return "ArmorItems:["
+            + itemInfo(e.getBoots()) + ","
+            + itemInfo(e.getLeggings()) + ","
+            + itemInfo(e.getChestplate()) + ","
+            + itemInfo(e.getHelmet())
+        + "],";
+    }
+
+    static private String handItems(EntityEquipment e) {
+        if(e == null || (isEmpty(e.getItemInMainHand()) && isEmpty(e.getItemInOffHand()))) {
+            return "";
+        }
+        return "HandItems:["
+            + itemInfo(e.getItemInMainHand()) + ","
+            + itemInfo(e.getItemInOffHand())
+         + "],";
+    }
+
+    static private String angleInfo(EulerAngle ea) {
+        return "[" + degrees(ea.getX()) + "f," + degrees(ea.getY()) + "f," + degrees(ea.getZ()) + "f]";
+    }
+
+    static private String pose(ArmorStand as) {
+       return "Pose:{"
+            + "Body:"     + angleInfo(as.getBodyPose())     + ","
+            + "Head:"     + angleInfo(as.getHeadPose())     + ","
+            + "LeftLeg:"  + angleInfo(as.getLeftLegPose())  + ","
+            + "RightLeg:" + angleInfo(as.getRightLegPose()) + ","
+            + "LeftArm:"  + angleInfo(as.getLeftArmPose())  + ","
+            + "RightArm:" + angleInfo(as.getRightArmPose())
+        + "}";
+    }
+
+    static private String createSummonCommand(ArmorStand as) {
+        Location asLocation = as.getLocation();
+        EntityEquipment e = as.getEquipment();
+        StringBuilder sb = new StringBuilder("summon minecraft:armor_stand ");
+        sb.append(twoDec(asLocation.getX())).append(" ");
+        sb.append(twoDec(asLocation.getY())).append(" ");
+        sb.append(twoDec(asLocation.getZ())).append(" ");
+        sb.append("{");
+            if(!as.isVisible())                 sb.append("Invisible:1,");
+            if(!as.hasBasePlate())              sb.append("NoBasePlate:1,");
+            if(!as.hasGravity())                sb.append("NoGravity:1,");
+            if(as.hasArms())                    sb.append("ShowArms:1,");
+            if(as.isSmall())                    sb.append("Small:1,");
+            if(as.isInvulnerable())             sb.append("Invulnerable:1,");
+            if(as.isGlowing())                  sb.append("Glowing:1,");
+            if(hasDisabledSlots(as))            sb.append("DisabledSlots:").append(disabledSlotsAsInteger(as)).append(",");
+            if(as.isCustomNameVisible())        sb.append("CustomNameVisible:1,");
+            if(as.getCustomName() != null)      sb.append("CustomName:\"\\\"").append(as.getCustomName()).append("\\\"\",");
+            if(as.getLocation().getYaw() != 0F) sb.append("Rotation:[").append(twoDec(as.getLocation().getYaw())).append("f],");
+            sb.append(armorItems(e));
+            sb.append(handItems(e));
+            sb.append(pose(as));
+        sb.append("}");
+        return sb.toString();
     }
 
     static void generateCmdBlock(Location l, ArmorStand as) {
         Block b = l.getBlock();
         b.setType(Material.COMMAND_BLOCK);
         CommandBlock cb = (CommandBlock) b.getState();
-        EntityEquipment e = as.getEquipment();
-        cb.setCommand("summon minecraft:armor_stand " + twoDec(as.getLocation().getX()) + " " + twoDec(as.getLocation().getY()) + " " + twoDec(as.getLocation().getZ()) + " "
-                + "{"
-                + (as.isVisible()                  ? ""                     : "Invisible:1,"                                                  )
-                + (as.hasBasePlate()               ? ""                     : "NoBasePlate:1,"                                                )
-                + (as.hasGravity()                 ? ""                     : "NoGravity:1,"                                                  )
-                + (as.hasArms()                    ? "ShowArms:1,"          : ""                                                              )
-                + (as.isSmall()                    ? "Small:1,"             : ""                                                              )
-                + (as.isInvulnerable()             ? "Invulnerable:1,"      : ""                                                              )
-                + (as.isGlowing()                  ? "Glowing:1,"           : ""                                                              )
-                + (as.isCustomNameVisible()        ? "CustomNameVisible:1," : ""                                                              )
-                + (as.getCustomName() == null      ? ""                     : ("CustomName:\"\\\"" + as.getCustomName() + "\\\"\",")          )
-                + (as.getLocation().getYaw() == 0F ? ""                     : ("Rotation:[" + twoDec(as.getLocation().getYaw()) + "f],"))
-                + "ArmorItems:["
-                + (e == null || e.getBoots()      == null ? "{}," : ("{id:" + e.getBoots().getType().getKey().getKey()      + ",Count:" + e.getBoots().getAmount()      + ",tag:{Damage:" + e.getBoots().getDurability()      + getItemStackTags(e.getBoots())                              + "}},"))
-                + (e == null || e.getLeggings()   == null ? "{}," : ("{id:" + e.getLeggings().getType().getKey().getKey()   + ",Count:" + e.getLeggings().getAmount()   + ",tag:{Damage:" + e.getLeggings().getDurability()   + getItemStackTags(e.getLeggings())                           + "}},"))
-                + (e == null || e.getChestplate() == null ? "{}," : ("{id:" + e.getChestplate().getType().getKey().getKey() + ",Count:" + e.getChestplate().getAmount() + ",tag:{Damage:" + e.getChestplate().getDurability() + getItemStackTags(e.getChestplate())                         + "}},"))
-                + (e == null || e.getHelmet()     == null ? "{}"  : ("{id:" + e.getHelmet().getType().getKey().getKey()     + ",Count:" + e.getHelmet().getAmount()     + ",tag:{Damage:" + e.getHelmet().getDurability()     + getItemStackTags(e.getHelmet()) + skullOwner(e.getHelmet()) + "}}" ))
-                + "],"
-                + "HandItems:["
-                + (e == null ? "{}," : ("{id:" + e.getItemInMainHand().getType().getKey().getKey() + ",Count:" + e.getItemInMainHand().getAmount() + ",tag:{Damage:" + e.getItemInMainHand().getDurability() + getItemStackTags(e.getItemInMainHand()) + "}},"))
-                + (e == null ? "{}"  : ("{id:" + e.getItemInOffHand().getType().getKey().getKey()  + ",Count:" + e.getItemInOffHand().getAmount()  + ",tag:{Damage:" + e.getItemInOffHand().getDurability()  + getItemStackTags(e.getItemInOffHand())  + "}}" ))
-                + "],"
-                + "Pose:{"
-                + "Body:["     + degrees(as.getBodyPose().getX())     + "f," + degrees(as.getBodyPose().getY())     + "f," + degrees(as.getBodyPose().getZ())     + "f],"
-                + "Head:["     + degrees(as.getHeadPose().getX())     + "f," + degrees(as.getHeadPose().getY())     + "f," + degrees(as.getHeadPose().getZ())     + "f],"
-                + "LeftLeg:["  + degrees(as.getLeftLegPose().getX())  + "f," + degrees(as.getLeftLegPose().getY())  + "f," + degrees(as.getLeftLegPose().getZ())  + "f],"
-                + "RightLeg:[" + degrees(as.getRightLegPose().getX()) + "f," + degrees(as.getRightLegPose().getY()) + "f," + degrees(as.getRightLegPose().getZ()) + "f],"
-                + "LeftArm:["  + degrees(as.getLeftArmPose().getX())  + "f," + degrees(as.getLeftArmPose().getY())  + "f," + degrees(as.getLeftArmPose().getZ())  + "f],"
-                + "RightArm:[" + degrees(as.getRightArmPose().getX()) + "f," + degrees(as.getRightArmPose().getY()) + "f," + degrees(as.getRightArmPose().getZ()) + "f]"
-                + "}"
-                + "}"
-        );
+        cb.setCommand(createSummonCommand(as));
         cb.update();
     }
 
