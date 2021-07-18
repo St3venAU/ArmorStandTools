@@ -172,9 +172,7 @@ public class AST extends JavaPlugin {
     static boolean checkBlockPermission(Player p, Block b) {
         if(b == null) return true;
         if (PlotSquaredHook.api != null) {
-            debug("PlotSquaredHook.api: " + PlotSquaredHook.api);
             Location l = b.getLocation();
-            debug("PlotSquaredHook.isPlotWorld(l): " + PlotSquaredHook.isPlotWorld(l));
             if(PlotSquaredHook.isPlotWorld(l)) {
                 Boolean hasPermission = PlotSquaredHook.checkPermission(p, l);
                 if(hasPermission != null) {
@@ -205,17 +203,18 @@ public class AST extends JavaPlugin {
     }
 
    static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
-        debug("tool: " + tool);
-        if(tool != null) {
-            debug("en: " + tool.isEnabled());
-            debug("perm: " + Utils.hasPermissionNode(p, tool.getPermission()));
+        String permNode = tool == null ? "astools.use" : tool.getPermission();
+        boolean enabled = tool == null || tool.isEnabled();
+        boolean hasNode = Utils.hasPermissionNode(p, permNode);
+        boolean blockPerm = checkBlockPermission(p, b);
+        if(Config.debug) {
+            AST.debug("Plr: " + p.getName() + ", Tool: " + tool + ", Tool En: " + enabled + ", Perm: " + permNode + ", Has Perm: " + hasNode + ", Location Perm: " + blockPerm);
         }
-        String permission = tool == null ? "astools.use" : tool.getPermission();
-        return (tool == null || tool.isEnabled()) && Utils.hasPermissionNode(p, permission) && checkBlockPermission(p, b);
+        return enabled && hasNode && blockPerm;
     }
 
     static void debug(String msg) {
         if(!Config.debug) return;
-        Bukkit.getLogger().log(Level.INFO, "[DEBUG] " + msg);
+        Bukkit.getLogger().log(Level.INFO, "[AST DEBUG] " + msg);
     }
 }

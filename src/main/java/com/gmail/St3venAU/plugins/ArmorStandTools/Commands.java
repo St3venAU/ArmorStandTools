@@ -1,12 +1,14 @@
 package com.gmail.st3venau.plugins.armorstandtools;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +31,22 @@ class Commands implements CommandExecutor, TabCompleter {
                 p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                 return true;
             }
-            p.sendMessage(ChatColor.AQUA + Config.instructions);
+            if(args.length > 0 && args[0].equalsIgnoreCase("new")) {
+                // astools new
+                if (!Utils.hasPermissionNode(p, "astools.new")) {
+                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                    return true;
+                }
+                Location l = Utils.getLocationFacing(p.getLocation());
+                if(l.getWorld() == null) {
+                    p.sendMessage(ChatColor.RED + Config.error);
+                    return true;
+                }
+                ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
+                AST.pickUpArmorStand(as, p);
+                Utils.title(p, Config.carrying);
+            }
+            p.sendMessage(ChatColor.AQUA + Config.instructions1 + ChatColor.GREEN + " /ast new " + ChatColor.AQUA + Config.instructions2);
             return true;
         } else if(cmd.equals("ascmd")) {
             ArmorStand as = getNearbyArmorStand(p);
@@ -111,6 +128,10 @@ class Commands implements CommandExecutor, TabCompleter {
                     p.sendMessage("\n" + Config.assignCmdError + name);
                 }
             } else if(args.length >= 2 && args[0].equalsIgnoreCase("cooldown")) { //ascmd cooldown <ticks>/remove
+                if (!Utils.hasPermissionNode(p, "astools.ascmd.cooldown")) {
+                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                    return true;
+                }
                 ArmorStandCmd asCmd = new ArmorStandCmd(as);
                 if(asCmd.getCommand() == null) {
                     p.sendMessage(Config.closestAS + name + Config.hasNoCmd);

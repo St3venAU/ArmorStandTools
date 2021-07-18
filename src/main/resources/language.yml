@@ -84,19 +84,39 @@ removeCooldown: 'Remove the cooldown for the command'
 # New since v3.4.1
 glow: 'Glow'
 #New since v4.0.0
-instructions: 'Crouch + right-click an armor stand to use Armor Stand Tools'
 crouch: 'Crouch'
 click: 'Click'
 finish: 'Finish'
+#New since v4.0.2
+instructions1: 'Crouch + right-click an armor stand to edit, or use command'
+instructions2: 'to summon a new armor stand'
+error: 'An error occured. Try again.'
 #
 #############################
 # Tool names & descriptions #
 #############################
 tool:
   gui_move:
-    name: 'Pick Up (Move/Rotate)'
+    name: 'Pick Up (Move)'
     lore:
-      - 'Pick up this armor stand to move or rotate it'
+      - 'Pick up this armor stand to move it'
+  gui_moveup:
+    name: 'Move Up'
+    lore:
+      - 'Left click: Move up 0.1 block'
+      - 'Right click: Move up 1 block'
+      - '(Automatically disables gravity)'
+  gui_movedown:
+    name: 'Move Down'
+    lore:
+      - 'Left click: Move down 0.1 block'
+      - 'Right click: Move down 1 block'
+      - '(Automatically disables gravity)'
+  gui_rotate:
+    name: 'Rotate'
+    lore:
+      - 'Left click: Rotate clockwise 5°'
+      - 'Right click: Rotate anti-clockwise 5°'
   gui_clone:
     name: 'Clone'
     lore:

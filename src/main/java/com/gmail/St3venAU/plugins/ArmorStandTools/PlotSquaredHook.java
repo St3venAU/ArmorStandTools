@@ -25,24 +25,18 @@ class PlotSquaredHook {
 
     public static Boolean checkPermission(Player p, Location l) {
         if(l.getWorld() == null) return null;
-        com.plotsquared.core.location.Location plotLocation
-                = com.plotsquared.core.location.Location.at(l.getWorld().getName(), BlockVector3.at(l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+        com.plotsquared.core.location.Location plotLocation = com.plotsquared.core.location.Location.at(l.getWorld().getName(), BlockVector3.at(l.getBlockX(), l.getBlockY(), l.getBlockZ()));
         PlotArea plotArea = plotLocation.getPlotArea();
         if(plotArea == null) {
-            AST.debug("plots.admin.build.road: " + p.hasPermission("plots.admin.build.road"));
             return p.hasPermission("plots.admin.build.road");
         }
         Plot plot = plotArea.getPlot(plotLocation);
         PlotPlayer<?> pp = api.wrapPlayer(p.getUniqueId());
         if(pp == null) return null;
-        AST.debug("Plot: " + plot);
         if (plot == null) {
-            AST.debug("plots.admin.build.road: " + pp.hasPermission("plots.admin.build.road"));
             return pp.hasPermission("plots.admin.build.road");
         }
         UUID uuid = pp.getUUID();
-        AST.debug("plot.isAdded: " + plot.isAdded(uuid));
-        AST.debug("plots.admin.build.other: " + pp.hasPermission("plots.admin.build.other"));
         return plot.isAdded(uuid) || pp.hasPermission("plots.admin.build.other");
     }
 }

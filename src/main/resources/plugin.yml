@@ -9,7 +9,7 @@ commands:
    astools:
       description: Provides player instructions on how to use AST
       aliases: ast
-      usage: Usage /astools or /ast
+      usage: Usage /astools or /ast, /ast new
    ascmd:
       description: View/Remove/Assign the command assigned to the nearest armor stand
       usage: Usage /ascmd view, /ascmd remove, /ascmd assign <player/console> <command>

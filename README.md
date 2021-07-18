@@ -57,7 +57,8 @@ WorldGuard Integration
 
 Permissions
 -----------
-- astools.use : Permission for using any of the tools, except for those that have a custom permission below
+- astools.use: Permission for using any of the tools, except for those that have a custom permission below
+- astools.new: Permission to use "/astools new" command to summon a new armor stand
 - astools.clone: Permission to use the clone tool
 - astools.head: Permission to use the player head tool (Ability to specify a player head for an armor stand)
 - astools.summon: Permission to use the summon tool (Summons an armor stand without requiring the materials)
@@ -66,6 +67,7 @@ Permissions
 - astools.ascmd.assign.player: Permission to assign a player command to an armor stand
 - astools.ascmd.remove: Permission to remove a command from an armor stand
 - astools.ascmd.view: Permission to view the command assigned to an armor stand
+- astools.ascmd.cooldown: Permission to add a cooldown to commands assigned to an armor stand
 - astools.ascmd.execute: Permission to execute a command assigned to an armor stand by (on right click)
 - astools.bypass-wg-flag: Permission to bypass the WorldGuard ast flag, allowing the player to use AST even in regions that ast flag is set to deny.
 

@@ -16,25 +16,30 @@ import java.util.UUID;
 
 public enum ArmorStandTool {
 
-    HEAD    ("gui_head",    Material.PLAYER_HEAD,            6,  "astools.use",     false),
-    BODY    ("gui_body",    Material.NETHER_BRICKS,          15, "astools.use",     false),
-    RARM    ("gui_rarm",    Material.REDSTONE_TORCH,         14, "astools.use",     true),
-    LARM    ("gui_larm",    Material.TORCH,                  16, "astools.use",     true),
-    RLEG    ("gui_rleg",    Material.BLAZE_ROD,              23, "astools.use",     true),
-    LLEG    ("gui_lleg",    Material.BONE,                   25, "astools.use",     true),
-    MOVE    ("gui_move",    Material.FEATHER,                24, "astools.use",     false),
-    CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,         33, "astools.clone",   false),
-    SAVE    ("gui_save",    Material.DIAMOND,                43, "astools.cmdblock",false),
-    SLOTS   ("gui_slots",   Material.IRON_HOE,               44, "astools.use",     false),
+    HEAD    ("gui_head",    Material.PLAYER_HEAD,            7,  "astools.use",     false),
+    BODY    ("gui_body",    Material.NETHER_BRICKS,          16, "astools.use",     false),
+    RARM    ("gui_rarm",    Material.REDSTONE_TORCH,         15, "astools.use",     true),
+    LARM    ("gui_larm",    Material.TORCH,                  17, "astools.use",     true),
+    RLEG    ("gui_rleg",    Material.BLAZE_ROD,              24, "astools.use",     true),
+    LLEG    ("gui_lleg",    Material.BONE,                   26, "astools.use",     true),
+    MOVE    ("gui_move",    Material.FEATHER,                25, "astools.use",     false),
+    CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,         34, "astools.clone",   false),
+
+    UP      ("gui_moveup",  Material.LIGHTNING_ROD,          4,  "astools.use",     false),
+    DOWN    ("gui_movedown",Material.LEVER,                  13, "astools.use",     false),
+    ROTATE  ("gui_rotate",  Material.ENDER_PEARL,            22, "astools.use",     false),
+
+    PHEAD   ("gui_pHead",   Material.PLAYER_HEAD,            36, "astools.head",    false),
     NAME    ("gui_name",    Material.NAME_TAG,               45, "astools.use",     false),
-    PHEAD   ("gui_pHead",   Material.PLAYER_HEAD,            46, "astools.head",    false),
-    INVIS   ("gui_invis",   Material.GOLD_NUGGET,            47, "astools.use",     false),
-    ARMS    ("gui_arms",    Material.ARROW,                  48, "astools.use",     false),
-    BASE    ("gui_base",    Material.STONE_SLAB,             49, "astools.use",     false),
-    SIZE    ("gui_size",    Material.EMERALD,                50, "astools.use",     false),
-    GRAV    ("gui_grav",    Material.GHAST_TEAR,             51, "astools.use",     false),
-    INVUL   ("gui_invul",   Material.GLISTERING_MELON_SLICE, 52, "astools.use",     false),
-    GLOW    ("gui_glow",    Material.GLOWSTONE,              53, "astools.glow",    false);
+    INVIS   ("gui_invis",   Material.GOLD_NUGGET,            46, "astools.use",     false),
+    ARMS    ("gui_arms",    Material.ARROW,                  47, "astools.use",     false),
+    BASE    ("gui_base",    Material.STONE_SLAB,             48, "astools.use",     false),
+    SIZE    ("gui_size",    Material.EMERALD,                49, "astools.use",     false),
+    GRAV    ("gui_grav",    Material.GHAST_TEAR,             50, "astools.use",     false),
+    INVUL   ("gui_invul",   Material.GLISTERING_MELON_SLICE, 51, "astools.use",     false),
+    SLOTS   ("gui_slots",   Material.IRON_HOE,               52, "astools.use",     false),
+    GLOW    ("gui_glow",    Material.GLOWSTONE,              53, "astools.glow",    false),
+    SAVE    ("gui_save",    Material.DIAMOND,                44, "astools.cmdblock",false);
 
     private final ItemStack item;
     private final String config_id;

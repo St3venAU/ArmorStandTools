@@ -232,6 +232,7 @@ class Utils {
             sb.append(",Count:").append(is.getAmount());
         }
         String itemStackTags = getItemStackTags(is);
+        @SuppressWarnings("deprecation")
         short durability = is.getDurability();
         String skullOwner = skullOwner(is);
         int n = 0;

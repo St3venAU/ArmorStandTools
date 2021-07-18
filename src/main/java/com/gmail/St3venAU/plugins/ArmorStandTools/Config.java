@@ -37,9 +37,9 @@ class Config {
             ascmdHelp, viewCmd, removeCmd, assignConsole,
             assignPlayer, executeCmdError, cmdOnCooldown,
             cooldownRemovedFrom, isAnInvalidCooldown,
-            cooldownSetTo, ticksFor, setCooldown,
-            removeCooldown, glow, instructions, crouch, click,
-            finish;
+            cooldownSetTo, ticksFor, setCooldown, glow,
+            removeCooldown, instructions1, instructions2,
+            crouch, click, finish, error;
 
     static void reload(AST main) {
         plugin = main;
@@ -57,7 +57,7 @@ class Config {
         requireCreative             = config.getBoolean("requireCreativeForSaveAsCmdBlock");
         defaultASCmdCooldownTicks   = config.getInt("defaultASCmdCooldownTicks");
         ignoreWGForASCmdExecution   = config.getBoolean("bypassWorldguardForASCmdExecution");
-        debug                       = config.getBoolean("debug", false);
+        debug                       = config.getBoolean("showDebugMessages", false);
 
         AST.activeTool.clear();
         AST.selectedArmorStand.clear();
@@ -159,10 +159,12 @@ class Config {
         removeCooldown = languageConfig.getString("removeCooldown");
         ticksFor = languageConfig.getString("ticksFor");
         glow = languageConfig.getString("glow");
-        instructions = languageConfig.getString("instructions");
+        instructions1 = languageConfig.getString("instructions1");
+        instructions2 = languageConfig.getString("instructions2");
         crouch = languageConfig.getString("crouch");
         click = languageConfig.getString("click");
         finish = languageConfig.getString("finish");
+        error = languageConfig.getString("error");
     }
 
 }

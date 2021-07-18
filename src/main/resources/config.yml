@@ -31,6 +31,7 @@
 #
 # Permissions:
 #   astools.use                     Permission to using any of the tools, except the ones below that have their own separate permissions (see below)
+#   astools.new                     Permission to use "/astools new" command to summon a new armor stand
 #   astools.clone                   Permission to use the clone tool (Clones an armor stand without requiring the materials)
 #   astools.summon                  Permission to use the summon tool (Summons an armor stand without requiring the materials)
 #   astools.head                    Permission to use the player head tool (Ability to specify a player head for an armor stand)
@@ -40,6 +41,7 @@
 #   astools.ascmd.remove            Permission to remove a command from an armor stand
 #   astools.ascmd.view              Permission to view the command assigned to an armor stand
 #   astools.ascmd.execute           Permission to execute a command assigned to an armor stand by (on right click)
+#   astools.ascmd.cooldown          Permission to add a cooldown to commands assigned to an armor stand
 #   astools.bypass-wg-flag          Permission to bypass AST's custom worldguard flag (see below for more details)
 #
 # WorldGuard Integration:
@@ -50,6 +52,7 @@
 #     this permission can use AST in worldguard regions even if the ast flag for that region is set to Deny.
 #   - The ast worldguard flag is also ignored for players that have op.
 #
+showDebugMessages: false
 integrateWithWorldGuard: true
 allowMovingStandsBetweenWorlds: false
 requireCreativeForSaveAsCmdBlock: false
@@ -68,6 +71,9 @@ enableTool:
   gui_pHead: true
   gui_invul: true
   gui_move: true
+  gui_moveup: true
+  gui_movedown: true
+  gui_rotate: true
   gui_glow: true
   gui_head: true
   gui_body: true

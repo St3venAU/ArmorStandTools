@@ -25,6 +25,7 @@ import org.bukkit.metadata.MetadataValue;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("CommentedOutCode")
 public class MainListener implements Listener {
 
     private static final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
@@ -34,9 +35,14 @@ public class MainListener implements Listener {
         Player p = event.getPlayer();
         if(stopEditing(p, false)) {
             event.setCancelled(true);
+            AST.debug("Interaction cancelled as player is already editing");
         }
         if(!(event.getRightClicked() instanceof ArmorStand)) return;
         ArmorStand as = (ArmorStand) event.getRightClicked();
+        AST.debug(p.getName() + " right-clicked " + as.getName() + ", Crouching: " + p.isSneaking());
+        if(event.isCancelled()) {
+            AST.debug("Interaction with Armor Stand was cancelled by a plugin");
+        }
         if(!event.isCancelled() && ArmorStandGUI.isInUse(as)) {
             Utils.title(p, Config.guiInUse);
             event.setCancelled(true);
@@ -66,9 +72,7 @@ public class MainListener implements Listener {
 
     ArmorStand getCarryingArmorStand(Player p) {
         UUID uuid = p.getUniqueId();
-        return  ArmorStandTool.MOVE == AST.activeTool.get(uuid)
-                ? AST.selectedArmorStand.get(uuid)
-                : null;
+        return  ArmorStandTool.MOVE == AST.activeTool.get(uuid) ? AST.selectedArmorStand.get(uuid) : null;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -247,7 +251,9 @@ public class MainListener implements Listener {
         attachment.setPermission("astools.ascmd.remove", true);
         attachment.setPermission("astools.ascmd.assign.player", true);
         attachment.setPermission("astools.ascmd.assign.console", true);
+        attachment.setPermission("astools.ascmd.cooldown", true);
         attachment.setPermission("astools.ascmd.execute", true);
+        attachment.setPermission("astools.new", true);
         //attachment.setPermission("astools.bypass-wg-flag", true);
     }*/
 

@@ -3,6 +3,7 @@ package com.gmail.st3venau.plugins.armorstandtools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -24,12 +25,12 @@ import java.util.UUID;
 
 class ArmorStandGUI implements Listener {
 
-    private static final int INV_SLOT_HELMET = 2;
-    private static final int INV_SLOT_CHEST  = 11;
-    private static final int INV_SLOT_PANTS  = 20;
-    private static final int INV_SLOT_BOOTS  = 29;
-    private static final int INV_SLOT_R_HAND = 10;
-    private static final int INV_SLOT_L_HAND = 12;
+    private static final int INV_SLOT_HELMET = 1;
+    private static final int INV_SLOT_CHEST  = 10;
+    private static final int INV_SLOT_PANTS  = 19;
+    private static final int INV_SLOT_BOOTS  = 28;
+    private static final int INV_SLOT_R_HAND = 9;
+    private static final int INV_SLOT_L_HAND = 11;
 
     private static final HashSet<Integer> inUse = new HashSet<>();
     private static final HashSet<Integer> invSlots = new HashSet<>();
@@ -106,10 +107,12 @@ class ArmorStandGUI implements Listener {
             event.setCancelled(true);
             return;
         }
+        boolean rightClick = event.getClick() == ClickType.RIGHT;
         int slot = event.getRawSlot();
         if(slot > i.getSize()) return;
+        Location l = as.getLocation();
         if(invSlots.contains(slot)) {
-            if(AST.checkBlockPermission(p, as.getLocation().getBlock())) {
+            if(AST.checkBlockPermission(p, l.getBlock())) {
                 updateArmorStandInventory();
             } else {
                 event.setCancelled(true);
@@ -121,7 +124,7 @@ class ArmorStandGUI implements Listener {
         if(!(event.getWhoClicked() instanceof Player)) return;
         ArmorStandTool t = ArmorStandTool.get(event.getCurrentItem());
         if(t == null) return;
-        if (!AST.playerHasPermission(p, as.getLocation().getBlock(), t)) {
+        if (!AST.playerHasPermission(p, l.getBlock(), t)) {
             p.sendMessage(ChatColor.RED + Config.generalNoPerm);
             return;
         }
@@ -192,6 +195,23 @@ class ArmorStandGUI implements Listener {
                 as.removeMetadata("clone", AST.plugin);
                 AST.pickUpArmorStand(as, p);
                 Utils.title(p, Config.carrying);
+                break;
+            case UP:
+            case DOWN:
+                double dist = (t == ArmorStandTool.UP ? 1 : -1) * (rightClick ? 1 : 0.1);
+                l.add(0, dist,0);
+                if (!AST.playerHasPermission(p, l.getBlock(), null)) {
+                    p.closeInventory();
+                    p.sendMessage(ChatColor.RED + Config.wgNoPerm);
+                    break;
+                }
+                as.setGravity(false);
+                as.teleport(l);
+                break;
+            case ROTATE:
+                float yaw = l.getYaw() + (rightClick ? -5 : 5);
+                l.setYaw(yaw);
+                as.teleport(l);
                 break;
             case GLOW:
                 boolean glowing = !as.isGlowing();
