@@ -19,6 +19,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -29,6 +30,7 @@ public class AST extends JavaPlugin {
 
     final static HashMap<UUID, ArmorStandTool> activeTool = new HashMap<>();
     final static HashMap<UUID, ArmorStand> selectedArmorStand = new HashMap<>();
+    final static ArrayList<UUID> showAdvancedTools = new ArrayList<>();
 
     static AST plugin;
 

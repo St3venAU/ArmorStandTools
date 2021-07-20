@@ -66,12 +66,13 @@ class ArmorStandGUI implements Listener {
         } else if(name.length() > 32) {
             name = name.substring(0, 32);
         }
-        i = Bukkit.createInventory(null, 54, name);
+        boolean showAdvancedTools = AST.showAdvancedTools.contains(p.getUniqueId());
+        i = Bukkit.createInventory(null, showAdvancedTools ? 54 : 36, name);
         for(int slot = 0; slot < i.getSize(); slot++) {
             i.setItem(slot, filler);
         }
         for(ArmorStandTool tool : ArmorStandTool.values()) {
-            if(tool.isEnabled()) {
+            if(tool.isEnabled() && (!tool.isAdvanced() || showAdvancedTools)) {
                 i.setItem(tool.getSlot(), tool.updateLore(as));
             }
         }
@@ -101,8 +102,7 @@ class ArmorStandGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!event.getInventory().equals(i) || !(event.getWhoClicked() instanceof Player)) return;
-        Player p = (Player) event.getWhoClicked();
+        if(!event.getInventory().equals(i) || !(event.getWhoClicked() instanceof Player p)) return;
         if(event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT || event.getClick() == ClickType.NUMBER_KEY) {
             event.setCancelled(true);
             return;
@@ -129,6 +129,12 @@ class ArmorStandGUI implements Listener {
             return;
         }
         UUID uuid = p.getUniqueId();
+        if(t.isAdvanced()) {
+            AST.activeTool.put(uuid, t);
+            AST.selectedArmorStand.put(uuid, as);
+            p.closeInventory();
+            t.showTitle(p);
+        }
         switch (t) {
             case HEAD:
             case BODY:
@@ -196,10 +202,11 @@ class ArmorStandGUI implements Listener {
                 AST.pickUpArmorStand(as, p);
                 Utils.title(p, Config.carrying);
                 break;
-            case UP:
-            case DOWN:
-                double dist = (t == ArmorStandTool.UP ? 1 : -1) * (rightClick ? 1 : 0.1);
-                l.add(0, dist,0);
+            case MOVE_X:
+            case MOVE_Y:
+            case MOVE_Z:
+                double dist = rightClick ? -0.1 : 0.1;
+                l.add(t == ArmorStandTool.MOVE_X ? dist : 0, t == ArmorStandTool.MOVE_Y ? dist : 0,t == ArmorStandTool.MOVE_Z ? dist : 0);
                 if (!AST.playerHasPermission(p, l.getBlock(), null)) {
                     p.closeInventory();
                     p.sendMessage(ChatColor.RED + Config.wgNoPerm);
@@ -218,6 +225,24 @@ class ArmorStandGUI implements Listener {
                 as.setGlowing(glowing);
                 Utils.title(p, Config.glow + ": " + (glowing ? Config.isOn : Config.isOff));
                 break;
+            case ADVANCED:
+                if(AST.showAdvancedTools.contains(uuid)) {
+                    AST.showAdvancedTools.remove(uuid);
+                } else {
+                    AST.showAdvancedTools.add(uuid);
+                }
+                p.closeInventory();
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if(ArmorStandGUI.isInUse(as)) {
+                            Utils.title(p, Config.guiInUse);
+                            return;
+                        }
+                        new ArmorStandGUI(as, p);
+                    }
+                }.runTaskLater(AST.plugin, 1L);
+                break;
             default:
                 return;
         }
@@ -226,8 +251,7 @@ class ArmorStandGUI implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
-        if(!event.getInventory().equals(i) || !(event.getWhoClicked() instanceof Player)) return;
-        Player p = (Player) event.getWhoClicked();
+        if(!event.getInventory().equals(i) || !(event.getWhoClicked() instanceof Player p)) return;
         boolean invModified = false;
         for(int slot : event.getRawSlots()) {
             if(slot < i.getSize()) {

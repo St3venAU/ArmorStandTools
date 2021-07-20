@@ -91,6 +91,8 @@ finish: 'Finish'
 instructions1: 'Crouch + right-click an armor stand to edit, or use command'
 instructions2: 'to summon a new armor stand'
 error: 'An error occured. Try again.'
+#New since v4.1.0
+reloaded : 'Armor Stand Tools reloaded'
 #
 #############################
 # Tool names & descriptions #
@@ -100,18 +102,6 @@ tool:
     name: 'Pick Up (Move)'
     lore:
       - 'Pick up this armor stand to move it'
-  gui_moveup:
-    name: 'Move Up'
-    lore:
-      - 'Left click: Move up 0.1 block'
-      - 'Right click: Move up 1 block'
-      - '(Automatically disables gravity)'
-  gui_movedown:
-    name: 'Move Down'
-    lore:
-      - 'Left click: Move down 0.1 block'
-      - 'Right click: Move down 1 block'
-      - '(Automatically disables gravity)'
   gui_rotate:
     name: 'Rotate'
     lore:
@@ -174,3 +164,95 @@ tool:
   gui_rleg:
     name: 'Move Right Leg'
     lore: 'Change the right leg position'
+  gui_moveX:
+    name: 'Move X (East/West)'
+    lore:
+      - 'Left click: Move East (+0.1 X)'
+      - 'Right click: Move West (-0.1 X)'
+      - '(Automatically disables gravity)'
+  gui_moveY:
+    name: 'Move Y (Up/Down)'
+    lore:
+      - 'Left click: Move Up (+0.1 Y)'
+      - 'Right click: Move Down (-0.1 Y)'
+      - '(Automatically disables gravity)'
+  gui_moveZ:
+    name: 'Move Z (South/North)'
+    lore:
+      - 'Left click: Move South (+0.1 Z)'
+      - 'Right click: Move North (-0.1 Z)'
+      - '(Automatically disables gravity)'
+  gui_advanced:
+    name: 'Show/Hide Advanced Tools'
+  gui_headX:
+    name: 'Head X'
+    lore:
+      - 'Change head X position'
+  gui_headY:
+    name: 'Head Y'
+    lore:
+      - 'Change head Y position'
+  gui_headZ:
+    name: 'Head Z'
+    lore:
+      - 'Change head Z position'
+  gui_lArmX:
+    name: 'Left Arm X'
+    lore:
+      - 'Change left arm X position'
+  gui_lArmY:
+    name: 'Left Arm Y'
+    lore:
+      - 'Change left arm Y Position'
+  gui_lArmZ:
+    name: 'Left Arm Z'
+    lore:
+      - 'Change left arm Z Position'
+  gui_rArmX:
+    name: 'Right Arm X'
+    lore:
+      - 'Change right arm X position'
+  gui_rArmY:
+    name: 'Right Arm Y'
+    lore:
+      - 'Change right arm Y position'
+  gui_rArmZ:
+    name: 'Right Arm Z'
+    lore:
+      - 'Change right arm Z position'
+  gui_lLegX:
+    name: 'Left Leg X'
+    lore:
+      - 'Change left leg X position'
+  gui_lLegY:
+    name: 'Left Leg Y'
+    lore:
+      - 'Change left leg Y position'
+  gui_lLegZ:
+    name: 'Left Leg Z'
+    lore:
+      - 'Change left leg Z position'
+  gui_rLegX:
+    name: 'Right Leg X'
+    lore:
+      - 'Change right leg X position'
+  gui_rLegY:
+    name: 'Right Leg Y'
+    lore:
+      - 'Change right leg Y position'
+  gui_rLegZ:
+    name: 'Right Leg Z'
+    lore:
+      - 'Change right leg Z position'
+  gui_bodyX:
+    name: 'Body X'
+    lore:
+      - 'Change body X position'
+  gui_bodyY:
+    name: 'Body Y'
+    lore:
+      - 'Change body Y position'
+  gui_bodyZ:
+    name: 'Body Z'
+    lore:
+      - 'Change body Z position'

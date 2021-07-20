@@ -33,8 +33,8 @@ Assigning Commands
 - Use /ascmd to assign a command to an armor stand (see usage and permissions below)
 - When using /ascmd assign player <command>, the command will be run by the player
 - When using /ascmd assign console <command>, the command will be run by the console (see Warning below!)
-- When a player with the astools.ascmd.execute permission right clicks on an armor stand, it's command is run.
-- If a player is crouching when they right click the armor stand, the command will not be run.
+- When a player with the astools.ascmd.execute permission right-clicks on an armor stand, it's command is run.
+- If a player is crouching when they right-click the armor stand, the command will not be run.
 - Warning: Make sure you are careful when assigning console commands. Any player with the astools.ascmd.execute permission will be able to execute the command.
 - By default, any command assigned to an armor stand will use the default cooldown set in config.yml. This can be set on an individual basis using the /ascmd cooldown <ticks> command.
 
@@ -47,6 +47,8 @@ Commands
 - /ascmd cooldown <ticks> : Sets the cooldown (in ticks) for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
 - /ascmd cooldown remove : Removes the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
 - /astools or /ast : Legacy command - instructs player to crouch right-click an armor stand to use AST.
+- /astools new : Create a new armor stand - will spawn being carried by the player
+- /astools reload : Reload the plugin (use when changing config files)
 
 WorldGuard Integration
 ----------------------
@@ -63,6 +65,7 @@ Permissions
 - astools.head: Permission to use the player head tool (Ability to specify a player head for an armor stand)
 - astools.summon: Permission to use the summon tool (Summons an armor stand without requiring the materials)
 - astools.cmdblock: Permission to use the save tool (Creates a command block)
+- astools.reload: Permission to reload the plugin
 - astools.ascmd.assign.console: Permission to assign a console command to an armor stand
 - astools.ascmd.assign.player: Permission to assign a player command to an armor stand
 - astools.ascmd.remove: Permission to remove a command from an armor stand
@@ -74,4 +77,4 @@ Permissions
 Config
 ------
 - config.yml - The main config file allows you to set the default starting settings for newly summoned armor stands. This is useful if you plan on creating a lot of armor stands with similar equipment.
-- language.yml - Contains all of the strings of text that the player will see. Edit this file if you wish to change the text or translate it into a different language.
+- language.yml - Contains all the strings of text that the player will see. Edit this file if you wish to change the text or translate it into a different language.

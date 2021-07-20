@@ -20,12 +20,11 @@ class Commands implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             AST.plugin.getLogger().warning(Config.notConsole);
             return false;
         }
         String cmd = command.getName().toLowerCase();
-        Player p = (Player) sender;
         if(cmd.equals("astools") || cmd.equals("ast")) {
             if (!Utils.hasPermissionNode(p, "astools.use")) {
                 p.sendMessage(ChatColor.RED + Config.noCommandPerm);
@@ -45,6 +44,14 @@ class Commands implements CommandExecutor, TabCompleter {
                 ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
                 AST.pickUpArmorStand(as, p);
                 Utils.title(p, Config.carrying);
+            } else if (args[0].equalsIgnoreCase("reload")) {
+                if (Utils.hasPermissionNode(p, "astools.reload")) {
+                    Config.reload(null);
+                    p.sendMessage(ChatColor.GREEN + Config.reloaded);
+                } else {
+                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                }
+                return true;
             }
             p.sendMessage(ChatColor.AQUA + Config.instructions1 + ChatColor.GREEN + " /ast new " + ChatColor.AQUA + Config.instructions2);
             return true;

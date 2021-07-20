@@ -33,22 +33,16 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         Player p = event.getPlayer();
-        if(stopEditing(p, false)) {
-            event.setCancelled(true);
-            AST.debug("Interaction cancelled as player is already editing");
-        }
-        if(!(event.getRightClicked() instanceof ArmorStand)) return;
-        ArmorStand as = (ArmorStand) event.getRightClicked();
-        AST.debug(p.getName() + " right-clicked " + as.getName() + ", Crouching: " + p.isSneaking());
-        if(event.isCancelled()) {
-            AST.debug("Interaction with Armor Stand was cancelled by a plugin");
-        }
-        if(!event.isCancelled() && ArmorStandGUI.isInUse(as)) {
-            Utils.title(p, Config.guiInUse);
-            event.setCancelled(true);
-            return;
-        }
-        if(!event.isCancelled() && p.isSneaking()) {
+        if(!(event.getRightClicked() instanceof ArmorStand as)) return;
+        boolean hasAstPerm = Utils.hasPermissionNode(p, "astools.use");
+        AST.debug(p.getName() + " right-clicked " + as.getName() + ", Crouching: " + p.isSneaking() + ", Has astools.use perm: " + hasAstPerm);
+        if(p.isSneaking() && hasAstPerm) {
+            if (ArmorStandGUI.isInUse(as)) {
+                Utils.title(p, Config.guiInUse);
+                event.setCancelled(true);
+                AST.debug("Interaction cancelled as Armor Stand GUI is in use");
+                return;
+            }
             if (!AST.playerHasPermission(p, as.getLocation().getBlock(), null)) {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
                 return;
@@ -130,8 +124,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof ArmorStand) {
-            ArmorStand as = (ArmorStand) event.getEntity();
+        if(event.getEntity() instanceof ArmorStand as) {
             if(event.getDamager() instanceof Player && stopEditing((Player) event.getDamager(), false)) {
                 event.setCancelled(true);
                 return;
@@ -144,8 +137,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if(event.getEntity() instanceof ArmorStand) {
-            ArmorStand as = (ArmorStand) event.getEntity();
+        if(event.getEntity() instanceof ArmorStand as) {
             if(ArmorStandGUI.isInUse(as) || as.isInvulnerable()) {
                 event.setCancelled(true);
             }

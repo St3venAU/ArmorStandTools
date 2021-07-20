@@ -188,8 +188,7 @@ class Utils {
             return "";
         }
         StringBuilder tags = new StringBuilder();
-        if(is.getItemMeta() != null && is.getItemMeta() instanceof LeatherArmorMeta) {
-            LeatherArmorMeta armorMeta = (LeatherArmorMeta) is.getItemMeta();
+        if(is.getItemMeta() != null && is.getItemMeta() instanceof LeatherArmorMeta armorMeta) {
             tags.append("display:{color:");
             tags.append(armorMeta.getColor().asRGB());
             tags.append("}");
@@ -215,9 +214,8 @@ class Utils {
     }
 
     static private String skullOwner(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta)) return "";
-        SkullMeta skull = (SkullMeta) is.getItemMeta();
-        return  skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwningPlayer().getName() + "\"";
+        if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta skull)) return "";
+        return skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwningPlayer().getName() + "\"";
     }
 
     static private boolean isEmpty(ItemStack is) {

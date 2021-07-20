@@ -16,30 +16,56 @@ import java.util.UUID;
 
 public enum ArmorStandTool {
 
-    HEAD    ("gui_head",    Material.PLAYER_HEAD,            7,  "astools.use",     false),
-    BODY    ("gui_body",    Material.NETHER_BRICKS,          16, "astools.use",     false),
-    RARM    ("gui_rarm",    Material.REDSTONE_TORCH,         15, "astools.use",     true),
-    LARM    ("gui_larm",    Material.TORCH,                  17, "astools.use",     true),
-    RLEG    ("gui_rleg",    Material.BLAZE_ROD,              24, "astools.use",     true),
-    LLEG    ("gui_lleg",    Material.BONE,                   26, "astools.use",     true),
-    MOVE    ("gui_move",    Material.FEATHER,                25, "astools.use",     false),
-    CLONE   ("gui_clone",   Material.GLOWSTONE_DUST,         34, "astools.clone",   false),
+    HEAD    ("gui_head",    Material.WITHER_SKELETON_SKULL,  7,  "astools.use",     false, false),
+    BODY    ("gui_body",    Material.NETHERITE_CHESTPLATE,   16, "astools.use",     false, false),
+    RARM    ("gui_rarm",    Material.REDSTONE_TORCH,         15, "astools.use",     true,  false),
+    LARM    ("gui_larm",    Material.TORCH,                  17, "astools.use",     true,  false),
+    RLEG    ("gui_rleg",    Material.BLAZE_ROD,              24, "astools.use",     true,  false),
+    LLEG    ("gui_lleg",    Material.BONE,                   26, "astools.use",     true,  false),
+    MOVE    ("gui_move",    Material.FEATHER,                8,  "astools.use",     false, false),
 
-    UP      ("gui_moveup",  Material.LIGHTNING_ROD,          4,  "astools.use",     false),
-    DOWN    ("gui_movedown",Material.LEVER,                  13, "astools.use",     false),
-    ROTATE  ("gui_rotate",  Material.ENDER_PEARL,            22, "astools.use",     false),
+    ROTATE  ("gui_rotate", Material.ENDER_PEARL,             25, "astools.use",     false, false),
+    MOVE_X  ("gui_moveX",  Material.ORANGE_CANDLE,           33, "astools.use",     false, false),
+    MOVE_Y  ("gui_moveY",  Material.LIGHT_BLUE_CANDLE,       34, "astools.use",     false, false),
+    MOVE_Z  ("gui_moveZ",  Material.LIME_CANDLE,             35, "astools.use",     false, false),
 
-    PHEAD   ("gui_pHead",   Material.PLAYER_HEAD,            36, "astools.head",    false),
-    NAME    ("gui_name",    Material.NAME_TAG,               45, "astools.use",     false),
-    INVIS   ("gui_invis",   Material.GOLD_NUGGET,            46, "astools.use",     false),
-    ARMS    ("gui_arms",    Material.ARROW,                  47, "astools.use",     false),
-    BASE    ("gui_base",    Material.STONE_SLAB,             48, "astools.use",     false),
-    SIZE    ("gui_size",    Material.EMERALD,                49, "astools.use",     false),
-    GRAV    ("gui_grav",    Material.GHAST_TEAR,             50, "astools.use",     false),
-    INVUL   ("gui_invul",   Material.GLISTERING_MELON_SLICE, 51, "astools.use",     false),
-    SLOTS   ("gui_slots",   Material.IRON_HOE,               52, "astools.use",     false),
-    GLOW    ("gui_glow",    Material.GLOWSTONE,              53, "astools.glow",    false),
-    SAVE    ("gui_save",    Material.DIAMOND,                44, "astools.cmdblock",false);
+
+    NAME    ("gui_name",    Material.NAME_TAG,               3, "astools.use",      false, false),
+    INVIS   ("gui_invis",   Material.GOLD_NUGGET,            4, "astools.use",      false, false),
+    ARMS    ("gui_arms",    Material.ARROW,                  5, "astools.use",      false, false),
+    BASE    ("gui_base",    Material.STONE_SLAB,             12, "astools.use",     false, false),
+    SIZE    ("gui_size",    Material.EMERALD,                14, "astools.use",     false, false),
+    GRAV    ("gui_grav",    Material.GHAST_TEAR,             13, "astools.use",     false, false),
+    INVUL   ("gui_invul",   Material.GLISTERING_MELON_SLICE, 21, "astools.use",     false, false),
+    SLOTS   ("gui_slots",   Material.IRON_HOE,               22, "astools.use",     false, false),
+    GLOW    ("gui_glow",    Material.GLOWSTONE,              23, "astools.glow",    false, false),
+    PHEAD   ("gui_pHead",   Material.PLAYER_HEAD,            30, "astools.head",    false, false),
+    SAVE    ("gui_save",    Material.DIAMOND,                31, "astools.cmdblock",false, false),
+    CLONE   ("gui_clone",   Material.ARMOR_STAND,            32, "astools.clone",   false, false),
+
+    ADVANCED("gui_advanced",Material.NETHER_STAR,           27, "astools.use",     false,  false),
+
+    RARM_X  ("gui_rArmX",   Material.REDSTONE_TORCH,        36, "astools.use",     false,  true),
+    RARM_Y  ("gui_rArmY",   Material.REDSTONE_TORCH,        37, "astools.use",     false,  true),
+    RARM_Z  ("gui_rArmZ",   Material.REDSTONE_TORCH,        38, "astools.use",     false,  true),
+    LARM_X  ("gui_lArmX",   Material.TORCH,                 39, "astools.use",     false,  true),
+    LARM_Y  ("gui_lArmY",   Material.TORCH,                 40, "astools.use",     false,  true),
+    LARM_Z  ("gui_lArmZ",   Material.TORCH,                 41, "astools.use",     false,  true),
+    HEAD_X  ("gui_headX",   Material.WITHER_SKELETON_SKULL, 42, "astools.use",     false,  true),
+    HEAD_Y  ("gui_headY",   Material.WITHER_SKELETON_SKULL, 43, "astools.use",     false,  true),
+    HEAD_Z  ("gui_headZ",   Material.WITHER_SKELETON_SKULL, 44, "astools.use",     false,  true),
+
+    RLEG_X  ("gui_rLegX",   Material.BLAZE_ROD,             45, "astools.use",     false,  true),
+    RLEG_Y  ("gui_rLegY",   Material.BLAZE_ROD,             46, "astools.use",     false,  true),
+    RLEG_Z  ("gui_rLegZ",   Material.BLAZE_ROD,             47, "astools.use",     false,  true),
+    LLEG_X  ("gui_lLegX",   Material.BONE,                  48, "astools.use",     false,  true),
+    LLEG_Y  ("gui_lLegY",   Material.BONE,                  49, "astools.use",     false,  true),
+    LLEG_Z  ("gui_lLegZ",   Material.BONE,                  50, "astools.use",     false,  true),
+    BODY_X  ("gui_bodyX",   Material.NETHERITE_CHESTPLATE,  51, "astools.use",     false,  true),
+    BODY_Y  ("gui_bodyY",   Material.NETHERITE_CHESTPLATE,  52, "astools.use",     false,  true),
+    BODY_Z  ("gui_bodyZ",   Material.NETHERITE_CHESTPLATE,  53, "astools.use",     false,  true);
+
+
 
     private final ItemStack item;
     private final String config_id;
@@ -47,15 +73,21 @@ public enum ArmorStandTool {
     private boolean enabled;
     private final String permission;
     private final boolean reverseSneaking;
+    private final boolean advanced;
     private String name;
 
-    ArmorStandTool(String config_id, Material m, int slot, String permission, boolean reverseSneaking) {
+    ArmorStandTool(String config_id, Material m, int slot, String permission, boolean reverseSneaking, boolean advanced) {
         item = new ItemStack(m);
         this.config_id = config_id;
         this.slot = slot;
         this.enabled = true;
         this.permission = permission;
         this.reverseSneaking = reverseSneaking;
+        this.advanced = advanced;
+    }
+
+    boolean isAdvanced() {
+        return advanced;
     }
 
     void showTitle(Player p) {
@@ -63,14 +95,20 @@ public enum ArmorStandTool {
         ChatColor offColor = ChatColor.WHITE;
         ChatColor onColor = ChatColor.YELLOW;
         ChatColor divColor = ChatColor.BLACK;
-        String msg =
-                (sneaking ? offColor : onColor) +
-                Config.normal + ": X/" + (reverseSneaking ? "Z" : "Y") +
-                divColor + " | " +
-                (sneaking ? onColor : offColor) +
-                Config.crouch + ": X/" + (reverseSneaking ? "Y" : "Z") +
-                divColor + " | " +
-                offColor + Config.click + ": " + Config.finish;
+        String msg;
+        if(advanced) {
+            msg =   onColor + name +
+                    divColor + " | " +
+                    offColor + Config.click + ": " + Config.finish;
+        } else {
+            msg =   (sneaking ? offColor : onColor) +
+                    Config.normal + ": X/" + (reverseSneaking ? "Z" : "Y") +
+                    divColor + " | " +
+                    (sneaking ? onColor : offColor) +
+                    Config.crouch + ": X/" + (reverseSneaking ? "Y" : "Z") +
+                    divColor + " | " +
+                    offColor + Config.click + ": " + Config.finish;
+        }
         p.sendTitle(" ", msg, 0, 600, 0);
     }
 
@@ -106,52 +144,49 @@ public enum ArmorStandTool {
             AST.activeTool.remove(uuid);
             return;
         }
-        EulerAngle eulerAngle;
-        switch (this) {
-            case MOVE:
-                as.teleport(Utils.getLocationFacing(p.getLocation()));
-                Utils.title(p, Config.carrying);
-                return;
-            case HEAD:
-                eulerAngle = as.getHeadPose();
-                break;
-            case BODY:
-                eulerAngle = as.getBodyPose();
-                break;
-            case LARM:
-                eulerAngle = as.getLeftArmPose();
-                break;
-            case RARM:
-                eulerAngle = as.getRightArmPose();
-                break;
-            case LLEG:
-                eulerAngle = as.getLeftLegPose();
-                break;
-            case RLEG:
-                eulerAngle = as.getRightLegPose();
-                break;
-            default:
-                return;
+        if(this == MOVE) {
+            as.teleport(Utils.getLocationFacing(p.getLocation()));
+            Utils.title(p, Config.carrying);
+            return;
         }
-        eulerAngle = eulerAngle.setX(getPitch(p));
-        boolean sneaking = reverseSneaking != p.isSneaking();
-        double yaw = getRelativeYaw(p, as);
-        eulerAngle = sneaking ? eulerAngle.setZ(yaw) : eulerAngle.setY(yaw);
         showTitle(p);
+        EulerAngle eulerAngle = switch (this) {
+            case HEAD, HEAD_X, HEAD_Y, HEAD_Z -> as.getHeadPose();
+            case BODY, BODY_X, BODY_Y, BODY_Z -> as.getBodyPose();
+            case LARM, LARM_X, LARM_Y, LARM_Z -> as.getLeftArmPose();
+            case RARM, RARM_X, RARM_Y, RARM_Z -> as.getRightArmPose();
+            case LLEG, LLEG_X, LLEG_Y, LLEG_Z -> as.getLeftLegPose();
+            case RLEG, RLEG_X, RLEG_Y, RLEG_Z -> as.getRightLegPose();
+            default -> null;
+        };
+        if(eulerAngle == null) return;
+        if(advanced) {
+            eulerAngle = switch (this) {
+                case HEAD_X, BODY_X, LARM_X, RARM_X, LLEG_X, RLEG_X -> eulerAngle.setX(getPitch(p, 8));
+                case HEAD_Y, BODY_Y, LARM_Y, RARM_Y, LLEG_Y, RLEG_Y -> eulerAngle.setY(getPitch(p, 8));
+                case HEAD_Z, BODY_Z, LARM_Z, RARM_Z, LLEG_Z, RLEG_Z -> eulerAngle.setZ(getPitch(p, 8));
+                default -> eulerAngle;
+            };
+        } else {
+            eulerAngle = eulerAngle.setX(getPitch(p, 4));
+            boolean sneaking = reverseSneaking != p.isSneaking();
+            double yaw = getRelativeYaw(p, as);
+            eulerAngle = sneaking ? eulerAngle.setZ(yaw) : eulerAngle.setY(yaw);
+        }
         switch (this) {
-            case HEAD -> as.setHeadPose(eulerAngle);
-            case BODY -> as.setBodyPose(eulerAngle);
-            case LARM -> as.setLeftArmPose(eulerAngle);
-            case RARM -> as.setRightArmPose(eulerAngle);
-            case LLEG -> as.setLeftLegPose(eulerAngle);
-            case RLEG -> as.setRightLegPose(eulerAngle);
+            case HEAD, HEAD_X, HEAD_Y, HEAD_Z -> as.setHeadPose(eulerAngle);
+            case BODY, BODY_X, BODY_Y, BODY_Z -> as.setBodyPose(eulerAngle);
+            case LARM, LARM_X, LARM_Y, LARM_Z -> as.setLeftArmPose(eulerAngle);
+            case RARM, RARM_X, RARM_Y, RARM_Z -> as.setRightArmPose(eulerAngle);
+            case LLEG, LLEG_X, LLEG_Y, LLEG_Z -> as.setLeftLegPose(eulerAngle);
+            case RLEG, RLEG_X, RLEG_Y, RLEG_Z -> as.setRightLegPose(eulerAngle);
         }
     }
 
     // Get pitch and format as 0 to 2pi radians
-    // Actual pitch quadrupled for increased sensitivity
-    private double getPitch(Player p) {
-        double pitch = p.getLocation().getPitch() * 4;
+    // Actual pitch multiplied for increased sensitivity
+    private double getPitch(Player p, int multiplier) {
+        double pitch = p.getLocation().getPitch() * multiplier;
         while(pitch < 0) {
             pitch += 360;
         }
@@ -214,8 +249,7 @@ public enum ArmorStandTool {
 
     private String plrHeadName(ArmorStand as) {
         EntityEquipment entityEquipment = as.getEquipment();
-        if(entityEquipment == null || entityEquipment.getHelmet() == null || !(entityEquipment.getHelmet().getItemMeta() instanceof SkullMeta)) return null;
-        SkullMeta meta = (SkullMeta) entityEquipment.getHelmet().getItemMeta();
+        if(entityEquipment == null || entityEquipment.getHelmet() == null || !(entityEquipment.getHelmet().getItemMeta() instanceof SkullMeta meta)) return null;
         if(meta.getOwningPlayer() == null) return null;
         return meta.getOwningPlayer().getName();
     }

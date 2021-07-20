@@ -27,6 +27,8 @@
 #   /ascmd cooldown <ticks>         Set the cooldown for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
 #   /ascmd cooldown remove          Remove the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
 #   /astools or /ast                Legacy command - now gives instructions for player to crouch right-click an armor stand
+#   /astools new                    Create a new armor stand - will spawn being carried by the player
+#   /astools reload                 Reload the plugin (use when changing config files)
 #   Note: Armor stand commands may include a %player% placeholder, which will get replaced by the executing player's name at time of execution.
 #
 # Permissions:
@@ -36,6 +38,7 @@
 #   astools.summon                  Permission to use the summon tool (Summons an armor stand without requiring the materials)
 #   astools.head                    Permission to use the player head tool (Ability to specify a player head for an armor stand)
 #   astools.cmdblock                Permission to use the save tool (Creates a command block)
+#   astools.reload                  Permission to reload the plugin
 #   astools.ascmd.assign.console    Permission to assign a console command to an armor stand
 #   astools.ascmd.assign.player     Permission to assign a player command to an armor stand
 #   astools.ascmd.remove            Permission to remove a command from an armor stand
@@ -71,9 +74,10 @@ enableTool:
   gui_pHead: true
   gui_invul: true
   gui_move: true
-  gui_moveup: true
-  gui_movedown: true
   gui_rotate: true
+  gui_moveX: true
+  gui_moveY: true
+  gui_moveZ: true
   gui_glow: true
   gui_head: true
   gui_body: true
@@ -81,3 +85,22 @@ enableTool:
   gui_rarm: true
   gui_lleg: true
   gui_rleg: true
+  gui_advanced: true
+  gui_lArmX: true
+  gui_lArmY: true
+  gui_lArmZ: true
+  gui_rArmX: true
+  gui_rArmY: true
+  gui_rArmZ: true
+  gui_headX: true
+  gui_headY: true
+  gui_headZ: true
+  gui_lLegX: true
+  gui_lLegY: true
+  gui_lLegZ: true
+  gui_rLegX: true
+  gui_rLegY: true
+  gui_rLegZ: true
+  gui_bodyX: true
+  gui_bodyY: true
+  gui_bodyZ: true

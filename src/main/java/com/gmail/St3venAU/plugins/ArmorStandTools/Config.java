@@ -39,10 +39,10 @@ class Config {
             cooldownRemovedFrom, isAnInvalidCooldown,
             cooldownSetTo, ticksFor, setCooldown, glow,
             removeCooldown, instructions1, instructions2,
-            crouch, click, finish, error;
+            crouch, click, finish, error, reloaded;
 
     static void reload(AST main) {
-        plugin = main;
+        if(main != null) plugin = main;
         reloadMainConfig();
         saveDefaultLanguageConfig();
         reloadLanguageConfig();
@@ -55,7 +55,7 @@ class Config {
         FileConfiguration config = plugin.getConfig();
         allowMoveWorld              = config.getBoolean("allowMovingStandsBetweenWorlds");
         requireCreative             = config.getBoolean("requireCreativeForSaveAsCmdBlock");
-        defaultASCmdCooldownTicks   = config.getInt("defaultASCmdCooldownTicks");
+        defaultASCmdCooldownTicks   = config.getInt(    "defaultASCmdCooldownTicks");
         ignoreWGForASCmdExecution   = config.getBoolean("bypassWorldguardForASCmdExecution");
         debug                       = config.getBoolean("showDebugMessages", false);
 
@@ -165,6 +165,7 @@ class Config {
         click = languageConfig.getString("click");
         finish = languageConfig.getString("finish");
         error = languageConfig.getString("error");
+        reloaded = languageConfig.getString("reloaded");
     }
 
 }
