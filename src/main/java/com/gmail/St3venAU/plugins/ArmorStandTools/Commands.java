@@ -44,7 +44,7 @@ class Commands implements CommandExecutor, TabCompleter {
                 ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
                 AST.pickUpArmorStand(as, p);
                 Utils.title(p, Config.carrying);
-            } else if (args[0].equalsIgnoreCase("reload")) {
+            } else if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
                 if (Utils.hasPermissionNode(p, "astools.reload")) {
                     Config.reload(null);
                     p.sendMessage(ChatColor.GREEN + Config.reloaded);
