@@ -93,6 +93,8 @@ instructions2: 'to summon a new armor stand'
 error: 'An error occured. Try again.'
 #New since v4.1.0
 reloaded : 'Armor Stand Tools reloaded'
+#New since v4.1.3
+assignBungee: 'Assign a bungeecord server to be teleported to'
 #
 #############################
 # Tool names & descriptions #

@@ -10,16 +10,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.io.ByteStreams;
+import com.google.common.io.ByteArrayDataOutput;
+
 class ArmorStandCmd {
 
     private final ArmorStand armorStand;
     private String command;
-    private boolean console;
+    public static enum CmdType {
+        Console,
+        Player,
+        Bungeecord;
+    };
+    private CmdType cmdtype;
 
-    ArmorStandCmd(ArmorStand as, String command, boolean console) {
+    ArmorStandCmd(ArmorStand as, String command, CmdType cmdtype) {
         this.armorStand = as;
         this.command = command;
-        this.console = console;
+        this.cmdtype = cmdtype;
     }
 
     ArmorStandCmd(ArmorStand as) {
@@ -35,7 +43,7 @@ class ArmorStandCmd {
                     }
                     if(cmd.length() == 0) return;
                     this.command = cmd;
-                    this.console = true;
+                    this.cmdtype = CmdType.Console;
                     return;
                 } else if(cmd.startsWith("plr:")) {
                     cmd = cmd.substring(4);
@@ -44,7 +52,16 @@ class ArmorStandCmd {
                     }
                     if(cmd.length() == 0) return;
                     this.command = cmd;
-                    this.console = false;
+                    this.cmdtype = CmdType.Player;
+                    return;
+                } else if(cmd.startsWith("bun:")) {
+                    cmd = cmd.substring(4);
+                    if(cmd.charAt(0) == '/') {
+                        cmd = cmd.substring(1);
+                    }
+                    if(cmd.length() == 0) return;
+                    this.command = cmd;
+                    this.cmdtype = CmdType.Bungeecord;
                     return;
                 }
             }
@@ -52,7 +69,18 @@ class ArmorStandCmd {
     }
 
     private String getTag() {
-        return "ast-cmd-" + (console ? "con" : "plr") + ":" + command;
+        String typename;
+        switch (cmdtype) {
+            case Player:
+                typename = "plr";
+                break;
+            case Bungeecord:
+                typename = "bun";
+                break;
+            default:
+                typename = "con";
+        }
+        return "ast-cmd-" + typename + ":" + command;
     }
 
     String getCommand() {
@@ -67,10 +95,19 @@ class ArmorStandCmd {
         }
         setOnCooldown();
         String cmd = command.contains("%player%") ? command.replaceAll("%player%", p.getName()) : command;
-        if(console) {
-            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-        } else {
-            return p.performCommand(cmd);
+        switch (cmdtype) {
+            case Console:
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+            case Player:
+                return p.performCommand(cmd);
+            case Bungeecord:
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF(cmd);
+                p.sendPluginMessage(AST.plugin, "BungeeCord", out.toByteArray());
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -89,12 +126,12 @@ class ArmorStandCmd {
 
     void cloneTo(ArmorStand clone) {
         if(command == null) return;
-        ArmorStandCmd asCmd = new ArmorStandCmd(clone, command, console);
+        ArmorStandCmd asCmd = new ArmorStandCmd(clone, command, cmdtype);
         asCmd.save();
     }
 
     String getType() {
-        return console ? "Console" : "Player";
+        return cmdtype.name();
     }
 
     static boolean removeAssignedCommand(ArmorStand as) {

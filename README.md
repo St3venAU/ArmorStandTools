@@ -68,6 +68,7 @@ Permissions
 - astools.reload: Permission to reload the plugin
 - astools.ascmd.assign.console: Permission to assign a console command to an armor stand
 - astools.ascmd.assign.player: Permission to assign a player command to an armor stand
+- astools.ascmd.assign.bungeecord: Permission to assign a bungeecord command to an armor stand
 - astools.ascmd.remove: Permission to remove a command from an armor stand
 - astools.ascmd.view: Permission to view the command assigned to an armor stand
 - astools.ascmd.cooldown: Permission to add a cooldown to commands assigned to an armor stand

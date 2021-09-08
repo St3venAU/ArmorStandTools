@@ -73,6 +73,7 @@ public class AST extends JavaPlugin {
             setEnabled(false);
             return;
         }
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getPluginManager().registerEvents(new  MainListener(), this);
         Commands cmds = new Commands();
         PluginCommand command = getCommand("astools");

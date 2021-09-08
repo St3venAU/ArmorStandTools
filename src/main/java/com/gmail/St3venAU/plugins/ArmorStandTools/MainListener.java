@@ -243,6 +243,7 @@ public class MainListener implements Listener {
         attachment.setPermission("astools.ascmd.remove", true);
         attachment.setPermission("astools.ascmd.assign.player", true);
         attachment.setPermission("astools.ascmd.assign.console", true);
+        attachment.setPermission("astools.ascmd.assign.bungeecord", true);
         attachment.setPermission("astools.ascmd.cooldown", true);
         attachment.setPermission("astools.ascmd.execute", true);
         attachment.setPermission("astools.new", true);

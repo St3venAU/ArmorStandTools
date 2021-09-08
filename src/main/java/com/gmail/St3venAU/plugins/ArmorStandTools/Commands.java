@@ -98,21 +98,27 @@ class Commands implements CommandExecutor, TabCompleter {
                     p.sendMessage(Config.removeCmd + ": " + ChatColor.YELLOW + " /ascmd remove");
                     return true;
                 }
-                Boolean isConsole = null;
+                ArmorStandCmd.CmdType cmdtype = null;
                 if(args[1].equalsIgnoreCase("console")) {
-                    isConsole = true;
+                    cmdtype = ArmorStandCmd.CmdType.Console;
                     if (!Utils.hasPermissionNode(p, "astools.ascmd.assign.console")) {
                         p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                         return true;
                     }
                 } else if(args[1].equalsIgnoreCase("player")) {
-                    isConsole = false;
+                    cmdtype = ArmorStandCmd.CmdType.Player;
                     if (!Utils.hasPermissionNode(p, "astools.ascmd.assign.player")) {
                         p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                         return true;
                     }
+                } else if(args[1].equalsIgnoreCase("bungeecord")) {
+                    cmdtype = ArmorStandCmd.CmdType.Bungeecord;
+                    if (!Utils.hasPermissionNode(p, "astools.ascmd.assign.bungeecord")) {
+                        p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                        return true;
+                    }
                 }
-                if(isConsole == null) {
+                if(cmdtype == null) {
                     ascmdHelp(p);
                     return true;
                 }
@@ -126,7 +132,7 @@ class Commands implements CommandExecutor, TabCompleter {
                     ascmdHelp(p);
                     return true;
                 }
-                asCmd = new ArmorStandCmd(as, c, isConsole);
+                asCmd = new ArmorStandCmd(as, c, cmdtype);
                 if(asCmd.save()) {
                     p.sendMessage("\n" + Config.assignedCmdToAS + name);
                     p.sendMessage(Config.type + ": " + ChatColor.YELLOW + asCmd.getType());
@@ -180,6 +186,8 @@ class Commands implements CommandExecutor, TabCompleter {
         p.sendMessage(ChatColor.YELLOW + "/ascmd assign console <command>");
         p.sendMessage(Config.assignPlayer + ":");
         p.sendMessage(ChatColor.YELLOW + "/ascmd assign player <command>");
+        p.sendMessage(Config.assignBungee + ":");
+        p.sendMessage(ChatColor.YELLOW + "/ascmd assign bungeecord <server>");
         p.sendMessage(Config.setCooldown + ":");
         p.sendMessage(ChatColor.YELLOW + "/ascmd cooldown <ticks>");
         p.sendMessage(Config.removeCooldown + ":");
@@ -212,7 +220,7 @@ class Commands implements CommandExecutor, TabCompleter {
                     }
                 }
             } else if (args.length == 2 && args[0].equalsIgnoreCase("assign")) {
-                for(String s : Arrays.asList("player", "console")) {
+                for(String s : Arrays.asList("player", "console", "bungeecord")) {
                     if(s.startsWith(typed)) {
                         list.add(s);
                     }

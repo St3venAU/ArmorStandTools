@@ -35,7 +35,7 @@ class Config {
             creativeRequired, hasNoCmd, hasCmd, type, command,
             unassignedCmd, assignedCmdToAS, assignCmdError,
             ascmdHelp, viewCmd, removeCmd, assignConsole,
-            assignPlayer, executeCmdError, cmdOnCooldown,
+            assignPlayer, assignBungee, executeCmdError, cmdOnCooldown,
             cooldownRemovedFrom, isAnInvalidCooldown,
             cooldownSetTo, ticksFor, setCooldown, glow,
             removeCooldown, instructions1, instructions2,
@@ -148,6 +148,7 @@ class Config {
         removeCmd = languageConfig.getString("removeCmd");
         assignConsole = languageConfig.getString("assignConsole");
         assignPlayer = languageConfig.getString("assignPlayer");
+        assignBungee = languageConfig.getString("assignBungee");
         executeCmdError = languageConfig.getString("executeCmdError");
         creativeRequired = languageConfig.getString("creativeRequired");
         cmdOnCooldown = languageConfig.getString("cmdOnCooldown");
