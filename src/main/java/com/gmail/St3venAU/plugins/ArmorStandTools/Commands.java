@@ -1,20 +1,19 @@
 package com.gmail.st3venau.plugins.armorstandtools;
 
+import org.jetbrains.annotations.NotNull;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 class Commands implements CommandExecutor, TabCompleter {
 
@@ -26,35 +25,32 @@ class Commands implements CommandExecutor, TabCompleter {
         }
         String cmd = command.getName().toLowerCase();
         if(cmd.equals("astools") || cmd.equals("ast")) {
-            if (!Utils.hasPermissionNode(p, "astools.use")) {
+            if (!Utils.hasPermissionNode(p, "astools.command")) {
                 p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                 return true;
             }
-            if(args.length > 0 && args[0].equalsIgnoreCase("new")) {
-                // astools new
-                if (!Utils.hasPermissionNode(p, "astools.new")) {
-                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
-                    return true;
-                }
-                Location l = Utils.getLocationFacing(p.getLocation());
-                if(l.getWorld() == null) {
-                    p.sendMessage(ChatColor.RED + Config.error);
-                    return true;
-                }
-                ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
-                AST.pickUpArmorStand(as, p);
-                Utils.title(p, Config.carrying);
-            } else if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-                if (Utils.hasPermissionNode(p, "astools.reload")) {
-                    Config.reload(null);
-                    p.sendMessage(ChatColor.GREEN + Config.reloaded);
+            if (args.length == 0) {
+                UUID uuid = p.getUniqueId();
+                if (AST.savedInventories.containsKey(uuid)) {
+                    AST.restoreInventory(p);
                 } else {
-                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                    AST.plugin.saveInventoryAndClear(p);
+                    ArmorStandTool.give(p);
+                    p.sendMessage(ChatColor.GREEN + Config.giveMsg1);
+                    p.sendMessage(ChatColor.AQUA + Config.giveMsg2);
                 }
                 return true;
             }
-            p.sendMessage(ChatColor.AQUA + Config.instructions1 + ChatColor.GREEN + " /ast new " + ChatColor.AQUA + Config.instructions2);
-            return true;
+            if (args[0].equalsIgnoreCase("reload")) {
+                if (Utils.hasPermissionNode(p, "astools.reload")) {
+                    Config.reload();
+                    p.sendMessage(ChatColor.GREEN + Config.conReload);
+                    return true;
+                } else {
+                    p.sendMessage(ChatColor.RED + Config.noRelPerm);
+                    return true;
+                }
+            }
         } else if(cmd.equals("ascmd")) {
             ArmorStand as = getNearbyArmorStand(p);
             if(as == null) {

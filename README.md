@@ -5,20 +5,20 @@ Spigot resource page with plugin download: http://www.spigotmc.org/resources/arm
 
 Inspiration
 -----------
-I wanted to create an armor stand for each kit in my mini-game, and I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Simply couch/sneak while right clicking an armor stand to open the tools. The plugin can also generate a summon command that will re-create the armor stand at any time.
+I wanted to create an armor stand for each kit in my mini-game, and I quickly became frustrated with trying to use commands and numeric values to position the legs, arms, body and head of each armor stand, so I created this plugin which allows you to do all of this with ease. Among other features you can create any pose you wish just by holding right click on the tools and moving your cursor up and down on the armor stand. The plugin can also generate a summon command that will re-create the armor stand at any time.
 
 Compatibility
 -------------
 - Armor Stand Tools v4.x.x - Spigot/CraftBukkit 1.17+
 - Armor Stand Tools v3.x.x - Spigot/CraftBukkit 1.13 - 1.16
-- Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8, 1.9, 1.10, 1.11, 1.12 (https://www.spigotmc.org/resources/armor-stand-tools.2237/download?version=175162)
+- Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8 - 1.12
 
 Features
 --------
 - Summon armor stands.
 - Name armor stands.
 - Toggle: Gravity, Visibility, Arms, Base, Size, Invulnerability, Equipment Lock.
-- Manipulate the rotations of the Head, Body, Arms and Legs.
+- Manipulate the x/y/z rotations of the Head, Body, Arms and Legs. The value depends on how high up the armor stand's body you click with the tool (i.e. click near the feet is one extreme, near the top of the head is the other extreme).
 - Full control over armor stand's inventory (armor & items in hands).
 - Pick up and move armor stands.
 - Armor stand cloning tool.
@@ -37,18 +37,16 @@ Assigning Commands
 - If a player is crouching when they right-click the armor stand, the command will not be run.
 - Warning: Make sure you are careful when assigning console commands. Any player with the astools.ascmd.execute permission will be able to execute the command.
 - By default, any command assigned to an armor stand will use the default cooldown set in config.yml. This can be set on an individual basis using the /ascmd cooldown <ticks> command.
-
 Commands
 --------
+- /astools or /ast : Give yourself all the armor stand tools (Note: Saves & clears your inventory which is restored by running this command again)
+- /astools reload : Reload the config file
 - /ascmd assign console <command> : Assign a console command to the nearest armor stand (within 4 blocks)
 - /ascmd assign player <command> : Assign a player command to the nearest armor stand
 - /ascmd remove : Remove the command assigned to the nearest armor stand
 - /ascmd view : View the command assigned to the nearest armor stand
 - /ascmd cooldown <ticks> : Sets the cooldown (in ticks) for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
 - /ascmd cooldown remove : Removes the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
-- /astools or /ast : Legacy command - instructs player to crouch right-click an armor stand to use AST.
-- /astools new : Create a new armor stand - will spawn being carried by the player
-- /astools reload : Reload the plugin (use when changing config files)
 
 WorldGuard Integration
 ----------------------
@@ -59,13 +57,13 @@ WorldGuard Integration
 
 Permissions
 -----------
-- astools.use: Permission for using any of the tools, except for those that have a custom permission below
-- astools.new: Permission to use "/astools new" command to summon a new armor stand
+- astools.command : Permission for the /astools command
+- astools.reload : Permission to reload the plugin with /astools reload
+- astools.use : Permission for using any of the tools
 - astools.clone: Permission to use the clone tool
 - astools.head: Permission to use the player head tool (Ability to specify a player head for an armor stand)
 - astools.summon: Permission to use the summon tool (Summons an armor stand without requiring the materials)
 - astools.cmdblock: Permission to use the save tool (Creates a command block)
-- astools.reload: Permission to reload the plugin
 - astools.ascmd.assign.console: Permission to assign a console command to an armor stand
 - astools.ascmd.assign.player: Permission to assign a player command to an armor stand
 - astools.ascmd.remove: Permission to remove a command from an armor stand

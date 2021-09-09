@@ -7,9 +7,9 @@ description: Armor stand manipulation tools
 softdepend: [WorldGuard, PlotSquared]
 commands:
    astools:
-      description: Provides player instructions on how to use AST
+      description: Give yourself the armor stand tools
       aliases: ast
-      usage: Usage /astools or /ast, /ast new, /ast reload
+      usage: Usage /astools or /astools reload
    ascmd:
       description: View/Remove/Assign the command assigned to the nearest armor stand
       usage: Usage /ascmd view, /ascmd remove, /ascmd assign <player/console> <command>

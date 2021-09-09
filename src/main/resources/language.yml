@@ -27,6 +27,7 @@
 ####################
 # General Messages #
 ####################
+invReturned: 'Inventory contents returned'
 asDropped: 'Armor stand dropped'
 asVisible: 'Visible'
 isTrue: 'True'
@@ -48,6 +49,10 @@ locked: 'Locked'
 unLocked: 'Un-Locked'
 currently: 'Currently'
 notConsole: 'This command can not be run from console'
+giveMsg1: 'Given armor stand tools. L-click any tool to cycle through tools.'
+giveMsg2: 'Run this command again to return your inventory.'
+conReload: 'Armor Stand Tools config reloaded'
+noRelPerm: 'You do not have permission to reload the plugin'
 noAirError: 'Error: Failed to find a near-by air block. Move and try again.'
 invalidName: 'is not a valid minecraft username'
 wgNoPerm: 'No permission to alter an armor stand in this region'
@@ -83,39 +88,150 @@ setCooldown: 'Set the cooldown for the command'
 removeCooldown: 'Remove the cooldown for the command'
 # New since v3.4.1
 glow: 'Glow'
+cmdNotAllowed: 'That command is not allowed while using Armor Stand Tools'
 #New since v4.0.0
 crouch: 'Crouch'
 click: 'Click'
 finish: 'Finish'
-#New since v4.0.2
-instructions1: 'Crouch + right-click an armor stand to edit, or use command'
-instructions2: 'to summon a new armor stand'
-error: 'An error occured. Try again.'
-#New since v4.1.0
-reloaded : 'Armor Stand Tools reloaded'
 #
 #############################
 # Tool names & descriptions #
 #############################
 tool:
+  summon:
+    name: 'Summon Armor Stand'
+    lore:
+      - 'R-Click to summon an armor stand and pick it up'
+      - 'Any click will drop it'
+  gui:
+    name: 'GUI Multi-Tool'
+    lore:
+      - 'R-Click armor stand to open a GUI to tweak'
+      - 'the attributes of the armor stand or change'
+      - 'its armor and items'
+  rotat:
+    name: 'Rotation'
+    lore:
+      - 'R-Click armor stand to change its Rotation'
+      - 'Value depends on how high up the body you click'
+  headX:
+    name: 'Head X'
+    lore:
+      - 'R-Click armor stand to change Head X Value'
+      - 'Value depends on how high up the body you click'
+  headY:
+    name: 'Head Y'
+    lore:
+      - 'R-Click armor stand to change Head Y Value'
+      - 'Value depends on how high up the body you click'
+  headZ:
+    name: 'Head Z'
+    lore:
+      - 'R-Click armor stand to change Head Z Value'
+      - 'Value depends on how high up the body you click'
+  lArmX:
+    name: 'Left Arm X'
+    lore:
+      - 'R-Click armor stand to change Left Arm X Value'
+      - 'Value depends on how high up the body you click'
+  lArmY:
+    name: 'Left Arm Y'
+    lore:
+      - 'R-Click armor stand to change Left Arm Y Value'
+      - 'Value depends on how high up the body you click'
+  lArmZ:
+    name: 'Left Arm Z'
+    lore:
+      - 'R-Click armor stand to change Left Arm Z Value'
+      - 'Value depends on how high up the body you click'
+  rArmX:
+    name: 'Right Arm X'
+    lore:
+      - 'R-Click armor stand to change Right Arm X Value'
+      - 'Value depends on how high up the body you click'
+  rArmY:
+    name: 'Right Arm Y'
+    lore:
+      - 'R-Click armor stand to change Right Arm Y Value'
+      - 'Value depends on how high up the body you click'
+  rArmZ:
+    name: 'Right Arm Z'
+    lore:
+      - 'R-Click armor stand to change Right Arm Z Value'
+      - 'Value depends on how high up the body you click'
+  moveX:
+    name: 'Move X'
+    lore:
+      - 'R-Click armor stand to move +0.1 X'
+      - 'Crouch R-Click for -0.1 X'
+  moveY:
+    name: 'Move Y'
+    lore:
+      - 'R-Click armor stand to move +0.1 Y'
+      - 'Crouch R-Click for -0.1 Y'
+  moveZ:
+    name: 'Move Z'
+    lore:
+      - 'R-Click armor stand to move +0.1 Z'
+      - 'Crouch R-Click for -0.1 Z'
+  lLegX:
+    name: 'Left Leg X'
+    lore:
+      - 'R-Click armor stand to change Left Leg X'
+      - 'Value depends on how high up the body you click'
+  lLegY:
+    name: 'Left Leg Y'
+    lore:
+      - 'R-Click armor stand to change Left Leg Y'
+      - 'Value depends on how high up the body you click'
+  lLegZ:
+    name: 'Left Leg Z'
+    lore:
+      - 'R-Click armor stand to change Left Leg Z'
+      - 'Value depends on how high up the body you click'
+  rLegX:
+    name: 'Right Leg X'
+    lore:
+      - 'R-Click armor stand to change Right Leg X'
+      - 'Value depends on how high up the body you click'
+  rLegY:
+    name: 'Right Leg Y'
+    lore:
+      - 'R-Click armor stand to change Right Leg Y'
+      - 'Value depends on how high up the body you click'
+  rLegZ:
+    name: 'Right Leg Z'
+    lore:
+      - 'R-Click armor stand to change Right Leg Z'
+      - 'Value depends on how high up the body you click'
+  bodyX:
+    name: 'Body X'
+    lore:
+      - 'R-Click armor stand to change Body X'
+      - 'Value depends on how high up the body you click'
+  bodyY:
+    name: 'Body Y'
+    lore:
+      - 'R-Click armor stand to change Body Y'
+      - 'Value depends on how high up the body you click'
+  bodyZ:
+    name: 'Body Z'
+    lore:
+      - 'R-Click armor stand to change Body Z'
+      - 'Value depends on how high up the body you click'
   gui_move:
     name: 'Pick Up (Move)'
     lore:
       - 'Pick up this armor stand to move it'
-  gui_rotate:
-    name: 'Rotate'
-    lore:
-      - 'Left click: Rotate clockwise 5°'
-      - 'Right click: Rotate anti-clockwise 5°'
   gui_clone:
     name: 'Clone'
     lore:
       - 'Clone this armor stand and pick it up'
-  gui_save:
-    name: 'Create Command Block'
+  gui_gen_cmd:
+    name: 'Generate Summon Command'
     lore:
-      - 'Create command block to'
-      - 'summon this armor stand'
+      - 'Command block will be created'
+      - 'Summon command will be logged'
   gui_invis:
     name: 'Toggle Visibility'
     lore:
@@ -164,95 +280,3 @@ tool:
   gui_rleg:
     name: 'Move Right Leg'
     lore: 'Change the right leg position'
-  gui_moveX:
-    name: 'Move X (East/West)'
-    lore:
-      - 'Left click: Move East (+0.1 X)'
-      - 'Right click: Move West (-0.1 X)'
-      - '(Automatically disables gravity)'
-  gui_moveY:
-    name: 'Move Y (Up/Down)'
-    lore:
-      - 'Left click: Move Up (+0.1 Y)'
-      - 'Right click: Move Down (-0.1 Y)'
-      - '(Automatically disables gravity)'
-  gui_moveZ:
-    name: 'Move Z (South/North)'
-    lore:
-      - 'Left click: Move South (+0.1 Z)'
-      - 'Right click: Move North (-0.1 Z)'
-      - '(Automatically disables gravity)'
-  gui_advanced:
-    name: 'Show/Hide Advanced Tools'
-  gui_headX:
-    name: 'Head X'
-    lore:
-      - 'Change head X position'
-  gui_headY:
-    name: 'Head Y'
-    lore:
-      - 'Change head Y position'
-  gui_headZ:
-    name: 'Head Z'
-    lore:
-      - 'Change head Z position'
-  gui_lArmX:
-    name: 'Left Arm X'
-    lore:
-      - 'Change left arm X position'
-  gui_lArmY:
-    name: 'Left Arm Y'
-    lore:
-      - 'Change left arm Y Position'
-  gui_lArmZ:
-    name: 'Left Arm Z'
-    lore:
-      - 'Change left arm Z Position'
-  gui_rArmX:
-    name: 'Right Arm X'
-    lore:
-      - 'Change right arm X position'
-  gui_rArmY:
-    name: 'Right Arm Y'
-    lore:
-      - 'Change right arm Y position'
-  gui_rArmZ:
-    name: 'Right Arm Z'
-    lore:
-      - 'Change right arm Z position'
-  gui_lLegX:
-    name: 'Left Leg X'
-    lore:
-      - 'Change left leg X position'
-  gui_lLegY:
-    name: 'Left Leg Y'
-    lore:
-      - 'Change left leg Y position'
-  gui_lLegZ:
-    name: 'Left Leg Z'
-    lore:
-      - 'Change left leg Z position'
-  gui_rLegX:
-    name: 'Right Leg X'
-    lore:
-      - 'Change right leg X position'
-  gui_rLegY:
-    name: 'Right Leg Y'
-    lore:
-      - 'Change right leg Y position'
-  gui_rLegZ:
-    name: 'Right Leg Z'
-    lore:
-      - 'Change right leg Z position'
-  gui_bodyX:
-    name: 'Body X'
-    lore:
-      - 'Change body X position'
-  gui_bodyY:
-    name: 'Body Y'
-    lore:
-      - 'Change body Y position'
-  gui_bodyZ:
-    name: 'Body Z'
-    lore:
-      - 'Change body Z position'

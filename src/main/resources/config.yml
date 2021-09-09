@@ -9,36 +9,38 @@
 #  config to allow it to be re-created. There may be new config options)
 #
 # Features:
-#   - Manipulate the position of the Head, Body, Arms and Legs
-#   - Toggle: Gravity, Visibility, Arms, Base plate, Size, Invulnerability, Equipment Lock, Glow
+#   - Summon armor stands
 #   - Name armor stands
-#   - Full control over armor stand's inventory (armor & items in both hands)
-#   - Create exact clones of armor stands
-#   - Create a command block with the command to summon the same armor stand
-#   - Set's an armor stand's head to the head of a specified player.
+#   - Toggle: Gravity, Visibility, Arms, Base, Size, Invulnerability, Equipment Lock
+#   - Manipulate the position of the Head, Body, Arms and Legs
+#   - Full control over armor stand's inventory (armor & items in hands)
+#   - Clone armor stand tool
+#   - Create command block tool: Creates a command block with the command that will summon this
+#     armor stand in its current state
+#   - Player head tool: Set's an armor stand's head to the head of a specified player.
 #   - Support for WorldGuard regions.
 #   - User customizable language config.
 #
 # Commands:
+#   /astools                        Give yourself all of the armor stand tools (Note: Clears your inventory)
+#   /astools reload                 Reload the armor stand tools plugin config file
+#   /ast                            Alias for the /astools
 #   /ascmd assign console <command> Assign a console command to the nearest armor stand (within 4 blocks)
 #   /ascmd assign player <command>  Assign a player command to the nearest armor stand
 #   /ascmd remove                   Remove the command assigned to the nearest armor stand
 #   /ascmd view                     View the command assigned to the nearest armor stand
 #   /ascmd cooldown <ticks>         Set the cooldown for the command on nearest armor stand (Setting this overrides the default cooldown from config.yml)
 #   /ascmd cooldown remove          Remove the cooldown for the command on nearest armor stand (Default cooldown set in config.yml will be used)
-#   /astools or /ast                Legacy command - now gives instructions for player to crouch right-click an armor stand
-#   /astools new                    Create a new armor stand - will spawn being carried by the player
-#   /astools reload                 Reload the plugin (use when changing config files)
-#   Note: Armor stand commands may include a %player% placeholder, which will get replaced by the executing player's name at time of execution.
+#   Note: Commands may include a %player% placeholder, which will get replaced by the executing player's name at time of execution.
 #
 # Permissions:
-#   astools.use                     Permission to using any of the tools, except the ones below that have their own separate permissions (see below)
-#   astools.new                     Permission to use "/astools new" command to summon a new armor stand
+#   astools.command                 Permission for the /astools command
+#   astools.reload                  Permission to reload the plugin with /astools reload
+#   astools.use                     Permission for using any of the tools (except the ones below that have their own separate permissions)
 #   astools.clone                   Permission to use the clone tool (Clones an armor stand without requiring the materials)
 #   astools.summon                  Permission to use the summon tool (Summons an armor stand without requiring the materials)
 #   astools.head                    Permission to use the player head tool (Ability to specify a player head for an armor stand)
 #   astools.cmdblock                Permission to use the save tool (Creates a command block)
-#   astools.reload                  Permission to reload the plugin
 #   astools.ascmd.assign.console    Permission to assign a console command to an armor stand
 #   astools.ascmd.assign.player     Permission to assign a player command to an armor stand
 #   astools.ascmd.remove            Permission to remove a command from an armor stand
@@ -55,15 +57,68 @@
 #     this permission can use AST in worldguard regions even if the ast flag for that region is set to Deny.
 #   - The ast worldguard flag is also ignored for players that have op.
 #
-showDebugMessages: false
+
+# General config
 integrateWithWorldGuard: true
 allowMovingStandsBetweenWorlds: false
+deactivateToolsOnWorldChange: true
 requireCreativeForSaveAsCmdBlock: false
 defaultASCmdCooldownTicks: 0
 bypassWorldguardForASCmdExecution: false
+saveToolCreatesCommandBlock: true
+logGeneratedSummonCommands: false
+showDebugMessages: false
+
+# Uncomment the section below to deny players access to commands of your choice when they have any AST tools in their inventory
+# Add as many command as you wish. Only the first word of each command is needed, anything after the first space is ignored.
+
+#deniedCommandsWhileUsingTools:
+#  - sell
+
+# These are the defaults for spawning new armor stands with the /astools (or /ast) armor stand
+helmet: AIR
+chest: AIR
+pants: AIR
+boots: AIR
+inHand: AIR
+inOffHand: AIR
+isVisible: true
+isSmall: false
+hasArms: true
+hasBasePlate: false
+hasGravity: false
+name: ''
+invulnerable: false
+equipmentLock: false
+
+# Enable/Disable Tools
 enableTool:
+  headX: true
+  headY: true
+  headZ: true
+  lArmX: true
+  lArmY: true
+  lArmZ: true
+  rArmX: true
+  rArmY: true
+  rArmZ: true
+  moveX: true
+  moveY: true
+  moveZ: true
+  lLegX: true
+  lLegY: true
+  lLegZ: true
+  rLegX: true
+  rLegY: true
+  rLegZ: true
+  bodyX: true
+  bodyY: true
+  bodyZ: true
+  summon: true
+  gui: true
+  rotat: true
   gui_clone: true
-  gui_save: true
+  gui_gen_cmd: true
   gui_invis: true
   gui_size: true
   gui_base: true
@@ -74,10 +129,6 @@ enableTool:
   gui_pHead: true
   gui_invul: true
   gui_move: true
-  gui_rotate: true
-  gui_moveX: true
-  gui_moveY: true
-  gui_moveZ: true
   gui_glow: true
   gui_head: true
   gui_body: true
@@ -85,22 +136,3 @@ enableTool:
   gui_rarm: true
   gui_lleg: true
   gui_rleg: true
-  gui_advanced: true
-  gui_lArmX: true
-  gui_lArmY: true
-  gui_lArmZ: true
-  gui_rArmX: true
-  gui_rArmY: true
-  gui_rArmZ: true
-  gui_headX: true
-  gui_headY: true
-  gui_headZ: true
-  gui_lLegX: true
-  gui_lLegY: true
-  gui_lLegZ: true
-  gui_rLegX: true
-  gui_rLegY: true
-  gui_rLegZ: true
-  gui_bodyX: true
-  gui_bodyY: true
-  gui_bodyZ: true

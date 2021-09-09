@@ -6,20 +6,24 @@ import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Collection;
 import java.util.Map;
 
 class Utils {
@@ -182,6 +186,14 @@ class Utils {
         return l;
     }
 
+    static boolean containsItems(Collection<ItemStack> items) {
+        for(ItemStack i : items) {
+            if(ArmorStandTool.get(i) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     static private String getItemStackTags(ItemStack is) {
         if(is == null) {
@@ -260,11 +272,11 @@ class Utils {
             return "";
         }
         return "ArmorItems:["
-            + itemInfo(e.getBoots()) + ","
-            + itemInfo(e.getLeggings()) + ","
-            + itemInfo(e.getChestplate()) + ","
-            + itemInfo(e.getHelmet())
-        + "],";
+                + itemInfo(e.getBoots()) + ","
+                + itemInfo(e.getLeggings()) + ","
+                + itemInfo(e.getChestplate()) + ","
+                + itemInfo(e.getHelmet())
+                + "],";
     }
 
     static private String handItems(EntityEquipment e) {
@@ -272,9 +284,9 @@ class Utils {
             return "";
         }
         return "HandItems:["
-            + itemInfo(e.getItemInMainHand()) + ","
-            + itemInfo(e.getItemInOffHand())
-         + "],";
+                + itemInfo(e.getItemInMainHand()) + ","
+                + itemInfo(e.getItemInOffHand())
+                + "],";
     }
 
     static private String angleInfo(EulerAngle ea) {
@@ -282,17 +294,17 @@ class Utils {
     }
 
     static private String pose(ArmorStand as) {
-       return "Pose:{"
-            + "Body:"     + angleInfo(as.getBodyPose())     + ","
-            + "Head:"     + angleInfo(as.getHeadPose())     + ","
-            + "LeftLeg:"  + angleInfo(as.getLeftLegPose())  + ","
-            + "RightLeg:" + angleInfo(as.getRightLegPose()) + ","
-            + "LeftArm:"  + angleInfo(as.getLeftArmPose())  + ","
-            + "RightArm:" + angleInfo(as.getRightArmPose())
-        + "}";
+        return "Pose:{"
+                + "Body:"     + angleInfo(as.getBodyPose())     + ","
+                + "Head:"     + angleInfo(as.getHeadPose())     + ","
+                + "LeftLeg:"  + angleInfo(as.getLeftLegPose())  + ","
+                + "RightLeg:" + angleInfo(as.getRightLegPose()) + ","
+                + "LeftArm:"  + angleInfo(as.getLeftArmPose())  + ","
+                + "RightArm:" + angleInfo(as.getRightArmPose())
+                + "}";
     }
 
-    static private String createSummonCommand(ArmorStand as) {
+    static String createSummonCommand(ArmorStand as) {
         Location asLocation = as.getLocation();
         EntityEquipment e = as.getEquipment();
         StringBuilder sb = new StringBuilder("summon minecraft:armor_stand ");
@@ -300,33 +312,33 @@ class Utils {
         sb.append(twoDec(asLocation.getY())).append(" ");
         sb.append(twoDec(asLocation.getZ())).append(" ");
         sb.append("{");
-            if(!as.isVisible())                 sb.append("Invisible:1,");
-            if(!as.hasBasePlate())              sb.append("NoBasePlate:1,");
-            if(!as.hasGravity())                sb.append("NoGravity:1,");
-            if(as.hasArms())                    sb.append("ShowArms:1,");
-            if(as.isSmall())                    sb.append("Small:1,");
-            if(as.isInvulnerable())             sb.append("Invulnerable:1,");
-            if(as.isGlowing())                  sb.append("Glowing:1,");
-            if(hasDisabledSlots(as))            sb.append("DisabledSlots:").append(disabledSlotsAsInteger(as)).append(",");
-            if(as.isCustomNameVisible())        sb.append("CustomNameVisible:1,");
-            if(as.getCustomName() != null)      sb.append("CustomName:\"\\\"").append(as.getCustomName()).append("\\\"\",");
-            if(as.getLocation().getYaw() != 0F) sb.append("Rotation:[").append(twoDec(as.getLocation().getYaw())).append("f],");
-            sb.append(armorItems(e));
-            sb.append(handItems(e));
-            sb.append(pose(as));
+        if(!as.isVisible())                 sb.append("Invisible:1,");
+        if(!as.hasBasePlate())              sb.append("NoBasePlate:1,");
+        if(!as.hasGravity())                sb.append("NoGravity:1,");
+        if(as.hasArms())                    sb.append("ShowArms:1,");
+        if(as.isSmall())                    sb.append("Small:1,");
+        if(as.isInvulnerable())             sb.append("Invulnerable:1,");
+        if(as.isGlowing())                  sb.append("Glowing:1,");
+        if(hasDisabledSlots(as))            sb.append("DisabledSlots:").append(disabledSlotsAsInteger(as)).append(",");
+        if(as.isCustomNameVisible())        sb.append("CustomNameVisible:1,");
+        if(as.getCustomName() != null)      sb.append("CustomName:\"\\\"").append(as.getCustomName()).append("\\\"\",");
+        if(as.getLocation().getYaw() != 0F) sb.append("Rotation:[").append(twoDec(as.getLocation().getYaw())).append("f],");
+        sb.append(armorItems(e));
+        sb.append(handItems(e));
+        sb.append(pose(as));
         sb.append("}");
         return sb.toString();
     }
 
-    static void generateCmdBlock(Location l, ArmorStand as) {
+    static void generateCmdBlock(Location l, String command) {
         Block b = l.getBlock();
         b.setType(Material.COMMAND_BLOCK);
         CommandBlock cb = (CommandBlock) b.getState();
-        cb.setCommand(createSummonCommand(as));
+        cb.setCommand(command);
         cb.update();
     }
 
-    private static String twoDec(double d) {
+    static String twoDec(double d) {
         if(twoDec == null) {
             twoDec = new DecimalFormat("0.0#");
             DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -339,5 +351,40 @@ class Utils {
     private static String degrees(double d) {
         return twoDec(d * 180.0 / Math.PI);
     }
+
+    static boolean hasAnyTools(Player p) {
+        for(ItemStack i : p.getInventory()) {
+            if(ArmorStandTool.isTool(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean onCooldown(Entity e) {
+        for(MetadataValue meta : e.getMetadata("lastEvent")) {
+            if(AST.plugin.equals(meta.getOwningPlugin())) {
+                return System.currentTimeMillis() - meta.asLong() < 100;
+            }
+        }
+        return false;
+    }
+
+    static void cycleInventory(Player p) {
+        if(onCooldown(p)) return;
+        Inventory i = p.getInventory();
+        ItemStack temp;
+        for (int n = 0; n < 9; n++) {
+            temp = i.getItem(n);
+            i.setItem(n, i.getItem(27 + n));
+            i.setItem(27 + n, i.getItem(18 + n));
+            i.setItem(18 + n, i.getItem(9 + n));
+            i.setItem(9 + n, temp);
+        }
+        p.updateInventory();
+        p.setMetadata("lastEvent", new FixedMetadataValue(AST.plugin, System.currentTimeMillis()));
+    }
+
+
 
 }

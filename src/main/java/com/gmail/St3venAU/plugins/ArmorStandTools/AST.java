@@ -14,12 +14,13 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -30,24 +31,24 @@ public class AST extends JavaPlugin {
 
     final static HashMap<UUID, ArmorStandTool> activeTool = new HashMap<>();
     final static HashMap<UUID, ArmorStand> selectedArmorStand = new HashMap<>();
-    final static ArrayList<UUID> showAdvancedTools = new ArrayList<>();
+
+    public static final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<>();
 
     static AST plugin;
 
-    @SuppressWarnings({"unchecked", "JavaReflectionInvocation", "rawtypes"})
     @Override
     public void onLoad() {
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
             try {
                 // Need to do this with reflection for some reason, otherwise plugin load fails when worldguard is not present, even though this code block is not actually executed unless worldguard is present ???
                 WG_AST_FLAG = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag").getConstructor(String.class, boolean.class).newInstance("ast", true);
-                Class worldGuardClass = Class.forName("com.sk89q.worldguard.WorldGuard");
+                Class<?> worldGuardClass = Class.forName("com.sk89q.worldguard.WorldGuard");
                 Object worldGuard = worldGuardClass.getMethod("getInstance").invoke(worldGuardClass);
                 Object flagRegistry = worldGuardClass.getMethod("getFlagRegistry").invoke(worldGuard);
                 flagRegistry.getClass().getMethod("register", Class.forName("com.sk89q.worldguard.protection.flags.Flag")).invoke(flagRegistry, WG_AST_FLAG);
                 getLogger().info("Registered custom WorldGuard flag: ast");
             } catch (Exception e) {
-                getLogger().info("Failed to register custom WorldGuard flag");
+                getLogger().warning("Failed to register custom WorldGuard flag");
             }
         }
     }
@@ -84,8 +85,8 @@ public class AST extends JavaPlugin {
             command.setExecutor(cmds);
             command.setTabCompleter(cmds);
         }
-        Config.reload(this);
-
+        Config.reload();
+        ArmorStandGUI.init();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -97,7 +98,7 @@ public class AST extends JavaPlugin {
                     }
                 }
             }
-        }.runTaskTimer(this, 5L, 5L);
+        }.runTaskTimer(this, 3L, 3L);
     }
 
     @Override
@@ -111,9 +112,18 @@ public class AST extends JavaPlugin {
                 activeTool.remove(uuid);
             }
         }
+        Player p;
+        for(UUID uuid : savedInventories.keySet()) {
+            p = getServer().getPlayer(uuid);
+            if(p != null && p.isOnline()) {
+                restoreInventory(p);
+            }
+        }
+        savedInventories.clear();
     }
 
     static void returnArmorStand(ArmorStand as) {
+        if(as == null) return;
         if(as.hasMetadata("clone")) {
             as.remove();
             return;
@@ -133,10 +143,51 @@ public class AST extends JavaPlugin {
         as.remove();
     }
 
-    static void pickUpArmorStand(ArmorStand as, Player p) {
+    private static void removeAllTools(Player p) {
+        PlayerInventory i = p.getInventory();
+        for(ArmorStandTool t : ArmorStandTool.values()) {
+            i.remove(t.getItem());
+        }
+    }
+
+    void saveInventoryAndClear(Player p) {
+        ItemStack[] inv = p.getInventory().getContents().clone();
+        savedInventories.put(p.getUniqueId(), inv);
+        p.getInventory().clear();
+    }
+
+    static void restoreInventory(Player p) {
+        removeAllTools(p);
         UUID uuid = p.getUniqueId();
+        ItemStack[] savedInv = savedInventories.get(uuid);
+        if(savedInv == null) return;
+        PlayerInventory plrInv = p.getInventory();
+        ItemStack[] newItems = plrInv.getContents().clone();
+        plrInv.setContents(savedInv);
+        savedInventories.remove(uuid);
+        for(ItemStack i : newItems) {
+            if(i == null) continue;
+            HashMap<Integer, ItemStack> couldntFit = plrInv.addItem(i);
+            for (ItemStack is : couldntFit.values()) {
+                p.getWorld().dropItem(p.getLocation(), is);
+            }
+        }
+        p.sendMessage(ChatColor.GREEN + Config.invReturned);
+    }
+    static ArmorStand getCarryingArmorStand(Player p) {
+        UUID uuid = p.getUniqueId();
+        return  ArmorStandTool.MOVE == AST.activeTool.get(uuid) ? AST.selectedArmorStand.get(uuid) : null;
+    }
+
+    static void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
+        UUID uuid = p.getUniqueId();
+        ArmorStand carrying = getCarryingArmorStand(p);
+        if(carrying != null && !carrying.isDead()) {
+            returnArmorStand(carrying);
+        }
         activeTool.put(uuid, ArmorStandTool.MOVE);
         selectedArmorStand.put(uuid, as);
+        if(newlySummoned) return;
         as.setMetadata("startLoc", new FixedMetadataValue(AST.plugin, as.getLocation()));
     }
 
@@ -204,19 +255,19 @@ public class AST extends JavaPlugin {
         }
     }
 
-   static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
+    static boolean playerHasPermission(Player p, Block b, ArmorStandTool tool) {
         String permNode = tool == null ? "astools.use" : tool.getPermission();
         boolean enabled = tool == null || tool.isEnabled();
         boolean hasNode = Utils.hasPermissionNode(p, permNode);
         boolean blockPerm = checkBlockPermission(p, b);
-        if(Config.debug) {
+        if(Config.showDebugMessages) {
             AST.debug("Plr: " + p.getName() + ", Tool: " + tool + ", Tool En: " + enabled + ", Perm: " + permNode + ", Has Perm: " + hasNode + ", Location Perm: " + blockPerm);
         }
         return enabled && hasNode && blockPerm;
     }
 
     static void debug(String msg) {
-        if(!Config.debug) return;
+        if(!Config.showDebugMessages) return;
         Bukkit.getLogger().log(Level.INFO, "[AST DEBUG] " + msg);
     }
 }

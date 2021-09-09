@@ -10,15 +10,15 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-class PlotSquaredHook {
-    
+public class PlotSquaredHook {
+
     public static PlotAPI api = null;
 
     public static void init() {
         if(api != null) return;
         api = new PlotAPI();
     }
-    
+
     public static boolean isPlotWorld(Location l) {
         return l.getWorld() != null && api.getPlotSquared().getPlotAreaManager().hasPlotArea(l.getWorld().getName());
     }
