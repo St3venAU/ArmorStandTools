@@ -1,6 +1,6 @@
-main: com.gmail.st3venau.plugins.armorstandtools.AST
+main: com.gmail.St3venAU.plugins.ArmorStandTools.AST
 name: ArmorStandTools
-version: ${project.version}
+version: '${version}'
 api-version: 1.17
 author: St3venAU
 description: Armor stand manipulation tools

@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+}
+
+group = "com.gmail.St3venAU.plugins"
+version = "4.2.0"
+description = "ArmorStandTools"
+java.sourceCompatibility = JavaVersion.VERSION_16
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+
+    maven {
+        url = uri("https://maven.sk89q.com/repo/")
+    }
+
+    maven {
+        url = uri("https://repo.maven.apache.org/maven2/")
+    }
+    maven {
+        name = "IntellectualSites Releases"
+        url = uri("https://mvn.intellectualsites.com/content/repositories/releases/")
+    }
+    maven {
+        name = "IntellectualSites Snapshots"
+        url = uri("https://mvn.intellectualsites.com/content/repositories/snapshots/")
+    }
+    maven {
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
+    }
+    maven {
+        name = "OSS Sonatype"
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
+}
+
+dependencies {
+    compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.6-SNAPSHOT")
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0-SNAPSHOT")
+    compileOnly("com.plotsquared:PlotSquared-Core:6.1.2")
+
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+            filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
