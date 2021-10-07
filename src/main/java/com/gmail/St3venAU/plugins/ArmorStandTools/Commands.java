@@ -59,61 +59,71 @@ class Commands implements CommandExecutor, TabCompleter {
             }
             String name = " ";
             if(as.getName().length() > 0 && !as.getName().equalsIgnoreCase("armor stand")) {
-                name = " (" + ChatColor.AQUA + as.getName() + ChatColor.RESET + ") ";
+                name = ChatColor.RESET + " (" + ChatColor.AQUA + as.getName() + ChatColor.RESET + ") ";
             }
-            if(args.length > 0 && args[0].equalsIgnoreCase("view")) {
-                // ascmd view
-                if (!Utils.hasPermissionNode(p, "astools.ascmd.view")) {
+            ArmorStandCmdManager asCmdManager = new ArmorStandCmdManager(as);
+            if(args.length >= 1 && args[0].equalsIgnoreCase("list")) {
+                //       [0]
+                // ascmd list
+                if (!Utils.hasPermissionNode(p, "astools.ascmd.list")) {
                     p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                     return true;
                 }
-                ArmorStandCmd asCmd = new ArmorStandCmd(as);
-                if(asCmd.getCommand() == null) {
-                    p.sendMessage("\n" + Config.closestAS + name + Config.hasNoCmd);
-                } else {
-                    p.sendMessage("\n" + Config.closestAS + name + Config.hasCmd);
-                    p.sendMessage(Config.type + ": " + ChatColor.YELLOW + asCmd.getType());
-                    p.sendMessage(Config.command + ": " + ChatColor.YELLOW + asCmd.getCommand());
-                }
-            } else if(args.length > 0 && args[0].equalsIgnoreCase("remove")) {
-                // ascmd remove
+                listAssignedCommands(asCmdManager, name, p);
+                return true;
+            } else if(args.length >= 2 && args[0].equalsIgnoreCase("remove")) {
+                //       [0]    [1]
+                // ascmd remove <command_number>
                 if (!Utils.hasPermissionNode(p, "astools.ascmd.remove")) {
                     p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                     return true;
                 }
-                if(ArmorStandCmd.removeAssignedCommand(as)) {
-                    p.sendMessage("\n" + Config.unassignedCmd + name);
-                } else {
-                    p.sendMessage("\n" + Config.closestAS + name + Config.hasNoCmd);
-                }
-            } else if(args.length >= 3 && args[0].equalsIgnoreCase("assign")) {
-                // ascmd assign <player/console> (command)
-                ArmorStandCmd asCmd = new ArmorStandCmd(as);
-                if(asCmd.getCommand() != null) {
-                    p.sendMessage("\n" + Config.closestAS + name + Config.hasCmd);
-                    p.sendMessage(Config.removeCmd + ": " + ChatColor.YELLOW + " /ascmd remove");
+                int n;
+                try {
+                    n = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    p.sendMessage(ChatColor.RED + args[1] + " " + Config.isNotValidNumber);
                     return true;
                 }
-                Boolean isConsole = null;
-                if(args[1].equalsIgnoreCase("console")) {
-                    isConsole = true;
-                    if (!Utils.hasPermissionNode(p, "astools.ascmd.assign.console")) {
-                        p.sendMessage(ChatColor.RED + Config.noCommandPerm);
-                        return true;
-                    }
-                } else if(args[1].equalsIgnoreCase("player")) {
-                    isConsole = false;
-                    if (!Utils.hasPermissionNode(p, "astools.ascmd.assign.player")) {
-                        p.sendMessage(ChatColor.RED + Config.noCommandPerm);
-                        return true;
-                    }
+                if(asCmdManager.removeCommand(n - 1)) {
+                    p.sendMessage("\n" + Config.command + ChatColor.GREEN + " #" + n + ChatColor.RESET + " " + Config.removedFromAs + name);
+                } else {
+                    p.sendMessage(ChatColor.RED + args[1] + " " + Config.isNotValidNumber);
                 }
-                if(isConsole == null) {
+                listAssignedCommands(asCmdManager, name, p);
+                return true;
+            } else if(args.length >= 5 && args[0].equalsIgnoreCase("add")) {
+                //       [0] [1]        [2]     [3]                     [4 - ...]
+                // ascmd add <priority> <delay> <player/console/bungee> <command/bungee_server_name>
+                CommandType type = CommandType.fromName(args[3]);
+                if(type == null) {
                     ascmdHelp(p);
                     return true;
                 }
+                if (!Utils.hasPermissionNode(p, type.getAddPermission())) {
+                    p.sendMessage(ChatColor.RED + Config.noCommandPerm);
+                    return true;
+                }
+                int priority;
+                try {
+                    priority = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    p.sendMessage(ChatColor.RED + args[1] + " " + Config.isNotValidNumber);
+                    return true;
+                }
+                int delay;
+                try {
+                    delay = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    p.sendMessage(ChatColor.RED + args[2] + " " + Config.isNotValidNumber);
+                    return true;
+                }
+                if(delay < 0) {
+                    p.sendMessage(ChatColor.RED + args[2] + " " + Config.isNotValidNumber);
+                    return true;
+                }
                 StringBuilder sb = new StringBuilder();
-                for(int i = 2; i < args.length; i++) {
+                for(int i = 4; i < args.length; i++) {
                     sb.append(args[i]).append(" ");
                 }
                 int startAt = sb.charAt(0) == '/' ? 1 : 0;
@@ -122,26 +132,20 @@ class Commands implements CommandExecutor, TabCompleter {
                     ascmdHelp(p);
                     return true;
                 }
-                asCmd = new ArmorStandCmd(as, c, isConsole);
-                if(asCmd.save()) {
-                    p.sendMessage("\n" + Config.assignedCmdToAS + name);
-                    p.sendMessage(Config.type + ": " + ChatColor.YELLOW + asCmd.getType());
-                    p.sendMessage(Config.command + ": " + ChatColor.YELLOW + asCmd.getCommand());
-                } else {
-                    p.sendMessage("\n" + Config.assignCmdError + name);
-                }
+                asCmdManager.addCommand(new ArmorStandCmd(c, type, priority, delay), true);
+                listAssignedCommands(asCmdManager, name, p);
+                return true;
             } else if(args.length >= 2 && args[0].equalsIgnoreCase("cooldown")) { //ascmd cooldown <ticks>/remove
                 if (!Utils.hasPermissionNode(p, "astools.ascmd.cooldown")) {
                     p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                     return true;
                 }
-                ArmorStandCmd asCmd = new ArmorStandCmd(as);
-                if(asCmd.getCommand() == null) {
-                    p.sendMessage(Config.closestAS + name + Config.hasNoCmd);
+                if(!asCmdManager.hasCommands()) {
+                    p.sendMessage(Config.closestAS + name + Config.hasNoCmds);
                     return true;
                 }
                 if(args[1].equalsIgnoreCase("remove")) {
-                    asCmd.setCooldownTime(-1);
+                    asCmdManager.setCooldownTime(-1);
                     p.sendMessage(Config.cooldownRemovedFrom + " " + Config.closestAS + name);
                 } else {
                     int ticks;
@@ -155,7 +159,7 @@ class Commands implements CommandExecutor, TabCompleter {
                         p.sendMessage(args[1] + " " + Config.isAnInvalidCooldown);
                         return true;
                     }
-                    asCmd.setCooldownTime(ticks);
+                    asCmdManager.setCooldownTime(ticks);
                     p.sendMessage(Config.cooldownSetTo + " " + ticks + " " + Config.ticksFor + " " + Config.closestAS + name);
                 }
                 return true;
@@ -163,19 +167,35 @@ class Commands implements CommandExecutor, TabCompleter {
                 ascmdHelp(p);
                 return true;
             }
-            return true;
         }
         return false;
     }
 
+    private void listAssignedCommands(ArmorStandCmdManager asCmdManager, String name, Player p) {
+        if(asCmdManager.hasCommands()) {
+            p.sendMessage("\n" + Config.closestAS + name + Config.hasTheseCmdsAssigned);
+            List<ArmorStandCmd> list = asCmdManager.getCommands();
+            for(int n = 0; n < list.size(); n++) {
+                ArmorStandCmd asCmd = list.get(n);
+                // #1 Priority:0 Delay:0 Type:Player Command:cmd
+                p.sendMessage(
+                ChatColor.GREEN + "#" + (n + 1) + " " +
+                   ChatColor.LIGHT_PURPLE + Config.priority + ":" + ChatColor.RESET + asCmd.priority() + " " +
+                   ChatColor.YELLOW + Config.delay + ":" + ChatColor.RESET + asCmd.delay() + " " +
+                   ChatColor.GOLD + Config.type + ":" + ChatColor.RESET + asCmd.type().getName() + " " +
+                   ChatColor.AQUA + Config.command + ":" + ChatColor.RESET + asCmd.command()
+                );
+            }
+        } else {
+            p.sendMessage("\n" + Config.closestAS + name + Config.hasNoCmds);
+        }
+    }
+
     private void ascmdHelp(Player p) {
-        p.sendMessage("\n" + ChatColor.AQUA + Config.ascmdHelp);
-        p.sendMessage(Config.viewCmd + ": " + ChatColor.YELLOW + "/ascmd view");
-        p.sendMessage(Config.removeCmd + ": " + ChatColor.YELLOW + "/ascmd remove");
-        p.sendMessage(Config.assignConsole + ":");
-        p.sendMessage(ChatColor.YELLOW + "/ascmd assign console <command>");
-        p.sendMessage(Config.assignPlayer + ":");
-        p.sendMessage(ChatColor.YELLOW + "/ascmd assign player <command>");
+        p.sendMessage("\n" + ChatColor.AQUA + Config.cmdHelp);
+        p.sendMessage(Config.listAssignedCmds + ": " + ChatColor.YELLOW + "/ascmd list");
+        p.sendMessage(Config.addACmd + ":" + ChatColor.YELLOW + "/ascmd add <priority> <delay> <player/console/bungee> <command/bungee_server_name>");
+        p.sendMessage(Config.removeACmd + ": " + ChatColor.YELLOW + "/ascmd remove <command_number>");
         p.sendMessage(Config.setCooldown + ":");
         p.sendMessage(ChatColor.YELLOW + "/ascmd cooldown <ticks>");
         p.sendMessage(Config.removeCooldown + ":");
@@ -183,14 +203,17 @@ class Commands implements CommandExecutor, TabCompleter {
     }
 
     private ArmorStand getNearbyArmorStand(Player p) {
-        ArmorStand closest = null;
-        double dist = 1000000;
+        ArmorStand closestAs = null;
+        double closestDist = 1000000;
         for(Entity e : p.getNearbyEntities(4, 4, 4)) {
-            if(e instanceof ArmorStand && e.getLocation().distanceSquared(p.getLocation()) < dist) {
-                closest = (ArmorStand) e;
+            if(!(e instanceof ArmorStand)) continue;
+            double dist = e.getLocation().distanceSquared(p.getLocation());
+            if(dist < closestDist) {
+                closestDist = dist;
+                closestAs = (ArmorStand) e;
             }
         }
-        return closest;
+        return closestAs;
     }
 
     public List<String> onTabComplete(@NotNull CommandSender sender, Command command, @NotNull String alias, String[] args) {
@@ -202,15 +225,21 @@ class Commands implements CommandExecutor, TabCompleter {
         }
         if (cmd.equals("ascmd")) {
             if (args.length == 1) {
-                for(String s : Arrays.asList("view", "remove", "assign", "cooldown")) {
+                for(String s : Arrays.asList("list", "remove", "add", "cooldown")) {
                     if(s.startsWith(typed)) {
                         list.add(s);
                     }
                 }
-            } else if (args.length == 2 && args[0].equalsIgnoreCase("assign")) {
-                for(String s : Arrays.asList("player", "console")) {
-                    if(s.startsWith(typed)) {
-                        list.add(s);
+            } else if (args[0].equalsIgnoreCase("add")) {
+                if(args.length == 2 && typed.length() == 0) {
+                    list.add("priority");
+                } if(args.length == 3 && typed.length() == 0) {
+                    list.add("delay");
+                } else if(args.length == 4) {
+                    for (String s : Arrays.asList("player", "console", "bungee")) {
+                        if (s.startsWith(typed)) {
+                            list.add(s);
+                        }
                     }
                 }
             } else if (args.length == 2 && args[0].equalsIgnoreCase("cooldown")) {

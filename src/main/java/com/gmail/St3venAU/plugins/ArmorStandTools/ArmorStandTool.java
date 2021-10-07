@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -59,7 +60,8 @@ public enum ArmorStandTool {
     RARM    ("gui_rarm",    Material.REDSTONE_TORCH,         15, true,  "astools.use",     true),
     LARM    ("gui_larm",    Material.TORCH,                  17, true,  "astools.use",     true),
     RLEG    ("gui_rleg",    Material.BLAZE_ROD,              24, true,  "astools.use",     true),
-    LLEG    ("gui_lleg",    Material.BONE,                   26, true,  "astools.use",     true);
+    LLEG    ("gui_lleg",    Material.BONE,                   26, true,  "astools.use",     true),
+    ITEM    ("gui_item",    Material.ARMOR_STAND,            34, true,  "astools.use",     false);
 
     private final ItemStack item;
     private final String config_id;
@@ -73,6 +75,12 @@ public enum ArmorStandTool {
 
     ArmorStandTool(String config_id, Material m, int slot, boolean forGui, String permission, boolean reverseSneaking) {
         item = new ItemStack(m);
+        ItemMeta meta = item.getItemMeta();
+        if(meta != null) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            item.setItemMeta(meta);
+        }
         this.config_id = config_id;
         this.slot = slot;
         this.forGui = forGui;

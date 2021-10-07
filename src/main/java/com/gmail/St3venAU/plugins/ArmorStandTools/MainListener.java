@@ -2,12 +2,14 @@ package com.gmail.st3venau.plugins.armorstandtools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -56,12 +58,21 @@ public class MainListener implements Listener {
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if(!(event.getRightClicked() instanceof ArmorStand as)) return;
         Player p = event.getPlayer();
-        if(!event.isCancelled() && ArmorStandGUI.isInUse(as)) {
+        if (ArmorStandGUI.isInUse(as)) {
             Utils.title(p, Config.guiInUse);
             event.setCancelled(true);
             return;
         }
-        if(!event.isCancelled() && stopEditing(p, false)) {
+        if(stopEditing(p, false)) {
+            event.setCancelled(true);
+            return;
+        }
+        if(Config.crouchRightClickOpensGUI && p.isSneaking() && Utils.hasPermissionNode(p, "astools.use")) {
+            if (!AST.playerHasPermission(p, as.getLocation().getBlock(), null)) {
+                p.sendMessage(ChatColor.RED + Config.generalNoPerm);
+                return;
+            }
+            new ArmorStandGUI(as, p);
             event.setCancelled(true);
             return;
         }
@@ -116,14 +127,10 @@ public class MainListener implements Listener {
             return;
         }
         if((Config.ignoreWGForASCmdExecution || !event.isCancelled()) && !p.isSneaking()) {
-            ArmorStandCmd asCmd = new ArmorStandCmd(as);
-            if (asCmd.getCommand() != null) {
+            ArmorStandCmdManager asCmdManager = new ArmorStandCmdManager(as);
+            if (asCmdManager.hasCommands() && Utils.hasPermissionNode(p, "astools.ascmd.execute")) {
                 event.setCancelled(true);
-                if (Utils.hasPermissionNode(p, "astools.ascmd.execute")) {
-                    if (!asCmd.execute(p)) {
-                        p.sendMessage(Config.executeCmdError);
-                    }
-                }
+                asCmdManager.executeCommands(p);
             }
         }
     }
@@ -267,10 +274,36 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        ArmorStandTool tool = ArmorStandTool.get(event.getItem());
+        Action action = event.getAction();
+        BlockFace blockFace = event.getBlockFace();
+        ItemStack inHand = event.getItem();
+        Block b = event.getClickedBlock();
+        ArmorStandTool tool = ArmorStandTool.get(inHand);
+        if(inHand != null && tool == null && b != null && action == Action.RIGHT_CLICK_BLOCK && blockFace != BlockFace.DOWN && inHand.getType() == Material.ARMOR_STAND) {
+            b = b.getRelative(blockFace);
+            if (!AST.playerHasPermission(p, b, ArmorStandTool.ITEM)) {
+                p.sendMessage(ChatColor.RED + Config.generalNoPerm);
+                return;
+            }
+            ArmorStandMeta asm = ArmorStandMeta.fromItem(inHand);
+            if(asm != null) {
+                event.setCancelled(true);
+                Location l = b.getLocation().add(0.5, 0, 0.5);
+                ArmorStand as = (ArmorStand) b.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
+                asm.applyToArmorStand(as);
+                if(p.getGameMode() != GameMode.CREATIVE) {
+                    if(inHand.getAmount() == 1) {
+                        p.getInventory().setItemInMainHand(null);
+                    } else {
+                        inHand.setAmount(inHand.getAmount() - 1);
+                        p.getInventory().setItemInMainHand(inHand);
+                    }
+                }
+                return;
+            }
+        }
         if(tool == null) return;
         event.setCancelled(true);
-        Action action = event.getAction();
         if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
             Utils.cycleInventory(p);
         } else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && tool == ArmorStandTool.SUMMON) {
@@ -453,10 +486,10 @@ public class MainListener implements Listener {
         attachment.setPermission("astools.head", true);
         attachment.setPermission("astools.reload", true);
         attachment.setPermission("astools.cmdblock", true);
-        attachment.setPermission("astools.ascmd.view", true);
+        attachment.setPermission("astools.ascmd.list", true);
         attachment.setPermission("astools.ascmd.remove", true);
-        attachment.setPermission("astools.ascmd.assign.player", true);
-        attachment.setPermission("astools.ascmd.assign.console", true);
+        attachment.setPermission("astools.ascmd.add.player", true);
+        attachment.setPermission("astools.ascmd.add.console", true);
         attachment.setPermission("astools.ascmd.execute", true);
         attachment.setPermission("astools.ascmd.cooldown", true);
         //attachment.setPermission("astools.bypass-wg-flag", true);

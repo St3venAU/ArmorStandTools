@@ -63,19 +63,8 @@ guiInUse: 'This armor stands GUI is in use'
 # New since v2.4.0:
 noASNearBy: 'No armor stand found near by'
 closestAS: 'Closest armor stand'
-hasNoCmd: 'has no command assigned'
-hasCmd: 'has an assigned a command'
 type: 'Type'
 command: 'Command'
-unassignedCmd: 'Unassigned command from armor stand'
-assignedCmdToAS: 'Assigned command to closest armor stand'
-assignCmdError: 'An error occured while assigning command to closest armor stand'
-ascmdHelp: 'This command is used to assign a command to the nearest armor stand (within 4 blocks). The command is executed when the armor stand is right clicked.'
-viewCmd: 'View assigned command'
-removeCmd: 'Remove assigned command'
-assignConsole: 'Assign a command to be executed by the console'
-assignPlayer: 'Assign a command to be executed by the player'
-executeCmdError: 'An error occured executing the command assigned to this armor stand'
 # New since v3.2.0
 creativeRequired: 'Creative mode is required to save an armor stand as a command block'
 # New since v3.3.0
@@ -93,7 +82,30 @@ cmdNotAllowed: 'That command is not allowed while using Armor Stand Tools'
 crouch: 'Crouch'
 click: 'Click'
 finish: 'Finish'
-#
+#New since v4.3.0
+configuredArmorStand: 'Configured Armor Stand'
+inventoryFull: 'Inventory full. Try again.'
+name: 'Name'
+inventory: 'Inventory'
+items: 'Items'
+stacks: 'Stacks'
+cmdsAssigned: 'commands assigned'
+invisible: 'Invisible'
+invuln: 'Invulnerable'
+glowing: 'Glowing'
+attributes: 'Attributes'
+hasTheseCmdsAssigned: 'has these commands assigned'
+hasNoCmds: 'has no commands assigned'
+priority: 'Priority'
+delay: 'Delay'
+errorExecutingCmd: 'An error occured executing command'
+isNotValidNumber: 'is not a valid number'
+removedFromAs: 'removed from armor stand'
+listAssignedCmds: 'List assigned commands'
+addACmd: 'Add a command'
+removeACmd: 'Remove a command'
+cmdHelp: 'This command is used to add/remove commands to the nearest armor stand (within 4 blocks). The commands are executed when the armor stand is right clicked, lowest priority first.'
+
 #############################
 # Tool names & descriptions #
 #############################
@@ -264,19 +276,31 @@ tool:
     lore:
   gui_head:
     name: 'Move Head'
-    lore: 'Change the head position'
+    lore:
+      - 'Change the head position'
   gui_body:
     name: 'Move Body'
-    lore: 'Change the body position'
+    lore:
+      - 'Change the body position'
   gui_larm:
     name: 'Move Left Arm'
-    lore: 'Change the left arm position'
+    lore:
+      - 'Change the left arm position'
   gui_rarm:
     name: 'Move Right Arm'
-    lore: 'Change the right arm position'
+    lore:
+      - 'Change the right arm position'
   gui_lleg:
     name: 'Move Left Leg'
-    lore: 'Change the left leg position'
+    lore:
+      - 'Change the left leg position'
   gui_rleg:
     name: 'Move Right Leg'
-    lore: 'Change the right leg position'
+    lore:
+      - 'Change the right leg position'
+  gui_item:
+    name: 'Pick Up As Item'
+    lore:
+      - 'Create armor stand item for this armor stand'
+      - 'Creative mode: Armor stand stays'
+      - 'Survival mode: Armor stand is deleted'

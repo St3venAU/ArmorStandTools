@@ -3,9 +3,9 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
-<groupId>com.gmail.St3venAU.plugins</groupId>
+<groupId>com.gmail.st3venau.plugins</groupId>
 <artifactId>ArmorStandTools</artifactId>
-<version>4.2.0</version>
+<version>4.3.0</version>
 <name>ArmorStandTools</name>
 
 <repositories>

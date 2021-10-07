@@ -35,22 +35,23 @@ class Config {
 
     static ItemStack helmet, chest, pants, boots, itemInHand, itemInOffHand;
 
-    static boolean isVisible                 = true;
-    static boolean isSmall                   = false;
-    static boolean hasArms                   = true;
-    static boolean hasBasePlate              = false;
-    static boolean hasGravity                = false;
-    static String  defaultName               = "";
-    static boolean invulnerable              = false;
-    static boolean equipmentLock             = false;
-    static boolean allowMoveWorld            = false;
-    static boolean deactivateOnWorldChange   = true;
-    static boolean showDebugMessages                     = false;
-    static boolean requireCreative           = false;
-    static int defaultASCmdCooldownTicks     = 0;
-    static boolean ignoreWGForASCmdExecution = false;
+    static boolean isVisible                    = true;
+    static boolean isSmall                      = false;
+    static boolean hasArms                      = true;
+    static boolean hasBasePlate                 = false;
+    static boolean hasGravity                   = false;
+    static String  defaultName                  = "";
+    static boolean invulnerable                 = false;
+    static boolean equipmentLock                = false;
+    static boolean allowMoveWorld               = false;
+    static boolean deactivateOnWorldChange      = true;
+    static boolean showDebugMessages            = false;
+    static boolean requireCreative              = false;
+    static int     defaultASCmdCooldownTicks    = 0;
+    static boolean ignoreWGForASCmdExecution    = false;
     static boolean saveToolCreatesCommandBlock  = true;
     static boolean logGeneratedSummonCommands   = false;
+    static boolean crouchRightClickOpensGUI     = false;
 
     static final ArrayList<String> deniedCommands = new ArrayList<>();
 
@@ -60,14 +61,16 @@ class Config {
             isOn, isOff, gravity, arms, invul, equip, locked,
             unLocked, notConsole, giveMsg1, giveMsg2, conReload,
             noRelPerm, noAirError, invalidName, wgNoPerm, currently,
-            noCommandPerm, generalNoPerm, armorStand, none,
-            guiInUse, noASNearBy, closestAS, creativeRequired,
-            hasNoCmd, hasCmd, type, command, unassignedCmd,
-            assignedCmdToAS, assignCmdError, ascmdHelp, viewCmd,
-            removeCmd, assignConsole, assignPlayer, executeCmdError,
+            noCommandPerm, generalNoPerm, armorStand, none, guiInUse,
+            noASNearBy, closestAS, creativeRequired, type, command,
             cmdOnCooldown, cooldownRemovedFrom, isAnInvalidCooldown,
             cooldownSetTo, ticksFor, setCooldown, removeCooldown,
-            cmdNotAllowed, glow, crouch, click, finish;
+            cmdNotAllowed, glow, crouch, click, finish, inventoryFull,
+            configuredArmorStand, name, inventory, cmdsAssigned,
+            invisible, invuln, glowing, attributes, items, stacks,
+            hasTheseCmdsAssigned, hasNoCmds, priority, delay,
+            errorExecutingCmd, isNotValidNumber, removedFromAs,
+            listAssignedCmds, addACmd, removeACmd, cmdHelp;
 
     static void reload() {
         reloadMainConfig();
@@ -103,6 +106,7 @@ class Config {
         showDebugMessages           = config.getBoolean("showDebugMessages", false);
         saveToolCreatesCommandBlock = config.getBoolean("saveToolCreatesCommandBlock", true);
         logGeneratedSummonCommands  = config.getBoolean("logGeneratedSummonCommands", false);
+        crouchRightClickOpensGUI    = config.getBoolean("crouchRightClickOpensGUI", false);
 
         AST.activeTool.clear();
         AST.selectedArmorStand.clear();
@@ -207,19 +211,8 @@ class Config {
         guiInUse = languageConfig.getString("guiInUse");
         noASNearBy = languageConfig.getString("noASNearBy");
         closestAS = languageConfig.getString("closestAS");
-        hasNoCmd = languageConfig.getString("hasNoCmd");
-        hasCmd = languageConfig.getString("hasCmd");
         type = languageConfig.getString("type");
         command = languageConfig.getString("command");
-        unassignedCmd = languageConfig.getString("unassignedCmd");
-        assignedCmdToAS = languageConfig.getString("assignedCmdToAS");
-        assignCmdError = languageConfig.getString("assignCmdError");
-        ascmdHelp = languageConfig.getString("ascmdHelp");
-        viewCmd = languageConfig.getString("viewCmd");
-        removeCmd = languageConfig.getString("removeCmd");
-        assignConsole = languageConfig.getString("assignConsole");
-        assignPlayer = languageConfig.getString("assignPlayer");
-        executeCmdError = languageConfig.getString("executeCmdError");
         creativeRequired = languageConfig.getString("creativeRequired");
         cmdOnCooldown = languageConfig.getString("cmdOnCooldown");
         cooldownRemovedFrom = languageConfig.getString("cooldownRemovedFrom");
@@ -234,6 +227,28 @@ class Config {
         crouch = languageConfig.getString("crouch");
         click = languageConfig.getString("click");
         finish = languageConfig.getString("finish");
+        inventoryFull = languageConfig.getString("inventoryFull");
+        configuredArmorStand = languageConfig.getString("configuredArmorStand");
+        name = languageConfig.getString("name");
+        inventory = languageConfig.getString("inventory");
+        cmdsAssigned = languageConfig.getString("cmdsAssigned");
+        invisible = languageConfig.getString("invisible");
+        invuln = languageConfig.getString("invuln");
+        glowing = languageConfig.getString("glowing");
+        attributes = languageConfig.getString("attributes");
+        items = languageConfig.getString("items");
+        stacks = languageConfig.getString("stacks");
+        hasTheseCmdsAssigned = languageConfig.getString("hasTheseCmdsAssigned");
+        hasNoCmds = languageConfig.getString("hasNoCmds");
+        priority = languageConfig.getString("priority");
+        delay = languageConfig.getString("delay");
+        errorExecutingCmd = languageConfig.getString("errorExecutingCmd");
+        isNotValidNumber = languageConfig.getString("isNotValidNumber");
+        removedFromAs = languageConfig.getString("removedFromAs");
+        listAssignedCmds = languageConfig.getString("listAssignedCmds");
+        addACmd = languageConfig.getString("addACmd");
+        removeACmd = languageConfig.getString("removeACmd");
+        cmdHelp = languageConfig.getString("cmdHelp");
     }
 
     private static ItemStack toItemStack(String s) {

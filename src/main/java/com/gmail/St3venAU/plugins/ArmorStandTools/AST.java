@@ -35,6 +35,7 @@ public class AST extends JavaPlugin {
     public static final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<>();
 
     static AST plugin;
+    static String nmsVersion;
 
     @Override
     public void onLoad() {
@@ -56,7 +57,7 @@ public class AST extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        String nmsVersion = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+        nmsVersion = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         if( nmsVersion.startsWith("v1_4")  ||
             nmsVersion.startsWith("v1_5")  ||
             nmsVersion.startsWith("v1_6")  ||
@@ -75,6 +76,7 @@ public class AST extends JavaPlugin {
             return;
         }
         getServer().getPluginManager().registerEvents(new  MainListener(), this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Commands cmds = new Commands();
         PluginCommand command = getCommand("astools");
         if(command != null) {
@@ -103,6 +105,7 @@ public class AST extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         for(UUID uuid : activeTool.keySet()) {
             if(ArmorStandTool.MOVE != activeTool.get(uuid)) continue;
             ArmorStand as = selectedArmorStand.get(uuid);
@@ -237,7 +240,9 @@ public class AST extends JavaPlugin {
             if(!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
                 return false;
             }
-            return Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b);
+            if(!Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b)) {
+                return false;
+            }
         }
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);

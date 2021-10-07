@@ -7,7 +7,6 @@ import org.bukkit.block.CommandBlock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -97,48 +96,6 @@ class Utils {
         boolean slotsDisabled = !hasDisabledSlots(as);
         setSlotsDisabled(as, slotsDisabled);
         return slotsDisabled;
-    }
-
-    static ArmorStand cloneArmorStand(ArmorStand as) {
-        ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
-        EntityEquipment asEquipment = as.getEquipment();
-        EntityEquipment cloneEquipment = clone.getEquipment();
-        if(asEquipment != null && cloneEquipment != null) {
-            cloneEquipment.setHelmet(asEquipment.getHelmet());
-            cloneEquipment.setChestplate(asEquipment.getChestplate());
-            cloneEquipment.setLeggings(asEquipment.getLeggings());
-            cloneEquipment.setBoots(asEquipment.getBoots());
-            cloneEquipment.setItemInMainHand(asEquipment.getItemInMainHand());
-            cloneEquipment.setItemInOffHand(asEquipment.getItemInOffHand());
-        }
-        clone.setHeadPose(as.getHeadPose());
-        clone.setBodyPose(as.getBodyPose());
-        clone.setLeftArmPose(as.getLeftArmPose());
-        clone.setRightArmPose(as.getRightArmPose());
-        clone.setLeftLegPose(as.getLeftLegPose());
-        clone.setRightLegPose(as.getRightLegPose());
-        clone.setGravity(as.hasGravity());
-        clone.setVisible(as.isVisible());
-        clone.setBasePlate(as.hasBasePlate());
-        clone.setArms(as.hasArms());
-        clone.setCustomName(as.getCustomName());
-        clone.setCustomNameVisible(as.isCustomNameVisible());
-        clone.setSmall(as.isSmall());
-        clone.setInvulnerable(as.isInvulnerable());
-        clone.setGlowing(as.isGlowing());
-        for(EquipmentSlot slot : EquipmentSlot.values()) {
-            for(ArmorStand.LockType lockType : ArmorStand.LockType.values()) {
-                if(as.hasEquipmentLock(slot, lockType)) {
-                    clone.addEquipmentLock(slot, lockType);
-                }
-            }
-        }
-        ArmorStandCmd asCmd = new ArmorStandCmd(as);
-        if(asCmd.getCommand() != null) {
-            asCmd.cloneTo(clone);
-        }
-        clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
-        return clone;
     }
 
     static boolean hasPermissionNode(Player p, String perm) {

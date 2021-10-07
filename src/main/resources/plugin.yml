@@ -11,5 +11,5 @@ commands:
       aliases: ast
       usage: Usage /astools or /astools reload
    ascmd:
-      description: View/Remove/Assign the command assigned to the nearest armor stand
-      usage: Usage /ascmd view, /ascmd remove, /ascmd assign <player/console> <command>
+      description: List/Add/Remove commands assigned to the nearest armor stand
+      usage: Usage /ascmd list, /ascmd remove <command_number>, /ascmd add <priority> <delay> <player/console/bungee> <command/bungee_server_name>

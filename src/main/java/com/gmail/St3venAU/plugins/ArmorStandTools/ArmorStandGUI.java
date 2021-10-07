@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -197,7 +199,10 @@ class ArmorStandGUI implements Listener {
                 break;
             case CLONE:
                 p.closeInventory();
-                AST.pickUpArmorStand(Utils.cloneArmorStand(as), p, true);
+                ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
+                (new ArmorStandMeta(as)).applyToArmorStand(clone);
+                clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
+                AST.pickUpArmorStand(clone, p, true);
                 Utils.title(p, Config.carrying);
                 break;
             case GEN_CMD:
@@ -257,6 +262,18 @@ class ArmorStandGUI implements Listener {
                 boolean glowing = !as.isGlowing();
                 as.setGlowing(glowing);
                 Utils.title(p, Config.glow + ": " + (glowing ? Config.isOn : Config.isOff));
+                break;
+            case ITEM:
+                ArmorStandMeta asm = new ArmorStandMeta(as);
+                ItemStack item = asm.convertToItem();
+                if(item != null) {
+                    p.closeInventory();
+                    if(p.getInventory().addItem(item).size() > 0) {
+                        p.sendMessage(ChatColor.RED + Config.inventoryFull);
+                    } else if(p.getGameMode() != GameMode.CREATIVE) {
+                        as.remove();
+                    }
+                }
                 break;
             default:
                 return;
