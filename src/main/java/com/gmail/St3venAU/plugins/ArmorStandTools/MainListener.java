@@ -281,12 +281,12 @@ public class MainListener implements Listener {
         ArmorStandTool tool = ArmorStandTool.get(inHand);
         if(inHand != null && tool == null && b != null && action == Action.RIGHT_CLICK_BLOCK && blockFace != BlockFace.DOWN && inHand.getType() == Material.ARMOR_STAND) {
             b = b.getRelative(blockFace);
-            if (!AST.playerHasPermission(p, b, ArmorStandTool.ITEM)) {
-                p.sendMessage(ChatColor.RED + Config.generalNoPerm);
-                return;
-            }
             ArmorStandMeta asm = ArmorStandMeta.fromItem(inHand);
             if(asm != null) {
+                if (!AST.playerHasPermission(p, b, ArmorStandTool.ITEM)) {
+                    p.sendMessage(ChatColor.RED + Config.generalNoPerm);
+                    return;
+                }
                 event.setCancelled(true);
                 Location l = b.getLocation().add(0.5, 0, 0.5);
                 ArmorStand as = (ArmorStand) b.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
