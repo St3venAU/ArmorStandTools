@@ -67,7 +67,8 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(Config.crouchRightClickOpensGUI && p.isSneaking() && Utils.hasPermissionNode(p, "astools.use")) {
+        ArmorStandTool tool = ArmorStandTool.get(p);
+        if(Config.crouchRightClickOpensGUI && tool == null && p.isSneaking() && Utils.hasPermissionNode(p, "astools.use")) {
             if (!AST.playerHasPermission(p, as.getLocation().getBlock(), null)) {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
                 return;
@@ -76,7 +77,6 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        ArmorStandTool tool = ArmorStandTool.get(p);
         if(!event.isCancelled() && tool != null) {
             if (!AST.playerHasPermission(p, as.getLocation().getBlock(), tool)) {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
