@@ -8,7 +8,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.ArmorStand;
@@ -21,6 +20,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -33,6 +33,9 @@ public class AST extends JavaPlugin {
     final static HashMap<UUID, ArmorStand> selectedArmorStand = new HashMap<>();
 
     public static final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<>();
+
+    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForName  = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
+    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForSkull = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
 
     static AST plugin;
     static String nmsVersion;
@@ -123,6 +126,8 @@ public class AST extends JavaPlugin {
             }
         }
         savedInventories.clear();
+        waitingForName.clear();
+        waitingForSkull.clear();
     }
 
     static void returnArmorStand(ArmorStand as) {
@@ -194,35 +199,42 @@ public class AST extends JavaPlugin {
         as.setMetadata("startLoc", new FixedMetadataValue(AST.plugin, as.getLocation()));
     }
 
-    static void setName(Player p, ArmorStand as) {
-        Block b = findAnAirBlock(p.getLocation());
-        if(b == null) {
-            p.sendMessage(ChatColor.RED + Config.noAirError);
-            return;
+    static void setName(final Player p, ArmorStand as) {
+        final UUID uuid = p.getUniqueId();
+        if(waitingForSkull.containsKey(uuid)) {
+            Bukkit.getScheduler().cancelTask(waitingForSkull.get(uuid).getValue());
+            waitingForSkull.remove(uuid);
         }
-        b.setType(Material.OAK_SIGN);
-        Utils.openSign(p, b);
-        b.setMetadata("armorStand", new FixedMetadataValue(AST.plugin, as.getUniqueId()));
-        b.setMetadata("setName", new FixedMetadataValue(AST.plugin, true));
+        p.sendTitle(" ", ChatColor.GOLD + Config.enterName, 0, 600, 0);
+        p.sendMessage(ChatColor.GOLD + Config.enterName2 + " &");
+        int taskID = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(!waitingForName.containsKey(uuid)) return;
+                waitingForName.remove(uuid);
+                p.sendMessage(ChatColor.RED + Config.inputTimeout);
+            }
+        }.runTaskLater(AST.plugin, 600L).getTaskId();
+        waitingForName.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), taskID));
     }
 
-    static void setPlayerSkull(Player p, ArmorStand as) {
-        Block b = findAnAirBlock(p.getLocation());
-        if(b == null) {
-            p.sendMessage(ChatColor.RED + Config.noAirError);
-            return;
+    static void setPlayerSkull(final Player p, ArmorStand as) {
+        final UUID uuid = p.getUniqueId();
+        if(waitingForName.containsKey(uuid)) {
+            Bukkit.getScheduler().cancelTask(waitingForName.get(uuid).getValue());
+            waitingForName.remove(uuid);
         }
-        b.setType(Material.OAK_SIGN);
-        Utils.openSign(p, b);
-        b.setMetadata("armorStand", new FixedMetadataValue(AST.plugin, as.getUniqueId()));
-        b.setMetadata("setSkull", new FixedMetadataValue(AST.plugin, true));
-    }
-
-    private static Block findAnAirBlock(Location l) {
-        while(l.getY() < 255 && l.getBlock().getType() != Material.AIR) {
-            l.add(0, 1, 0);
-        }
-        return l.getY() < 255 && l.getBlock().getType() == Material.AIR ? l.getBlock() : null;
+        p.sendTitle(" ", ChatColor.GOLD + Config.enterSkull, 0, 600, 0);
+        p.sendMessage(ChatColor.GOLD + Config.enterSkull);
+        int taskID = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(!waitingForSkull.containsKey(uuid)) return;
+                waitingForSkull.remove(uuid);
+                p.sendMessage(ChatColor.RED + Config.inputTimeout);
+            }
+        }.runTaskLater(AST.plugin, 600L).getTaskId();
+        waitingForSkull.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), taskID));
     }
 
     static boolean checkBlockPermission(Player p, Block b) {

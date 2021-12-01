@@ -7,6 +7,7 @@ import org.bukkit.block.CommandBlock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -16,35 +17,19 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 class Utils {
 
     private static DecimalFormat twoDec;
-
-    static void openSign(final Player p, final Block b) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    Object world = b.getWorld().getClass().getMethod("getHandle").invoke(b.getWorld());
-                    Object position = Class.forName("net.minecraft.core.BlockPosition").getConstructor(int.class, int.class, int.class).newInstance(b.getX(), b.getY(), b.getZ());
-                    Object sign = world.getClass().getMethod("getTileEntity", Class.forName("net.minecraft.core.BlockPosition")).invoke(world, position);
-                    Object player = p.getClass().getMethod("getHandle").invoke(p);
-                    player.getClass().getMethod("openSign", Class.forName("net.minecraft.world.level.block.entity.TileEntitySign")).invoke(player, sign);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.runTaskLater(AST.plugin, 2L);
-    }
 
     static boolean hasDisabledSlots(ArmorStand as) {
         for(EquipmentSlot slot : EquipmentSlot.values()) {
@@ -184,7 +169,7 @@ class Utils {
 
     static private String skullOwner(ItemStack is) {
         if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta skull)) return "";
-        return skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwningPlayer().getName() + "\"";
+        return skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwner() + "\"";
     }
 
     static private boolean isEmpty(ItemStack is) {
@@ -263,12 +248,35 @@ class Utils {
 
     static String createSummonCommand(ArmorStand as) {
         Location asLocation = as.getLocation();
+        return  "summon minecraft:armor_stand " +
+                twoDec(asLocation.getX()) + " " +
+                twoDec(asLocation.getY()) + " " +
+                twoDec(asLocation.getZ()) + " " +
+                createEntityTag(as);
+    }
+
+    static String quote(String s) {
+        return "\"\\\"" + s + "\\\"\"";
+    }
+
+    static String createGiveCommand(ArmorStand as, Player p) {
+        StringBuilder sb = new StringBuilder("give ");
+        sb.append(p.getName()).append(" minecraft:armor_stand{Enchantments:[{id:unbreaking,lvl:1}],HideFlags:1,display:{Name:");
+        sb.append(quote(Config.configuredArmorStand));
+        sb.append(",Lore:[");
+        boolean comma = false;
+        for(String s : createItemLore(as)) {
+            if(comma) sb.append(",");
+            comma = true;
+            sb.append(quote(s));
+        }
+        sb.append("]},EntityTag:").append(createEntityTag(as)).append("}");
+        return sb.toString();
+    }
+
+    static String createEntityTag(ArmorStand as) {
         EntityEquipment e = as.getEquipment();
-        StringBuilder sb = new StringBuilder("summon minecraft:armor_stand ");
-        sb.append(twoDec(asLocation.getX())).append(" ");
-        sb.append(twoDec(asLocation.getY())).append(" ");
-        sb.append(twoDec(asLocation.getZ())).append(" ");
-        sb.append("{");
+        StringBuilder sb = new StringBuilder("{");
         if(!as.isVisible())                 sb.append("Invisible:1,");
         if(!as.hasBasePlate())              sb.append("NoBasePlate:1,");
         if(!as.hasGravity())                sb.append("NoGravity:1,");
@@ -278,13 +286,61 @@ class Utils {
         if(as.isGlowing())                  sb.append("Glowing:1,");
         if(hasDisabledSlots(as))            sb.append("DisabledSlots:").append(disabledSlotsAsInteger(as)).append(",");
         if(as.isCustomNameVisible())        sb.append("CustomNameVisible:1,");
-        if(as.getCustomName() != null)      sb.append("CustomName:\"\\\"").append(as.getCustomName()).append("\\\"\",");
+        if(as.getCustomName() != null)      sb.append("CustomName:").append(quote(as.getCustomName())).append(",");
         if(as.getLocation().getYaw() != 0F) sb.append("Rotation:[").append(twoDec(as.getLocation().getYaw())).append("f],");
         sb.append(armorItems(e));
         sb.append(handItems(e));
         sb.append(pose(as));
         sb.append("}");
         return sb.toString();
+    }
+
+    static List<String> createItemLore(ArmorStand as) {
+        EntityEquipment e = as.getEquipment();
+        List<String> lore = new ArrayList<>();
+        String name = as.getCustomName();
+        if(name != null && name.length() > 0) {
+            lore.add(Config.name + ": " + name);
+        }
+        if (e != null) {
+            int stacks = 0;
+            int items = 0;
+            if(e.getHelmet() != null)                           { stacks++; items += e.getHelmet().getAmount();         }
+            if(e.getChestplate() != null)                       { stacks++; items += e.getChestplate().getAmount();     }
+            if(e.getLeggings() != null)                         { stacks++; items += e.getLeggings().getAmount();       }
+            if(e.getBoots() != null)                            { stacks++; items += e.getBoots().getAmount();          }
+            if(Material.AIR != e.getItemInMainHand().getType()) { stacks++; items += e.getItemInMainHand().getAmount(); }
+            if(Material.AIR != e.getItemInOffHand().getType())  { stacks++; items += e.getItemInOffHand().getAmount();  }
+            if(stacks > 0) {
+                lore.add(Config.inventory + ": " + items + " " + Config.items + " (" + stacks + " " + Config.stacks + ")");
+            }
+        }
+        List<String> attribs = new ArrayList<>();
+        if(hasDisabledSlots(as))    attribs.add(Config.equip + " " + Config.locked);
+        if(!as.hasGravity())        attribs.add(Config.gravity + " " + Config.isOff);
+        if(!as.isVisible())         attribs.add(Config.invisible);
+        if(as.hasArms())            attribs.add(Config.arms);
+        if(as.isSmall())            attribs.add(Config.small);
+        if(as.isInvulnerable())     attribs.add(Config.invuln);
+        if(as.isGlowing())          attribs.add(Config.glowing);
+        if(attribs.size() > 0) {
+            StringBuilder sb = new StringBuilder(Config.attributes + ": ");
+            for (String attrib : attribs) {
+                sb.append(attrib).append(", ");
+                if (sb.length() >= 40) {
+                    lore.add(sb.toString());
+                    sb = new StringBuilder();
+                }
+            }
+            if (sb.length() > 1) {
+                lore.add(sb.substring(0, sb.length() - 2));
+            } else {
+                String last = lore.get(lore.size() - 1);
+                lore.remove(lore.size() - 1);
+                lore.add(last.substring(0, last.length() - 2));
+            }
+        }
+        return lore;
     }
 
     static void generateCmdBlock(Location l, String command) {
@@ -340,6 +396,53 @@ class Utils {
         }
         p.updateInventory();
         p.setMetadata("lastEvent", new FixedMetadataValue(AST.plugin, System.currentTimeMillis()));
+    }
+
+    static ArmorStand cloneArmorStand(ArmorStand as) {
+        ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
+        EntityEquipment asEquipment = as.getEquipment();
+        EntityEquipment cloneEquipment = clone.getEquipment();
+        if(asEquipment != null && cloneEquipment != null) {
+            cloneEquipment.setHelmet(asEquipment.getHelmet());
+            cloneEquipment.setChestplate(asEquipment.getChestplate());
+            cloneEquipment.setLeggings(asEquipment.getLeggings());
+            cloneEquipment.setBoots(asEquipment.getBoots());
+            cloneEquipment.setItemInMainHand(asEquipment.getItemInMainHand());
+            cloneEquipment.setItemInOffHand(asEquipment.getItemInOffHand());
+        }
+        clone.setHeadPose(as.getHeadPose());
+        clone.setBodyPose(as.getBodyPose());
+        clone.setLeftArmPose(as.getLeftArmPose());
+        clone.setRightArmPose(as.getRightArmPose());
+        clone.setLeftLegPose(as.getLeftLegPose());
+        clone.setRightLegPose(as.getRightLegPose());
+        clone.setGravity(as.hasGravity());
+        clone.setVisible(as.isVisible());
+        clone.setBasePlate(as.hasBasePlate());
+        clone.setArms(as.hasArms());
+        clone.setCustomName(as.getCustomName());
+        clone.setCustomNameVisible(as.isCustomNameVisible());
+        clone.setSmall(as.isSmall());
+        clone.setInvulnerable(as.isInvulnerable());
+        clone.setGlowing(as.isGlowing());
+        for(EquipmentSlot slot : EquipmentSlot.values()) {
+            for(ArmorStand.LockType lockType : ArmorStand.LockType.values()) {
+                if(as.hasEquipmentLock(slot, lockType)) {
+                    clone.addEquipmentLock(slot, lockType);
+                }
+            }
+        }
+        ArmorStandCmdManager cmdMgrAs = new ArmorStandCmdManager(as);
+        ArmorStandCmdManager cmdMgrClone = new ArmorStandCmdManager(clone);
+        for(ArmorStandCmd asCmd : cmdMgrAs.getCommands()) {
+            cmdMgrClone.addCommand(asCmd, true);
+        }
+        int cooldown = cmdMgrAs.getCooldownTime();
+        if(cooldown > 0) {
+            cmdMgrClone.setCooldownTime(cooldown);
+        }
+        clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
+        return clone;
     }
 
 

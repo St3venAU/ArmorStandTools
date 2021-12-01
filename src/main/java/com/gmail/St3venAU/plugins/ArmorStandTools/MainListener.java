@@ -2,14 +2,12 @@ package com.gmail.st3venau.plugins.armorstandtools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -20,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -28,6 +25,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -41,7 +39,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
@@ -67,7 +64,8 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(Config.crouchRightClickOpensGUI && p.isSneaking() && Utils.hasPermissionNode(p, "astools.use")) {
+        ArmorStandTool tool = ArmorStandTool.get(p);
+        if(tool == null && p.isSneaking() && Config.crouchRightClickOpensGUI && Utils.hasPermissionNode(p, "astools.use")) {
             if (!AST.playerHasPermission(p, as.getLocation().getBlock(), null)) {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
                 return;
@@ -76,7 +74,6 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        ArmorStandTool tool = ArmorStandTool.get(p);
         if(!event.isCancelled() && tool != null) {
             if (!AST.playerHasPermission(p, as.getLocation().getBlock(), tool)) {
                 p.sendMessage(ChatColor.RED + Config.generalNoPerm);
@@ -275,33 +272,8 @@ public class MainListener implements Listener {
             return;
         }
         Action action = event.getAction();
-        BlockFace blockFace = event.getBlockFace();
         ItemStack inHand = event.getItem();
-        Block b = event.getClickedBlock();
         ArmorStandTool tool = ArmorStandTool.get(inHand);
-        if(inHand != null && tool == null && b != null && action == Action.RIGHT_CLICK_BLOCK && blockFace != BlockFace.DOWN && inHand.getType() == Material.ARMOR_STAND) {
-            b = b.getRelative(blockFace);
-            if (!AST.playerHasPermission(p, b, ArmorStandTool.ITEM)) {
-                p.sendMessage(ChatColor.RED + Config.generalNoPerm);
-                return;
-            }
-            ArmorStandMeta asm = ArmorStandMeta.fromItem(inHand);
-            if(asm != null) {
-                event.setCancelled(true);
-                Location l = b.getLocation().add(0.5, 0, 0.5);
-                ArmorStand as = (ArmorStand) b.getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
-                asm.applyToArmorStand(as);
-                if(p.getGameMode() != GameMode.CREATIVE) {
-                    if(inHand.getAmount() == 1) {
-                        p.getInventory().setItemInMainHand(null);
-                    } else {
-                        inHand.setAmount(inHand.getAmount() - 1);
-                        p.getInventory().setItemInMainHand(inHand);
-                    }
-                }
-                return;
-            }
-        }
         if(tool == null) return;
         event.setCancelled(true);
         if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -386,44 +358,59 @@ public class MainListener implements Listener {
     }
 
     @EventHandler
-    public void onSignChange(final SignChangeEvent event) {
-        final Block b = event.getBlock();
-        if(!b.hasMetadata("armorStand")) {
+    public void onPlayerChat(final AsyncPlayerChatEvent event) {
+        final Player p = event.getPlayer();
+        final UUID plrUuid = p.getUniqueId();
+        final UUID uuid;
+        boolean name;
+        int taskId;
+        if(AST.waitingForName.containsKey(plrUuid)) {
+            uuid = AST.waitingForName.get(plrUuid).getKey();
+            taskId = AST.waitingForName.get(plrUuid).getValue();
+            name = true;
+        } else if(AST.waitingForSkull.containsKey(plrUuid)) {
+            uuid = AST.waitingForSkull.get(plrUuid).getKey();
+            taskId = AST.waitingForSkull.get(plrUuid).getValue();
+            name = false;
+        } else {
             return;
         }
-        final ArmorStand as = getArmorStand(b);
-        if (as != null) {
-            StringBuilder sb = new StringBuilder();
-            for (String line : event.getLines()) {
-                if (line != null && line.length() > 0) {
-                    sb.append(ChatColor.translateAlternateColorCodes('&', line));
-                }
-            }
-            String input = sb.toString();
-            if(b.hasMetadata("setName")) {
-                if (input.length() > 0) {
-                    as.setCustomName(input);
-                    as.setCustomNameVisible(true);
-                } else {
-                    as.setCustomName("");
-                    as.setCustomNameVisible(false);
-                    as.setCustomNameVisible(false);
-                }
-            } else if(b.hasMetadata("setSkull")) {
-                if(MC_USERNAME_PATTERN.matcher(input).matches()) {
-                    if(as.getEquipment() != null) {
-                        as.getEquipment().setHelmet(getPlayerHead(input));
-                    }
-                } else {
-                    event.getPlayer().sendMessage(ChatColor.RED + input + " " + Config.invalidName);
-                }
-            }
-        }
         event.setCancelled(true);
-        b.removeMetadata("armorStand", AST.plugin);
-        b.removeMetadata("setName", AST.plugin);
-        b.removeMetadata("setSkull", AST.plugin);
-        b.setType(Material.AIR);
+        Bukkit.getScheduler().cancelTask(taskId);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                final ArmorStand as = getArmorStand(uuid, p.getWorld());
+                if (as != null) {
+                    String input = ChatColor.translateAlternateColorCodes('&', event.getMessage());
+                    if(input.equals("&")) input = "";
+                    if(name) {
+                        if (input.length() > 0) {
+                            as.setCustomName(input);
+                            as.setCustomNameVisible(true);
+                            p.sendMessage(ChatColor.GREEN + Config.nameSet);
+                        } else {
+                            as.setCustomName("");
+                            as.setCustomNameVisible(false);
+                            as.setCustomNameVisible(false);
+                            p.sendMessage(ChatColor.GREEN + Config.nameRemoved);
+                        }
+                    } else {
+                        if(MC_USERNAME_PATTERN.matcher(input).matches()) {
+                            if(as.getEquipment() != null) {
+                                as.getEquipment().setHelmet(getPlayerHead(input));
+                                p.sendMessage(ChatColor.GREEN + Config.skullSet);
+                            }
+                        } else {
+                            p.sendMessage(ChatColor.RED + input + " " + Config.invalidName);
+                        }
+                    }
+                }
+                AST.waitingForName.remove(plrUuid);
+                AST.waitingForSkull.remove(plrUuid);
+                Utils.title(p, " ");
+            }
+        }.runTask(AST.plugin);
     }
 
     @SuppressWarnings("deprecation")
@@ -456,17 +443,10 @@ public class MainListener implements Listener {
         }
     }
 
-    private ArmorStand getArmorStand(Block b) {
-        UUID uuid = null;
-        for (MetadataValue value : b.getMetadata("armorStand")) {
-            if (value.getOwningPlugin() == AST.plugin) {
-                uuid = (UUID) value.value();
-            }
-        }
-        b.removeMetadata("armorStand", AST.plugin);
-        if (uuid != null) {
-            for(org.bukkit.entity.Entity e : b.getWorld().getEntities()) {
-                if(e instanceof ArmorStand && e.getUniqueId().equals(uuid)) {
+    private ArmorStand getArmorStand(UUID uuid, World w) {
+        if (uuid != null && w != null) {
+            for (org.bukkit.entity.Entity e : w.getEntities()) {
+                if (e instanceof ArmorStand && e.getUniqueId().equals(uuid)) {
                     return (ArmorStand) e;
                 }
             }
@@ -475,7 +455,7 @@ public class MainListener implements Listener {
     }
 
     // Give all permissions to all players - for testing only
-    /*@EventHandler
+   /*@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
         PermissionAttachment attachment = p.addAttachment(AST.plugin);

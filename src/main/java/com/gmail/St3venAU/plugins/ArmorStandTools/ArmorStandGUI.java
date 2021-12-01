@@ -3,10 +3,11 @@ package com.gmail.st3venau.plugins.armorstandtools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -19,7 +20,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -199,9 +199,7 @@ class ArmorStandGUI implements Listener {
                 break;
             case CLONE:
                 p.closeInventory();
-                ArmorStand clone = (ArmorStand) as.getWorld().spawnEntity(as.getLocation().add(1, 0, 0), EntityType.ARMOR_STAND);
-                (new ArmorStandMeta(as)).applyToArmorStand(clone);
-                clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
+                ArmorStand clone = Utils.cloneArmorStand(as);
                 AST.pickUpArmorStand(clone, p, true);
                 Utils.title(p, Config.carrying);
                 break;
@@ -264,16 +262,11 @@ class ArmorStandGUI implements Listener {
                 Utils.title(p, Config.glow + ": " + (glowing ? Config.isOn : Config.isOff));
                 break;
             case ITEM:
-                ArmorStandMeta asm = new ArmorStandMeta(as);
-                ItemStack item = asm.convertToItem();
-                if(item != null) {
-                    p.closeInventory();
-                    if(p.getInventory().addItem(item).size() > 0) {
-                        p.sendMessage(ChatColor.RED + Config.inventoryFull);
-                    } else if(p.getGameMode() != GameMode.CREATIVE) {
-                        as.remove();
-                    }
-                }
+                World w = p.getWorld();
+                boolean commandFeedback = Boolean.TRUE.equals(w.getGameRuleValue(GameRule.SEND_COMMAND_FEEDBACK));
+                if(commandFeedback) w.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Utils.createGiveCommand(as, p));
+                if(commandFeedback) w.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
                 break;
             default:
                 return;

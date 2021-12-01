@@ -9,7 +9,7 @@ I wanted to create an armor stand for each kit in my mini-game, and I quickly be
 
 Compatibility
 -------------
-- Armor Stand Tools v4.x.x - Spigot/CraftBukkit 1.17+
+- Armor Stand Tools v4.x.x - Spigot/CraftBukkit 1.17, 1.18+
 - Armor Stand Tools v3.x.x - Spigot/CraftBukkit 1.13 - 1.16
 - Armor Stand Tools v2.4.3 - Spigot/CraftBukkit 1.8 - 1.12
 

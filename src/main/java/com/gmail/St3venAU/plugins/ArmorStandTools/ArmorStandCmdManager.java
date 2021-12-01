@@ -128,7 +128,7 @@ class ArmorStandCmdManager {
         armorStand.addScoreboardTag("ast-cdn-" + cooldown);
     }
 
-    private int getCooldownTime() {
+    int getCooldownTime() {
         if(armorStand == null) return -1;
         for(String tag : armorStand.getScoreboardTags()) {
             if(tag.startsWith("ast-cdn-")) {

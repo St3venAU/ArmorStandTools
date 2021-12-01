@@ -60,17 +60,19 @@ class Config {
             carrying, cbCreated, size, small, normal, basePlate,
             isOn, isOff, gravity, arms, invul, equip, locked,
             unLocked, notConsole, giveMsg1, giveMsg2, conReload,
-            noRelPerm, noAirError, invalidName, wgNoPerm, currently,
+            noRelPerm, invalidName, wgNoPerm, currently,
             noCommandPerm, generalNoPerm, armorStand, none, guiInUse,
             noASNearBy, closestAS, creativeRequired, type, command,
             cmdOnCooldown, cooldownRemovedFrom, isAnInvalidCooldown,
             cooldownSetTo, ticksFor, setCooldown, removeCooldown,
-            cmdNotAllowed, glow, crouch, click, finish, inventoryFull,
-            configuredArmorStand, name, inventory, cmdsAssigned,
+            cmdNotAllowed, glow, crouch, click, finish,
+            configuredArmorStand, name, inventory,
             invisible, invuln, glowing, attributes, items, stacks,
             hasTheseCmdsAssigned, hasNoCmds, priority, delay,
             errorExecutingCmd, isNotValidNumber, removedFromAs,
-            listAssignedCmds, addACmd, removeACmd, cmdHelp;
+            listAssignedCmds, addACmd, removeACmd, cmdHelp,
+            enterName, enterName2, enterSkull, inputTimeout,
+            nameSet, nameRemoved, skullSet;
 
     static void reload() {
         reloadMainConfig();
@@ -84,12 +86,12 @@ class Config {
         AST.plugin.reloadConfig();
         FileConfiguration config = AST.plugin.getConfig();
         summonCommandsLogPath       = Paths.get("AST-generated-summon-commands.log");
-        helmet                      = toItemStack(config.getString("helmet"));
-        chest                       = toItemStack(config.getString("chest"));
-        pants                       = toItemStack(config.getString("pants"));
-        boots                       = toItemStack(config.getString("boots"));
-        itemInHand                  = toItemStack(config.getString("inHand"));
-        itemInOffHand               = toItemStack(config.getString("inOffHand"));
+        helmet                      = getItemStack("helmet");
+        chest                       = getItemStack("chest");
+        pants                       = getItemStack("pants");
+        boots                       = getItemStack("boots");
+        itemInHand                  = getItemStack("inHand");
+        itemInOffHand               = getItemStack("inOffHand");
         isVisible                   = config.getBoolean("isVisible");
         isSmall                     = config.getBoolean("isSmall");
         hasArms                     = config.getBoolean("hasArms");
@@ -200,7 +202,6 @@ class Config {
         giveMsg2 = languageConfig.getString("giveMsg2");
         conReload = languageConfig.getString("conReload");
         noRelPerm = languageConfig.getString("noRelPerm");
-        noAirError = languageConfig.getString("noAirError");
         invalidName = languageConfig.getString("invalidName");
         wgNoPerm = languageConfig.getString("wgNoPerm");
         noCommandPerm = languageConfig.getString("noCommandPerm");
@@ -227,11 +228,9 @@ class Config {
         crouch = languageConfig.getString("crouch");
         click = languageConfig.getString("click");
         finish = languageConfig.getString("finish");
-        inventoryFull = languageConfig.getString("inventoryFull");
         configuredArmorStand = languageConfig.getString("configuredArmorStand");
         name = languageConfig.getString("name");
         inventory = languageConfig.getString("inventory");
-        cmdsAssigned = languageConfig.getString("cmdsAssigned");
         invisible = languageConfig.getString("invisible");
         invuln = languageConfig.getString("invuln");
         glowing = languageConfig.getString("glowing");
@@ -249,10 +248,22 @@ class Config {
         addACmd = languageConfig.getString("addACmd");
         removeACmd = languageConfig.getString("removeACmd");
         cmdHelp = languageConfig.getString("cmdHelp");
+        enterName = languageConfig.getString("enterName");
+        enterName2 = languageConfig.getString("enterName2");
+        enterSkull = languageConfig.getString("enterSkull");
+        inputTimeout = languageConfig.getString("inputTimeout");
+        nameSet = languageConfig.getString("nameSet");
+        nameRemoved = languageConfig.getString("nameRemoved");
+        skullSet = languageConfig.getString("skullSet");
     }
 
-    private static ItemStack toItemStack(String s) {
+    private static ItemStack getItemStack(String configPath) {
+        String s = AST.plugin.getConfig().getString(configPath);
         if(s == null || s.length() == 0) {
+            return new ItemStack(Material.AIR);
+        }
+        if(s.equals("AIR 0")) {
+            AST.plugin.getConfig().set(configPath, "AIR");
             return new ItemStack(Material.AIR);
         }
         Material m;
