@@ -52,6 +52,7 @@ class Config {
     static boolean saveToolCreatesCommandBlock  = true;
     static boolean logGeneratedSummonCommands   = false;
     static boolean crouchRightClickOpensGUI     = false;
+    static boolean useCommandForTextInput       = false;
 
     static final ArrayList<String> deniedCommands = new ArrayList<>();
 
@@ -72,7 +73,8 @@ class Config {
             errorExecutingCmd, isNotValidNumber, removedFromAs,
             listAssignedCmds, addACmd, removeACmd, cmdHelp,
             enterName, enterName2, enterSkull, inputTimeout,
-            nameSet, nameRemoved, skullSet;
+            nameSet, nameRemoved, skullSet, enterNameC,
+            enterNameC2, enterSkullC;
 
     static void reload() {
         reloadMainConfig();
@@ -109,6 +111,7 @@ class Config {
         saveToolCreatesCommandBlock = config.getBoolean("saveToolCreatesCommandBlock", true);
         logGeneratedSummonCommands  = config.getBoolean("logGeneratedSummonCommands", false);
         crouchRightClickOpensGUI    = config.getBoolean("crouchRightClickOpensGUI", false);
+        useCommandForTextInput      = config.getBoolean("useCommandForTextInput", false);
 
         AST.activeTool.clear();
         AST.selectedArmorStand.clear();
@@ -255,6 +258,9 @@ class Config {
         nameSet = languageConfig.getString("nameSet");
         nameRemoved = languageConfig.getString("nameRemoved");
         skullSet = languageConfig.getString("skullSet");
+        enterNameC = languageConfig.getString("enterNameC");
+        enterNameC2 = languageConfig.getString("enterNameC2");
+        enterSkullC = languageConfig.getString("enterSkullC");
     }
 
     private static ItemStack getItemStack(String configPath) {

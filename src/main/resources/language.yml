@@ -110,6 +110,10 @@ inputTimeout: 'Input timeout. Please try again.'
 nameSet: 'Armor stand name set'
 nameRemoved: 'Armor stand name removed'
 skullSet: 'Armor stand skull set'
+#New since v4.4.1
+enterNameC: 'To set armor stand name'
+enterNameC2: 'Or to remove the name'
+enterSkullC: 'To set MC username for skull'
 #############################
 # Tool names & descriptions #
 #############################

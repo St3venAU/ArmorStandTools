@@ -90,6 +90,7 @@ defaultASCmdCooldownTicks: 0
 bypassWorldguardForASCmdExecution: false
 saveToolCreatesCommandBlock: true
 logGeneratedSummonCommands: false
+useCommandForTextInput: false
 showDebugMessages: false
 
 # Uncomment the section below to deny players access to commands of your choice when they have any AST tools in their inventory

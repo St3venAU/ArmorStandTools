@@ -49,8 +49,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("CommentedOutCode")
 public class MainListener implements Listener {
 
-    private final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if(!(event.getRightClicked() instanceof ArmorStand as)) return;
@@ -359,75 +357,10 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(final AsyncPlayerChatEvent event) {
-        final Player p = event.getPlayer();
-        final UUID plrUuid = p.getUniqueId();
-        final UUID uuid;
-        boolean name;
-        int taskId;
-        if(AST.waitingForName.containsKey(plrUuid)) {
-            uuid = AST.waitingForName.get(plrUuid).getKey();
-            taskId = AST.waitingForName.get(plrUuid).getValue();
-            name = true;
-        } else if(AST.waitingForSkull.containsKey(plrUuid)) {
-            uuid = AST.waitingForSkull.get(plrUuid).getKey();
-            taskId = AST.waitingForSkull.get(plrUuid).getValue();
-            name = false;
-        } else {
-            return;
+        if(Config.useCommandForTextInput) return;
+        if(AST.processInput(event.getPlayer(), event.getMessage())) {
+            event.setCancelled(true);
         }
-        event.setCancelled(true);
-        Bukkit.getScheduler().cancelTask(taskId);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                final ArmorStand as = getArmorStand(uuid, p.getWorld());
-                if (as != null) {
-                    String input = ChatColor.translateAlternateColorCodes('&', event.getMessage());
-                    if(input.equals("&")) input = "";
-                    if(name) {
-                        if (input.length() > 0) {
-                            as.setCustomName(input);
-                            as.setCustomNameVisible(true);
-                            p.sendMessage(ChatColor.GREEN + Config.nameSet);
-                        } else {
-                            as.setCustomName("");
-                            as.setCustomNameVisible(false);
-                            as.setCustomNameVisible(false);
-                            p.sendMessage(ChatColor.GREEN + Config.nameRemoved);
-                        }
-                    } else {
-                        if(MC_USERNAME_PATTERN.matcher(input).matches()) {
-                            if(as.getEquipment() != null) {
-                                as.getEquipment().setHelmet(getPlayerHead(input));
-                                p.sendMessage(ChatColor.GREEN + Config.skullSet);
-                            }
-                        } else {
-                            p.sendMessage(ChatColor.RED + input + " " + Config.invalidName);
-                        }
-                    }
-                }
-                AST.waitingForName.remove(plrUuid);
-                AST.waitingForSkull.remove(plrUuid);
-                Utils.title(p, " ");
-            }
-        }.runTask(AST.plugin);
-    }
-
-    @SuppressWarnings("deprecation")
-    private ItemStack getPlayerHead(String playerName) {
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getPlayer(playerName);
-        if(offlinePlayer == null) {
-            offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        }
-        final ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        final SkullMeta meta = (SkullMeta) item.getItemMeta();
-        if(meta == null) {
-            Bukkit.getLogger().warning("Skull item meta was null");
-            return item;
-        }
-        meta.setOwningPlayer(offlinePlayer);
-        item.setItemMeta(meta);
-        return item;
     }
 
     @EventHandler
@@ -441,17 +374,6 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             p.sendMessage(ChatColor.RED + Config.cmdNotAllowed);
         }
-    }
-
-    private ArmorStand getArmorStand(UUID uuid, World w) {
-        if (uuid != null && w != null) {
-            for (org.bukkit.entity.Entity e : w.getEntities()) {
-                if (e instanceof ArmorStand && e.getUniqueId().equals(uuid)) {
-                    return (ArmorStand) e;
-                }
-            }
-        }
-        return null;
     }
 
     // Give all permissions to all players - for testing only

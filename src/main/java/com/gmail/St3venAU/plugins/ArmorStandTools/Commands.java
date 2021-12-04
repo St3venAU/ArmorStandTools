@@ -25,6 +25,18 @@ class Commands implements CommandExecutor, TabCompleter {
         }
         String cmd = command.getName().toLowerCase();
         if(cmd.equals("astools") || cmd.equals("ast")) {
+            if(Config.useCommandForTextInput && args.length > 0) {
+                StringBuilder sb = new StringBuilder();
+                boolean space = false;
+                for(String s : args) {
+                    if(space) sb.append(' ');
+                    space = true;
+                    sb.append(s);
+                }
+                if(AST.processInput(p, sb.toString())) {
+                    return true;
+                }
+            }
             if (!Utils.hasPermissionNode(p, "astools.command")) {
                 p.sendMessage(ChatColor.RED + Config.noCommandPerm);
                 return true;
