@@ -166,6 +166,11 @@ class Utils {
         }
         return tags.length() == 0 ? "" : tags.toString();
     }
+    
+    static private int getItemCustomModelData(ItemStack is) {
+        if(is == null || is.getItemMeta() == null || is.getItemMeta().getCustomModelData() == null) return 0;
+        return is.getItemMeta().getCustomModelData();
+    }
 
     static private String skullOwner(ItemStack is) {
         if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta skull)) return "";
@@ -187,11 +192,17 @@ class Utils {
         @SuppressWarnings("deprecation")
         short durability = is.getDurability();
         String skullOwner = skullOwner(is);
+        int customModelData = getItemCustomModelData(is);
         int n = 0;
         if(itemStackTags.length() > 0 || durability > 0 || skullOwner.length() > 0) {
             sb.append(",tag:{");
             if(durability > 0) {
                 sb.append("Damage:").append(durability);
+                n++;
+            }
+            if(customModelData > 0) {
+                if(n > 0) sb.append(",");
+                sb.append("CustomModelData:").append(customModelData);
                 n++;
             }
             if(itemStackTags.length() > 0) {
