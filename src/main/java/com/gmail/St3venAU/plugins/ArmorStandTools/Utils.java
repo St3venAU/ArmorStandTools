@@ -271,7 +271,7 @@ class Utils {
     }
 
     static String createGiveCommand(ArmorStand as, Player p) {
-        StringBuilder sb = new StringBuilder("give ");
+        StringBuilder sb = new StringBuilder("minecraft:give ");
         sb.append(p.getName()).append(" minecraft:armor_stand{Enchantments:[{id:unbreaking,lvl:1}],HideFlags:1,display:{Name:");
         sb.append(quote(Config.configuredArmorStand));
         sb.append(",Lore:[");
