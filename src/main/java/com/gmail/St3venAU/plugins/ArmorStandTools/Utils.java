@@ -168,7 +168,7 @@ class Utils {
     }
     
     static private int getItemCustomModelData(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || is.getItemMeta().getCustomModelData() == null) return 0;
+        if(is == null || is.getItemMeta() == null || !is.getItemMeta().hasCustomModelData()) return 0;
         return is.getItemMeta().getCustomModelData();
     }
 
