@@ -21,6 +21,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -38,7 +39,7 @@ public class AST extends JavaPlugin {
     final static HashMap<UUID, ArmorStand> selectedArmorStand = new HashMap<>();
 
     public static final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<>();
-
+    public static Boolean hasVehiclesInstalled = false;
     static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForName  = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
     static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForSkull = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
 
@@ -87,6 +88,8 @@ public class AST extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new  MainListener(), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        Plugin vehicles = getServer().getPluginManager().getPlugin("Vehicles");
+        if (vehicles != null) hasVehiclesInstalled = Boolean.valueOf(vehicles.isEnabled()); 
         Commands cmds = new Commands();
         PluginCommand command = getCommand("astools");
         if(command != null) {

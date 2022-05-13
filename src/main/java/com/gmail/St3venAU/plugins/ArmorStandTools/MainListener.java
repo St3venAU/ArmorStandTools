@@ -41,6 +41,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import es.pollitoyeye.vehicles.enums.VehicleType;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +55,7 @@ public class MainListener implements Listener {
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if(!(event.getRightClicked() instanceof ArmorStand as)) return;
         Player p = event.getPlayer();
+        if(isVehicle(as)) return;
         if (ArmorStandGUI.isInUse(as)) {
             Utils.title(p, Config.guiInUse);
             event.setCancelled(true);
@@ -129,6 +132,22 @@ public class MainListener implements Listener {
             }
         }
     }
+	public Boolean isVehicle(ArmorStand as) {
+		if(!AST.hasVehiclesInstalled) return false;
+		String customName = as.getCustomName();  
+		if (customName == null) return false;	
+		byte b;
+	    int i;
+		VehicleType[] arrayOfVehicleType;
+		for (i = (arrayOfVehicleType = VehicleType.values()).length, b = 0; b < i; ) {
+			VehicleType toCheck = arrayOfVehicleType[b];
+			if (customName.startsWith(String.valueOf(toCheck.getName()) + ";")) {
+			    return true;			
+			}
+			b++;
+		}
+		return false;
+	}
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
