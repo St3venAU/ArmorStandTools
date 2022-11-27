@@ -79,6 +79,7 @@ public enum ArmorStandTool {
         if(meta != null) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            meta.setLocalizedName("ArmorStandTool");
             item.setItemMeta(meta);
         }
         this.config_id = config_id;
