@@ -1,4 +1,4 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -137,46 +137,6 @@ class Utils {
         return false;
     }
 
-    static private String getItemStackTags(ItemStack is) {
-        if(is == null) {
-            return "";
-        }
-        StringBuilder tags = new StringBuilder();
-        if(is.getItemMeta() != null && is.getItemMeta() instanceof LeatherArmorMeta armorMeta) {
-            tags.append("display:{color:");
-            tags.append(armorMeta.getColor().asRGB());
-            tags.append("}");
-        }
-        Map<Enchantment, Integer> enchants = is.getEnchantments();
-        if(enchants.size() > 0) {
-            if(tags.length() > 0) {
-                tags.append(",");
-            }
-            tags.append("Enchantments:[");
-
-            for(Enchantment e : enchants.keySet()) {
-                tags.append("{id:");
-                tags.append(e.getKey().getKey());
-                tags.append(",lvl:");
-                tags.append(enchants.get(e));
-                tags.append("},");
-            }
-
-            tags.setCharAt(tags.length() - 1, ']');
-        }
-        return tags.length() == 0 ? "" : tags.toString();
-    }
-    
-    static private int getItemCustomModelData(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || !is.getItemMeta().hasCustomModelData()) return 0;
-        return is.getItemMeta().getCustomModelData();
-    }
-
-    static private String skullOwner(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || !(is.getItemMeta() instanceof SkullMeta skull)) return "";
-        return skull.getOwningPlayer() == null ? "" : "SkullOwner:\"" + skull.getOwner() + "\"";
-    }
-
     static private boolean isEmpty(ItemStack is) {
         return is == null || is.getType() == Material.AIR;
     }
@@ -188,33 +148,10 @@ class Utils {
         if(is.getAmount() > 0) {
             sb.append(",Count:").append(is.getAmount());
         }
-        String itemStackTags = getItemStackTags(is);
-        @SuppressWarnings("deprecation")
-        short durability = is.getDurability();
-        String skullOwner = skullOwner(is);
-        int customModelData = getItemCustomModelData(is);
-        int n = 0;
-        if(itemStackTags.length() > 0 || durability > 0 || skullOwner.length() > 0) {
-            sb.append(",tag:{");
-            if(durability > 0) {
-                sb.append("Damage:").append(durability);
-                n++;
-            }
-            if(customModelData > 0) {
-                if(n > 0) sb.append(",");
-                sb.append("CustomModelData:").append(customModelData);
-                n++;
-            }
-            if(itemStackTags.length() > 0) {
-                if(n > 0) sb.append(",");
-                sb.append(itemStackTags);
-                n++;
-            }
-            if(skullOwner.length() > 0) {
-                if(n > 0) sb.append(",");
-                sb.append(skullOwner);
-            }
-            sb.append("}");
+        String itemStackTags = ItemStackNBT.itemToString(is);
+        if(itemStackTags != null && !itemStackTags.isEmpty()) {
+            sb.append(",tag:");
+            sb.append(itemStackTags);
         }
         sb.append("}");
         return sb.toString();
@@ -455,7 +392,4 @@ class Utils {
         clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
         return clone;
     }
-
-
-
 }

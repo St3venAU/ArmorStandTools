@@ -1,4 +1,4 @@
-main: com.gmail.st3venau.plugins.armorstandtools.AST
+main: com.gmail.St3venAU.plugins.ArmorStandTools.AST
 name: ArmorStandTools
 version: ${project.version}
 api-version: 1.17
