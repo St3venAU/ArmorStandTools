@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+// CREDIT: This class is based on the MiniNBT library: https://github.com/I-Al-Istannen/MiniNBT
 public class ItemStackNBT {
     private final static Method AS_NMS_COPY;
     private final static Method GET_TAG;
