@@ -2,11 +2,8 @@ package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -17,14 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -151,7 +142,7 @@ class Utils {
         if(is.getAmount() > 0) {
             sb.append(",Count:").append(is.getAmount());
         }
-        String itemStackTags = Reflections.itemToString(is);
+        String itemStackTags = ItemStackReflections.itemNBTToString(is);
         if(itemStackTags != null && !itemStackTags.isEmpty()) {
             sb.append(",tag:");
             sb.append(itemStackTags);
@@ -210,9 +201,9 @@ class Utils {
         return "\"\\\"" + s + "\\\"\"";
     }
 
-    static String createGiveCommand(ArmorStand as, Player p) {
-        StringBuilder sb = new StringBuilder("minecraft:give ");
-        sb.append(p.getName()).append(" minecraft:armor_stand{Enchantments:[{id:unbreaking,lvl:1}],HideFlags:1,display:{Name:");
+    static ItemStack createArmorStandItem(ArmorStand as) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{Enchantments:[{id:unbreaking,lvl:1}],HideFlags:1,display:{Name:");
         sb.append(quote(Config.configuredArmorStand));
         sb.append(",Lore:[");
         boolean comma = false;
@@ -222,7 +213,9 @@ class Utils {
             sb.append(quote(s));
         }
         sb.append("]},EntityTag:").append(createEntityTag(as)).append("}");
-        return sb.toString();
+        ItemStack armorStand = new ItemStack(Material.ARMOR_STAND);
+        ItemStackReflections.setItemNBTFromString(armorStand, sb.toString());
+        return armorStand;
     }
 
     static String createEntityTag(ArmorStand as) {

@@ -114,6 +114,8 @@ skullSet: 'Armor stand skull set'
 enterNameC: 'To set armor stand name'
 enterNameC2: 'Or to remove the name'
 enterSkullC: 'To set MC username for skull'
+#New since v4.4.4
+invFullForArmorStandItem: 'Your inventory is full! The item was dropped at the armor stand.'
 #############################
 # Tool names & descriptions #
 #############################
