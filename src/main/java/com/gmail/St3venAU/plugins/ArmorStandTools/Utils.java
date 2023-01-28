@@ -2,9 +2,11 @@ package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -13,19 +15,20 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class Utils {
 
@@ -148,7 +151,7 @@ class Utils {
         if(is.getAmount() > 0) {
             sb.append(",Count:").append(is.getAmount());
         }
-        String itemStackTags = ItemStackNBT.itemToString(is);
+        String itemStackTags = Reflections.itemToString(is);
         if(itemStackTags != null && !itemStackTags.isEmpty()) {
             sb.append(",tag:");
             sb.append(itemStackTags);
@@ -253,12 +256,12 @@ class Utils {
         if (e != null) {
             int stacks = 0;
             int items = 0;
-            if(e.getHelmet() != null)                           { stacks++; items += e.getHelmet().getAmount();         }
-            if(e.getChestplate() != null)                       { stacks++; items += e.getChestplate().getAmount();     }
-            if(e.getLeggings() != null)                         { stacks++; items += e.getLeggings().getAmount();       }
-            if(e.getBoots() != null)                            { stacks++; items += e.getBoots().getAmount();          }
-            if(Material.AIR != e.getItemInMainHand().getType()) { stacks++; items += e.getItemInMainHand().getAmount(); }
-            if(Material.AIR != e.getItemInOffHand().getType())  { stacks++; items += e.getItemInOffHand().getAmount();  }
+            for(EquipmentSlot slot : EquipmentSlot.values()){
+                ItemStack item = e.getItem(slot);
+                if(item.getType() == Material.AIR) continue;
+                stacks++;
+                items += item.getAmount();
+            }
             if(stacks > 0) {
                 lore.add(Config.inventory + ": " + items + " " + Config.items + " (" + stacks + " " + Config.stacks + ")");
             }
@@ -392,4 +395,5 @@ class Utils {
         clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
         return clone;
     }
+
 }
