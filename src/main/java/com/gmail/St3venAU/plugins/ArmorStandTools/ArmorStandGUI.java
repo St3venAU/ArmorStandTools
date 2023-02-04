@@ -10,10 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -263,6 +260,11 @@ class ArmorStandGUI implements Listener {
                 break;
             case ITEM:
                 ItemStack stack = Utils.createArmorStandItem(as);
+                if(stack == null){
+                    p.sendMessage(ChatColor.RED + Config.armorStandItemFail);
+                    p.closeInventory();
+                    break;
+                }
                 HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(stack);
                 if(leftover.containsKey(0)){ // if inventory full, drop item on ground and tell the player
                     p.getWorld().dropItem(as.getLocation(), leftover.get(0)).setVelocity(new Vector(0, 0.2d, 0));

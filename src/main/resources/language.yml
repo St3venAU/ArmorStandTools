@@ -58,7 +58,7 @@ wgNoPerm: 'No permission to alter an armor stand in this region'
 noCommandPerm: 'You do not have permission to use this command'
 armorStand: 'Armor Stand'
 none: 'None'
-guiInUse: 'This armor stands GUI is in use'
+guiInUse: "This armor stand's GUI is in use"
 # New since v2.4.0:
 noASNearBy: 'No armor stand found near by'
 closestAS: 'Closest armor stand'
@@ -115,7 +115,8 @@ enterNameC: 'To set armor stand name'
 enterNameC2: 'Or to remove the name'
 enterSkullC: 'To set MC username for skull'
 #New since v4.4.4
-invFullForArmorStandItem: 'Your inventory is full! The item was dropped at the armor stand.'
+invFullForArmorStandItem: 'Your inventory is full! The item was dropped at the armor stand'
+armorStandItemFail: "Armor stand can't be turned into an item because it contains disallowed items"
 #############################
 # Tool names & descriptions #
 #############################

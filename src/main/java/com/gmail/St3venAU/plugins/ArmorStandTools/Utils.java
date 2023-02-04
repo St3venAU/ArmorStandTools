@@ -4,15 +4,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -200,17 +199,26 @@ class Utils {
     }
 
     static String quote(String s) {
-        return "\"\\\"" + s + "\\\"\"";
+        return "\"\\\"" +
+                s.replace("\\", "\\\\\\\\").replace("\"", "\\\\\\\"") // escape " and \
+                + "\\\"\"";
     }
 
     static ItemStack createArmorStandItem(ArmorStand as) {
+        EntityEquipment equipment = as.getEquipment();
+        if(equipment != null){
+            for(EquipmentSlot slot : EquipmentSlot.values()){
+                if(canArmorStandItemContain(equipment.getItem(slot))) return null;
+            }
+        }
         ItemStack armorStand = new ItemStack(Material.ARMOR_STAND);
-        ItemStackReflections.setItemNBTFromString(armorStand, "{HideFlags:1,EntityTag:" + createEntityTag(as) + "}");
+        ItemStackReflections.setItemNBTFromString(armorStand, "{EntityTag:" + createEntityTag(as) + "}");
         ItemMeta meta = armorStand.getItemMeta();
         if(meta != null){
             meta.setLore(createItemLore(as));
             meta.setDisplayName(Config.configuredArmorStand);
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         armorStand.setItemMeta(meta);
         return armorStand;
@@ -385,5 +393,14 @@ class Utils {
         }
         clone.setMetadata("clone", new FixedMetadataValue(AST.plugin, true));
         return clone;
+    }
+
+    static boolean isConfiguredArmorStandItem(ItemStack item){
+        return item.getType() == Material.ARMOR_STAND && ItemStackReflections.containsEntityTag(item);
+    }
+
+    static boolean canArmorStandItemContain(ItemStack item){
+        return !isConfiguredArmorStandItem (item) &&
+                !(item.getItemMeta() instanceof BlockStateMeta meta && meta.getBlockState() instanceof ShulkerBox);
     }
 }

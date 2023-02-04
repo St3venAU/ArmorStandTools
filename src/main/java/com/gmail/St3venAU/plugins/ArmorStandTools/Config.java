@@ -74,7 +74,8 @@ class Config {
             listAssignedCmds, addACmd, removeACmd, cmdHelp,
             enterName, enterName2, enterSkull, inputTimeout,
             nameSet, nameRemoved, skullSet, enterNameC,
-            enterNameC2, enterSkullC, invFullForArmorStandItem;
+            enterNameC2, enterSkullC, invFullForArmorStandItem,
+            armorStandItemFail;
 
     static void reload() {
         reloadMainConfig();
@@ -262,6 +263,7 @@ class Config {
         enterNameC2 = languageConfig.getString("enterNameC2");
         enterSkullC = languageConfig.getString("enterSkullC");
         invFullForArmorStandItem = languageConfig.getString("invFullForArmorStandItem");
+        armorStandItemFail = languageConfig.getString("armorStandItemFail");
     }
 
     private static ItemStack getItemStack(String configPath) {
