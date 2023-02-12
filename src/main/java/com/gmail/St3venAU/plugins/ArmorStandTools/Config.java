@@ -1,4 +1,4 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Material;
@@ -74,7 +74,8 @@ class Config {
             listAssignedCmds, addACmd, removeACmd, cmdHelp,
             enterName, enterName2, enterSkull, inputTimeout,
             nameSet, nameRemoved, skullSet, enterNameC,
-            enterNameC2, enterSkullC;
+            enterNameC2, enterSkullC, invFullForArmorStandItem,
+            armorStandItemFail;
 
     static void reload() {
         reloadMainConfig();
@@ -261,6 +262,8 @@ class Config {
         enterNameC = languageConfig.getString("enterNameC");
         enterNameC2 = languageConfig.getString("enterNameC2");
         enterSkullC = languageConfig.getString("enterSkullC");
+        invFullForArmorStandItem = languageConfig.getString("invFullForArmorStandItem");
+        armorStandItemFail = languageConfig.getString("armorStandItemFail");
     }
 
     private static ItemStack getItemStack(String configPath) {

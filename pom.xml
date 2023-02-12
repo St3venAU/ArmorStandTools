@@ -17,7 +17,7 @@
     <!-- WorldEdit / WorldGuard -->
     <repository>
         <id>sk89q-repo</id>
-        <url>https://maven.sk89q.com/repo/</url>
+        <url>https://maven.enginehub.org/repo/</url>
     </repository>
     <!-- PlotSquared -->
     <repository>
@@ -60,7 +60,7 @@
     <dependency>
         <groupId>com.plotsquared</groupId>
         <artifactId>PlotSquared-Core</artifactId>
-        <version>6.1.3</version>
+        <version>6.9.0</version>
     </dependency>
 </dependencies>
 
