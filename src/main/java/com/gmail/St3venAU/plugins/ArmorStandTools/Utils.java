@@ -208,7 +208,7 @@ class Utils {
         EntityEquipment equipment = as.getEquipment();
         if(equipment != null){
             for(EquipmentSlot slot : EquipmentSlot.values()){
-                if(canArmorStandItemContain(equipment.getItem(slot))) return null;
+                if(!canArmorStandItemContain(equipment.getItem(slot))) return null;
             }
         }
         ItemStack armorStand = new ItemStack(Material.ARMOR_STAND);
