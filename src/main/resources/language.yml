@@ -104,7 +104,7 @@ removeACmd: 'Remove a command'
 cmdHelp: 'This command is used to add/remove commands to the nearest armor stand (within 4 blocks). The commands are executed when the armor stand is right clicked, lowest priority first.'
 #New since v4.4.0
 enterName: 'Enter armor stand name in chat'
-enterName2: 'Enter armor stand name in chat, or to remove the name enter:'
+enterName2: 'Enter armor stand name in chat, with a "!" at the beginning to make the name invisible, or to remove the name enter:'
 enterSkull: 'Enter username for armor stand skull in chat'
 inputTimeout: 'Input timeout. Please try again.'
 nameSet: 'Armor stand name set'
