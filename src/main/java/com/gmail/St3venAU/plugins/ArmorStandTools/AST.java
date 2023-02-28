@@ -362,8 +362,9 @@ public class AST extends JavaPlugin {
                     if(input.equals("&")) input = "";
                     if(name) {
                         if (input.length() > 0) {
-                            as.setCustomName(input);
-                            as.setCustomNameVisible(true);
+                            boolean customNameVisibility = input.charAt(0) != '!';
+                            as.setCustomName(customNameVisibility ? input : input.substring(1));
+                            as.setCustomNameVisible(customNameVisibility);
                             p.sendMessage(ChatColor.GREEN + Config.nameSet);
                         } else {
                             as.setCustomName("");
