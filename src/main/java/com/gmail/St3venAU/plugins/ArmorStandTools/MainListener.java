@@ -1,5 +1,6 @@
 package com.gmail.St3venAU.plugins.ArmorStandTools;
 
+import com.gmail.St3venAU.plugins.ArmorStandTools.HuskAPI.HuskSyncAPIHook;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -30,6 +31,10 @@ import java.util.UUID;
 
 @SuppressWarnings("CommentedOutCode")
 public class MainListener implements Listener {
+    private final AST mPlugin;
+    public MainListener(AST plugin) {
+        mPlugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
@@ -145,12 +150,17 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler()
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player p = event.getPlayer();
         stopEditing(p, true);
-        if(AST.savedInventories.containsKey(p.getUniqueId())) {
+        if (AST.savedInventories.containsKey(p.getUniqueId())) {
             AST.restoreInventory(event.getPlayer());
+
+            HuskSyncAPIHook huskSyncAPIHook = mPlugin.TryGetHuskHook();
+            if (huskSyncAPIHook != null) {
+                huskSyncAPIHook.SaveUser(p);
+            }
         }
     }
 
