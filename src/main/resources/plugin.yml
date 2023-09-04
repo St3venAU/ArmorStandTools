@@ -1,10 +1,10 @@
-main: com.gmail.st3venau.plugins.armorstandtools.AST
+main: com.gmail.St3venAU.plugins.ArmorStandTools.AST
 name: ArmorStandTools
 version: ${project.version}
 api-version: 1.17
 author: St3venAU
 description: Armor stand manipulation tools
-softdepend: [WorldGuard, PlotSquared]
+softdepend: [WorldGuard, PlotSquared, HuskSync]
 commands:
    astools:
       description: Give yourself the armor stand tools

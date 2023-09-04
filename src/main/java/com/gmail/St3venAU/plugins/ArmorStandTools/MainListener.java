@@ -1,17 +1,9 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameRule;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import com.gmail.St3venAU.plugins.ArmorStandTools.HuskAPI.HuskSyncAPIHook;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,29 +17,24 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("CommentedOutCode")
 public class MainListener implements Listener {
+    private final AST mPlugin;
+    public MainListener(AST plugin) {
+        mPlugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
@@ -163,12 +150,17 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler()
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player p = event.getPlayer();
         stopEditing(p, true);
-        if(AST.savedInventories.containsKey(p.getUniqueId())) {
+        if (AST.savedInventories.containsKey(p.getUniqueId())) {
             AST.restoreInventory(event.getPlayer());
+
+            HuskSyncAPIHook huskSyncAPIHook = mPlugin.TryGetHuskHook();
+            if (huskSyncAPIHook != null) {
+                huskSyncAPIHook.SaveUser(p);
+            }
         }
     }
 
@@ -256,8 +248,10 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(final PlayerDropItemEvent event) {
-        if (ArmorStandTool.isTool(event.getItemDrop().getItemStack())) {
-            event.getItemDrop().remove();
+        Item itemDrop = event.getItemDrop();
+
+        if (ArmorStandTool.isTool(itemDrop.getItemStack())) {
+            itemDrop.remove();
         }
     }
 

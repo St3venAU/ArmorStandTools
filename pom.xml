@@ -5,7 +5,7 @@
 <modelVersion>4.0.0</modelVersion>
 <groupId>com.gmail.st3venau.plugins</groupId>
 <artifactId>ArmorStandTools</artifactId>
-<version>4.4.4</version>
+<version>4.4.6-feoz</version>
 <name>ArmorStandTools</name>
 
 <repositories>
@@ -17,7 +17,7 @@
     <!-- WorldEdit / WorldGuard -->
     <repository>
         <id>sk89q-repo</id>
-        <url>https://maven.sk89q.com/repo/</url>
+        <url>https://maven.enginehub.org/repo/</url>
     </repository>
     <!-- PlotSquared -->
     <repository>
@@ -31,6 +31,12 @@
     <repository> <!-- needed due to missing dependency on PlotSquared for adventure-text-minimessage -->
         <id>sonatype-oss-snapshots</id>
         <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
+    <!-- HuskSync -->
+    <repository>
+        <id>william278-releases</id>
+        <name>William278</name>
+        <url>https://repo.william278.net/releases</url>
     </repository>
 </repositories>
 
@@ -60,7 +66,14 @@
     <dependency>
         <groupId>com.plotsquared</groupId>
         <artifactId>PlotSquared-Core</artifactId>
-        <version>6.1.3</version>
+        <version>6.9.0</version>
+    </dependency>
+    <!-- HuskSync -->
+    <dependency>
+        <groupId>net.william278</groupId>
+        <artifactId>husksync</artifactId>
+        <version>2.2.8</version>
+        <scope>provided</scope>
     </dependency>
 </dependencies>
 

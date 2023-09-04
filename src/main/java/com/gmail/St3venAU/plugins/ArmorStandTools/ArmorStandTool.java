@@ -1,4 +1,4 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -63,6 +63,7 @@ public enum ArmorStandTool {
     LLEG    ("gui_lleg",    Material.BONE,                   26, true,  "astools.use",     true),
     ITEM    ("gui_item",    Material.ARMOR_STAND,            34, true,  "astools.use",     false);
 
+    private static final String ItemStackName = "ArmorStandTool";
     private final ItemStack item;
     private final String config_id;
     private final int slot;
@@ -76,9 +77,10 @@ public enum ArmorStandTool {
     ArmorStandTool(String config_id, Material m, int slot, boolean forGui, String permission, boolean reverseSneaking) {
         item = new ItemStack(m);
         ItemMeta meta = item.getItemMeta();
-        if(meta != null) {
+        if (meta != null) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            meta.setLocalizedName(ItemStackName);
             item.setItemMeta(meta);
         }
         this.config_id = config_id;
@@ -267,9 +269,13 @@ public enum ArmorStandTool {
     }
 
     static ArmorStandTool get(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || !is.getItemMeta().hasDisplayName()) return null;
-        for(ArmorStandTool t : values()) {
-            if(t.is(is)) return t;
+        if (is == null || is.getItemMeta() == null || !is.getItemMeta().hasLocalizedName()) return null;
+        if (is.getItemMeta().getLocalizedName().equals(ItemStackName)) {
+            for(ArmorStandTool t : values()) {
+                if (t.getItem().getType().equals(is.getType())) {
+                    return t;
+                }
+            }
         }
         return null;
     }

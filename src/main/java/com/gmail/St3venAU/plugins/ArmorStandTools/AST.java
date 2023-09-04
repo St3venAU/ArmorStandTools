@@ -1,5 +1,6 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
+import com.gmail.St3venAU.plugins.ArmorStandTools.HuskAPI.HuskSyncAPIHook;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -18,19 +19,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class AST extends JavaPlugin {
+
+    private HuskSyncAPIHook huskSyncAPIHook = null;
 
     private static Object WG_AST_FLAG;
 
@@ -47,9 +53,14 @@ public class AST extends JavaPlugin {
 
     static final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
 
+    public HuskSyncAPIHook TryGetHuskHook() {
+        return huskSyncAPIHook;
+    }
+
     @Override
     public void onLoad() {
-        if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+        PluginManager pluginManager = getServer().getPluginManager();
+        if (pluginManager.getPlugin("WorldGuard") != null) {
             try {
                 // Need to do this with reflection for some reason, otherwise plugin load fails when worldguard is not present, even though this code block is not actually executed unless worldguard is present ???
                 WG_AST_FLAG = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag").getConstructor(String.class, boolean.class).newInstance("ast", true);
@@ -61,6 +72,11 @@ public class AST extends JavaPlugin {
             } catch (Exception e) {
                 getLogger().warning("Failed to register custom WorldGuard flag");
             }
+        }
+
+        if (pluginManager.getPlugin("HuskSync") != null) {
+            huskSyncAPIHook = new HuskSyncAPIHook();
+            getLogger().info("Registered HuskSyncSave");
         }
     }
 
@@ -85,7 +101,7 @@ public class AST extends JavaPlugin {
             setEnabled(false);
             return;
         }
-        getServer().getPluginManager().registerEvents(new  MainListener(), this);
+        getServer().getPluginManager().registerEvents(new  MainListener(this), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Commands cmds = new Commands();
         PluginCommand command = getCommand("astools");
@@ -162,6 +178,25 @@ public class AST extends JavaPlugin {
         PlayerInventory i = p.getInventory();
         for(ArmorStandTool t : ArmorStandTool.values()) {
             i.remove(t.getItem());
+
+            Collection<? extends ItemStack> materialItems = i.all(t.getItem().getType()).values();
+            ItemMeta toolMeta = t.getItem().getItemMeta();
+            if (toolMeta == null) {
+                continue;
+            }
+
+            String toolLocalizedName = toolMeta.getLocalizedName();
+            for (ItemStack invItem : materialItems) {
+                ItemMeta inventoryItemMeta = invItem.getItemMeta();
+
+                if (inventoryItemMeta == null) {
+                    continue;
+                }
+
+                if (toolLocalizedName.equals(inventoryItemMeta.getLocalizedName())) {
+                    i.remove(invItem);
+                }
+            }
         }
     }
 
