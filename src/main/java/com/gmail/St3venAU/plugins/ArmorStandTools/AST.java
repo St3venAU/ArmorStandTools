@@ -43,7 +43,6 @@ public class AST extends JavaPlugin {
     static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForSkull = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
 
     static AST plugin;
-    static String nmsVersion;
 
     static final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
 
@@ -67,24 +66,6 @@ public class AST extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        nmsVersion = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        if( nmsVersion.startsWith("v1_4")  ||
-            nmsVersion.startsWith("v1_5")  ||
-            nmsVersion.startsWith("v1_6")  ||
-            nmsVersion.startsWith("v1_7")  ||
-            nmsVersion.startsWith("v1_8")  ||
-            nmsVersion.startsWith("v1_9")  ||
-            nmsVersion.startsWith("v1_10") ||
-            nmsVersion.startsWith("v1_11") ||
-            nmsVersion.startsWith("v1_12") ||
-            nmsVersion.startsWith("v1_13") ||
-            nmsVersion.startsWith("v1_14") ||
-            nmsVersion.startsWith("v1_15") ||
-            nmsVersion.startsWith("v1_16")) {
-            getLogger().warning("This Craftbukkit/Spigot version is not supported. Craftbukkit/Spigot 1.17+ required. Loading plugin failed.");
-            setEnabled(false);
-            return;
-        }
         getServer().getPluginManager().registerEvents(new  MainListener(), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Commands cmds = new Commands();
