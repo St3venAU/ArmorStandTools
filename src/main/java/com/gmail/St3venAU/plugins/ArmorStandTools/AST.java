@@ -26,6 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -117,7 +118,6 @@ public class AST extends JavaPlugin {
         waitingForName.clear();
         waitingForSkull.clear();
     }
-
     static void returnArmorStand(ArmorStand as) {
         if(as == null) return;
         if(as.hasMetadata("clone")) {
@@ -139,19 +139,31 @@ public class AST extends JavaPlugin {
         as.remove();
     }
 
+    private static boolean matches(ItemStack one, ItemStack two) {
+        if(one == null || two == null || one.getItemMeta() == null || two.getItemMeta() == null) return false;
+        String NameOne = one.getItemMeta().getDisplayName();
+        List<String> LoreOne = one.getItemMeta().getLore();
+        if(LoreOne == null) return false;
+        String NameTwo = two.getItemMeta().getDisplayName();
+        List<String> LoreTwo = two.getItemMeta().getLore();
+        if(LoreTwo == null) return false;
+        return NameOne.equals(NameTwo) && LoreOne.equals(LoreTwo);
+    }
     private static void removeAllTools(Player p) {
         PlayerInventory i = p.getInventory();
         for(ArmorStandTool t : ArmorStandTool.values()) {
-            i.remove(t.getItem());
+            for(int slot = 0; slot < i.getSize(); slot++) {
+                if(matches(t.getItem(), i.getItem(slot))) {
+                    i.setItem(slot, null);
+                }
+            }
         }
     }
-
     void saveInventoryAndClear(Player p) {
         ItemStack[] inv = p.getInventory().getContents().clone();
         savedInventories.put(p.getUniqueId(), inv);
         p.getInventory().clear();
     }
-
     static void restoreInventory(Player p) {
         removeAllTools(p);
         UUID uuid = p.getUniqueId();
