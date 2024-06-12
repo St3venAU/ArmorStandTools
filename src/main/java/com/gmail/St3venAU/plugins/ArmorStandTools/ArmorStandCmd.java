@@ -1,4 +1,4 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

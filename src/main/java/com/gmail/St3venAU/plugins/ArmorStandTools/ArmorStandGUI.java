@@ -1,27 +1,24 @@
-package com.gmail.st3venau.plugins.armorstandtools;
+package com.gmail.St3venAU.plugins.ArmorStandTools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -262,11 +259,17 @@ class ArmorStandGUI implements Listener {
                 Utils.title(p, Config.glow + ": " + (glowing ? Config.isOn : Config.isOff));
                 break;
             case ITEM:
-                World w = p.getWorld();
-                boolean commandFeedback = Boolean.TRUE.equals(w.getGameRuleValue(GameRule.SEND_COMMAND_FEEDBACK));
-                if(commandFeedback) w.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Utils.createGiveCommand(as, p));
-                if(commandFeedback) w.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+                ItemStack stack = Utils.createArmorStandItem(as);
+                if(stack == null){
+                    p.sendMessage(ChatColor.RED + Config.armorStandItemFail);
+                    p.closeInventory();
+                    break;
+                }
+                HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(stack);
+                if(leftover.containsKey(0)){ // if inventory full, drop item on ground and tell the player
+                    p.getWorld().dropItem(as.getLocation(), leftover.get(0)).setVelocity(new Vector(0, 0.2d, 0));
+                    p.sendMessage(ChatColor.RED + Config.invFullForArmorStandItem);
+                }
                 p.closeInventory();
                 if(p.getGameMode() != GameMode.CREATIVE) {
                     as.remove();
