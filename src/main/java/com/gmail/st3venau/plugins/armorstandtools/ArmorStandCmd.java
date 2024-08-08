@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -103,7 +102,7 @@ public record ArmorStandCmd(String command, CommandType type, Integer priority, 
     }
 
     @Override
-    public int compareTo(@NotNull ArmorStandCmd o) {
+    public int compareTo(ArmorStandCmd o) {
         return Integer.compare(priority, o.priority);
     }
 }
