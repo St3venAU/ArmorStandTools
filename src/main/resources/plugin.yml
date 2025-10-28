@@ -1,7 +1,8 @@
 main: com.gmail.st3venau.plugins.armorstandtools.AST
 name: ArmorStandTools
 version: ${project.version}
-api-version: 1.17
+api-version: 1.21
+folia-supported: true
 author: St3venAU
 description: Armor stand manipulation tools
 softdepend: [WorldGuard, PlotSquared]

@@ -5,6 +5,9 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.impl.PlatformScheduler;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,7 +25,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -40,12 +42,18 @@ public class AST extends JavaPlugin {
 
     public static final HashMap<UUID, ItemStack[]> savedInventories = new HashMap<>();
 
-    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForName  = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
-    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, Integer>> waitingForSkull = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task ID>
+    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, WrappedTask>> waitingForName  = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task>
+    static final HashMap<UUID, AbstractMap.SimpleEntry<UUID, WrappedTask>> waitingForSkull = new HashMap<>(); // Player UUID, <ArmorStand UUID, Task>
 
     static AST plugin;
 
+    private static PlatformScheduler scheduler;
+
     static final Pattern MC_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+
+    public static PlatformScheduler scheduler() {
+        return scheduler;
+    }
 
     @Override
     public void onLoad() {
@@ -67,145 +75,182 @@ public class AST extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        FoliaLib foliaLib = new FoliaLib(this);
+        scheduler = foliaLib.getScheduler();
         getServer().getPluginManager().registerEvents(new  MainListener(), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Commands cmds = new Commands();
         PluginCommand command = getCommand("astools");
-        if(command != null) {
+        if (command != null) {
             command.setExecutor(cmds);
         }
+
         command = getCommand("ascmd");
-        if(command != null) {
+        if (command != null) {
             command.setExecutor(cmds);
             command.setTabCompleter(cmds);
         }
+
         Config.reload();
         ArmorStandGUI.init();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for(UUID uuid : activeTool.keySet()) {
-                    Player p = getServer().getPlayer(uuid);
-                    ArmorStandTool tool = activeTool.get(uuid);
-                    if(p != null && tool != null && p.isOnline() && selectedArmorStand.containsKey(uuid)) {
-                        tool.use(p, selectedArmorStand.get(uuid));
-                    }
+        scheduler.runTimer(task -> {
+            for (UUID uuid : activeTool.keySet()) {
+                Player p = getServer().getPlayer(uuid);
+                ArmorStandTool tool = activeTool.get(uuid);
+                if (p != null && tool != null && p.isOnline() && selectedArmorStand.containsKey(uuid)) {
+                    tool.use(p, selectedArmorStand.get(uuid));
                 }
             }
-        }.runTaskTimer(this, 3L, 3L);
+        }, 3L, 3L);
     }
 
     @Override
     public void onDisable() {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        for(UUID uuid : activeTool.keySet()) {
-            if(ArmorStandTool.MOVE != activeTool.get(uuid)) continue;
+        for (UUID uuid : activeTool.keySet()) {
+            if (ArmorStandTool.MOVE != activeTool.get(uuid)) {
+                continue;
+            }
+
             ArmorStand as = selectedArmorStand.get(uuid);
-            if(as != null && !as.isDead()) {
+            if (as != null && !as.isDead()) {
                 returnArmorStand(as);
                 selectedArmorStand.remove(uuid);
                 activeTool.remove(uuid);
             }
         }
+
         Player p;
-        for(UUID uuid : savedInventories.keySet()) {
+        for (UUID uuid : savedInventories.keySet()) {
             p = getServer().getPlayer(uuid);
-            if(p != null && p.isOnline()) {
+            if (p != null && p.isOnline()) {
                 restoreInventory(p);
             }
         }
+
         savedInventories.clear();
         waitingForName.clear();
         waitingForSkull.clear();
     }
+
     static void returnArmorStand(ArmorStand as) {
-        if(as == null) return;
-        if(as.hasMetadata("clone")) {
-            as.remove();
+        if (as == null) {
             return;
         }
-        if(as.hasMetadata("startLoc")) {
+
+        if (as.hasMetadata("clone")) {
+            scheduler.runAtEntity(as, task -> as.remove());
+            return;
+        }
+
+        if (as.hasMetadata("startLoc")) {
             for (MetadataValue metaData : as.getMetadata("startLoc")) {
                 if (metaData.getOwningPlugin() == plugin) {
                     Location l = (Location) metaData.value();
-                    if(l != null) {
-                        as.teleport(l);
+                    if (l != null) {
+                        scheduler.runAtEntity(as, task -> as.teleportAsync(l));
                         as.removeMetadata("startLoc", plugin);
                         return;
                     }
                 }
             }
         }
-        as.remove();
+
+        scheduler.runAtEntity(as, task -> as.remove());
     }
 
     private static boolean matches(ItemStack one, ItemStack two) {
-        if(one == null || two == null || one.getItemMeta() == null || two.getItemMeta() == null) return false;
+        if (one == null || two == null || one.getItemMeta() == null || two.getItemMeta() == null) {
+            return false;
+        }
+
         String NameOne = one.getItemMeta().getDisplayName();
         List<String> LoreOne = one.getItemMeta().getLore();
-        if(LoreOne == null) return false;
+        if (LoreOne == null) {
+            return false;
+        }
+
         String NameTwo = two.getItemMeta().getDisplayName();
         List<String> LoreTwo = two.getItemMeta().getLore();
-        if(LoreTwo == null) return false;
+        if (LoreTwo == null) {
+            return false;
+        }
+
         return NameOne.equals(NameTwo) && LoreOne.equals(LoreTwo);
     }
     private static void removeAllTools(Player p) {
         PlayerInventory i = p.getInventory();
-        for(ArmorStandTool t : ArmorStandTool.values()) {
-            for(int slot = 0; slot < i.getSize(); slot++) {
-                if(matches(t.getItem(), i.getItem(slot))) {
+        for (ArmorStandTool t : ArmorStandTool.values()) {
+            for (int slot = 0; slot < i.getSize(); slot++) {
+                if (matches(t.getItem(), i.getItem(slot))) {
                     i.setItem(slot, null);
                 }
             }
         }
     }
+
     void saveInventoryAndClear(Player p) {
         ItemStack[] inv = p.getInventory().getContents().clone();
         savedInventories.put(p.getUniqueId(), inv);
         p.getInventory().clear();
     }
+
     static void restoreInventory(Player p) {
         removeAllTools(p);
         UUID uuid = p.getUniqueId();
         ItemStack[] savedInv = savedInventories.get(uuid);
-        if(savedInv == null) return;
+        if (savedInv == null) {
+            return;
+        }
+
         PlayerInventory plrInv = p.getInventory();
         ItemStack[] newItems = plrInv.getContents().clone();
         plrInv.setContents(savedInv);
         savedInventories.remove(uuid);
-        for(ItemStack i : newItems) {
-            if(i == null) continue;
+        for (ItemStack i : newItems) {
+            if (i == null) {
+                continue;
+            }
+
             HashMap<Integer, ItemStack> couldntFit = plrInv.addItem(i);
             for (ItemStack is : couldntFit.values()) {
-                p.getWorld().dropItem(p.getLocation(), is);
+                scheduler.runAtEntity(p, task -> p.getWorld().dropItem(p.getLocation(), is));
             }
         }
+
         p.sendMessage(ChatColor.GREEN + Config.invReturned);
     }
+
     static ArmorStand getCarryingArmorStand(Player p) {
         UUID uuid = p.getUniqueId();
-        return  ArmorStandTool.MOVE == AST.activeTool.get(uuid) ? AST.selectedArmorStand.get(uuid) : null;
+        return ArmorStandTool.MOVE == AST.activeTool.get(uuid) ? AST.selectedArmorStand.get(uuid) : null;
     }
 
     static void pickUpArmorStand(ArmorStand as, Player p, boolean newlySummoned) {
         UUID uuid = p.getUniqueId();
         ArmorStand carrying = getCarryingArmorStand(p);
-        if(carrying != null && !carrying.isDead()) {
+        if (carrying != null && !carrying.isDead()) {
             returnArmorStand(carrying);
         }
+
         activeTool.put(uuid, ArmorStandTool.MOVE);
         selectedArmorStand.put(uuid, as);
-        if(newlySummoned) return;
+        if (newlySummoned) {
+            return;
+        }
+
         as.setMetadata("startLoc", new FixedMetadataValue(AST.plugin, as.getLocation()));
     }
 
     static void setName(final Player p, ArmorStand as) {
         final UUID uuid = p.getUniqueId();
-        if(waitingForSkull.containsKey(uuid)) {
-            Bukkit.getScheduler().cancelTask(waitingForSkull.get(uuid).getValue());
+        if (waitingForSkull.containsKey(uuid)) {
+            WrappedTask wrappedTask = waitingForSkull.get(uuid).getValue();
+            scheduler.cancelTask(wrappedTask);
             waitingForSkull.remove(uuid);
         }
-        if(Config.useCommandForTextInput) {
+
+        if (Config.useCommandForTextInput) {
             String msg1 = ChatColor.GOLD + Config.enterNameC + ": " + ChatColor.GREEN + "/ast <Armor Stand Name>";
             p.sendTitle(" ", msg1, 0, 600, 0);
             p.sendMessage(msg1);
@@ -214,24 +259,27 @@ public class AST extends JavaPlugin {
             p.sendTitle(" ", ChatColor.GOLD + Config.enterName, 0, 600, 0);
             p.sendMessage(ChatColor.GOLD + Config.enterName2 + " &");
         }
-        int taskID = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!waitingForName.containsKey(uuid)) return;
-                waitingForName.remove(uuid);
-                p.sendMessage(ChatColor.RED + Config.inputTimeout);
+
+        WrappedTask wrappedTask = scheduler.runLater(() -> {
+            if (!waitingForName.containsKey(uuid)) {
+                return;
             }
-        }.runTaskLater(AST.plugin, 600L).getTaskId();
-        waitingForName.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), taskID));
+
+            waitingForName.remove(uuid);
+            p.sendMessage(ChatColor.RED + Config.inputTimeout);
+        }, 600L);
+        waitingForName.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), wrappedTask));
     }
 
     static void setPlayerSkull(final Player p, ArmorStand as) {
         final UUID uuid = p.getUniqueId();
-        if(waitingForName.containsKey(uuid)) {
-            Bukkit.getScheduler().cancelTask(waitingForName.get(uuid).getValue());
+        if (waitingForName.containsKey(uuid)) {
+            WrappedTask wrappedTask = waitingForName.get(uuid).getValue();
+            scheduler.cancelTask(wrappedTask);
             waitingForName.remove(uuid);
         }
-        if(Config.useCommandForTextInput) {
+
+        if (Config.useCommandForTextInput) {
             String msg1 = ChatColor.GOLD + Config.enterSkullC + ": " + ChatColor.GREEN + "/ast <MC Username For Skull>";
             p.sendTitle(" ", msg1, 0, 600, 0);
             p.sendMessage(msg1);
@@ -239,36 +287,43 @@ public class AST extends JavaPlugin {
             p.sendTitle(" ", ChatColor.GOLD + Config.enterSkull, 0, 600, 0);
             p.sendMessage(ChatColor.GOLD + Config.enterSkull);
         }
-        int taskID = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!waitingForSkull.containsKey(uuid)) return;
-                waitingForSkull.remove(uuid);
-                p.sendMessage(ChatColor.RED + Config.inputTimeout);
+
+        WrappedTask wrappedTask = scheduler.runLater(() -> {
+            if (!waitingForSkull.containsKey(uuid)) {
+                return;
             }
-        }.runTaskLater(AST.plugin, 600L).getTaskId();
-        waitingForSkull.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), taskID));
+
+            waitingForSkull.remove(uuid);
+            p.sendMessage(ChatColor.RED + Config.inputTimeout);
+        }, 600L);
+        waitingForSkull.put(uuid, new AbstractMap.SimpleEntry<>(as.getUniqueId(), wrappedTask));
     }
 
     static boolean checkBlockPermission(Player p, Block b) {
-        if(b == null) return true;
+        if (b == null) {
+            return true;
+        }
+
         if (PlotSquaredHook.api != null) {
             Location l = b.getLocation();
-            if(PlotSquaredHook.isPlotWorld(l)) {
+            if (PlotSquaredHook.isPlotWorld(l)) {
                 Boolean hasPermission = PlotSquaredHook.checkPermission(p, l);
-                if(hasPermission != null) {
+                if (hasPermission != null) {
                     return hasPermission;
                 }
             }
         }
-        if(Config.worldGuardPlugin != null) {
-            if(!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
+
+        if (Config.worldGuardPlugin != null) {
+            if (!Utils.hasPermissionNode(p, "astools.bypass-wg-flag") && !getWorldGuardAstFlag(b.getLocation())) {
                 return false;
             }
-            if(!Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b)) {
+
+            if (!Config.worldGuardPlugin.createProtectionQuery().testBlockBreak(p, b)) {
                 return false;
             }
         }
+
         BlockBreakEvent breakEvent = new BlockBreakEvent(b, p);
         Bukkit.getServer().getPluginManager().callEvent(breakEvent);
         return !breakEvent.isCancelled();
@@ -278,7 +333,10 @@ public class AST extends JavaPlugin {
         if (l != null && l.getWorld() != null) {
             RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager regions = regionContainer.get(BukkitAdapter.adapt(l.getWorld()));
-            if (regions == null) return true;
+            if (regions == null) {
+                return true;
+            }
+
             return regions.getApplicableRegions(BukkitAdapter.asBlockVector(l)).testState(null, (StateFlag) WG_AST_FLAG);
         } else {
             return false;
@@ -290,15 +348,19 @@ public class AST extends JavaPlugin {
         boolean enabled = tool == null || tool.isEnabled();
         boolean hasNode = Utils.hasPermissionNode(p, permNode);
         boolean blockPerm = checkBlockPermission(p, b);
-        if(Config.showDebugMessages) {
+        if (Config.showDebugMessages) {
             AST.debug("Plr: " + p.getName() + ", Tool: " + tool + ", Tool En: " + enabled + ", Perm: " + permNode + ", Has Perm: " + hasNode + ", Location Perm: " + blockPerm);
         }
+
         return enabled && hasNode && blockPerm;
     }
 
     static void debug(String msg) {
-        if(!Config.showDebugMessages) return;
-        Bukkit.getLogger().log(Level.INFO, "[AST DEBUG] " + msg);
+        if (!Config.showDebugMessages) {
+            return;
+        }
+
+        plugin.getLogger().log(Level.INFO, "[AST DEBUG] " + msg);
     }
 
     static ArmorStand getArmorStand(UUID uuid, World w) {
@@ -309,21 +371,23 @@ public class AST extends JavaPlugin {
                 }
             }
         }
+
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     static ItemStack getPlayerHead(String playerName) {
         OfflinePlayer offlinePlayer = Bukkit.getServer().getPlayer(playerName);
-        if(offlinePlayer == null) {
+        if (offlinePlayer == null) {
             offlinePlayer = Bukkit.getOfflinePlayer(playerName);
         }
+
         final ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         final SkullMeta meta = (SkullMeta) item.getItemMeta();
-        if(meta == null) {
-            Bukkit.getLogger().warning("Skull item meta was null");
+        if (meta == null) {
+            plugin.getLogger().warning("Skull item meta was null");
             return item;
         }
+
         meta.setOwningPlayer(offlinePlayer);
         item.setItemMeta(meta);
         return item;
@@ -333,53 +397,55 @@ public class AST extends JavaPlugin {
         final UUID plrUuid = p.getUniqueId();
         final UUID uuid;
         boolean name;
-        int taskId;
-        if(AST.waitingForName.containsKey(plrUuid)) {
+        WrappedTask task;
+        if (AST.waitingForName.containsKey(plrUuid)) {
             uuid = AST.waitingForName.get(plrUuid).getKey();
-            taskId = AST.waitingForName.get(plrUuid).getValue();
+            task = AST.waitingForName.get(plrUuid).getValue();
             name = true;
-        } else if(AST.waitingForSkull.containsKey(plrUuid)) {
+        } else if (AST.waitingForSkull.containsKey(plrUuid)) {
             uuid = AST.waitingForSkull.get(plrUuid).getKey();
-            taskId = AST.waitingForSkull.get(plrUuid).getValue();
+            task = AST.waitingForSkull.get(plrUuid).getValue();
             name = false;
         } else {
             return false;
         }
-        Bukkit.getScheduler().cancelTask(taskId);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                final ArmorStand as = getArmorStand(uuid, p.getWorld());
-                if (as != null) {
-                    String input = ChatColor.translateAlternateColorCodes('&', in);
-                    if(input.equals("&")) input = "";
-                    if(name) {
-                        if (input.length() > 0) {
-                            as.setCustomName(input);
-                            as.setCustomNameVisible(true);
-                            p.sendMessage(ChatColor.GREEN + Config.nameSet);
-                        } else {
-                            as.setCustomName("");
-                            as.setCustomNameVisible(false);
-                            as.setCustomNameVisible(false);
-                            p.sendMessage(ChatColor.GREEN + Config.nameRemoved);
-                        }
+
+        scheduler.cancelTask(task);
+
+        scheduler.runAtEntity(p, t -> {
+            final ArmorStand as = getArmorStand(uuid, p.getWorld());
+            if (as != null) {
+                String input = ChatColor.translateAlternateColorCodes('&', in);
+                if (input.equals("&")) {
+                    input = "";
+                }
+
+                if (name) {
+                    if (!input.isEmpty()) {
+                        as.setCustomName(input);
+                        as.setCustomNameVisible(true);
+                        p.sendMessage(ChatColor.GREEN + Config.nameSet);
                     } else {
-                        if(MC_USERNAME_PATTERN.matcher(input).matches()) {
-                            if(as.getEquipment() != null) {
-                                as.getEquipment().setHelmet(getPlayerHead(input));
-                                p.sendMessage(ChatColor.GREEN + Config.skullSet);
-                            }
-                        } else {
-                            p.sendMessage(ChatColor.RED + input + " " + Config.invalidName);
-                        }
+                        as.setCustomName("");
+                        as.setCustomNameVisible(false);
+                        as.setCustomNameVisible(false);
+                        p.sendMessage(ChatColor.GREEN + Config.nameRemoved);
+                    }
+                } else {
+                    if (MC_USERNAME_PATTERN.matcher(input).matches()) {
+                        as.getEquipment();
+                        as.getEquipment().setHelmet(getPlayerHead(input));
+                        p.sendMessage(ChatColor.GREEN + Config.skullSet);
+                    } else {
+                        p.sendMessage(ChatColor.RED + input + " " + Config.invalidName);
                     }
                 }
-                AST.waitingForName.remove(plrUuid);
-                AST.waitingForSkull.remove(plrUuid);
-                Utils.title(p, " ");
             }
-        }.runTask(AST.plugin);
+
+            AST.waitingForName.remove(plrUuid);
+            AST.waitingForSkull.remove(plrUuid);
+            Utils.title(p, " ");
+        });
         return true;
     }
 }

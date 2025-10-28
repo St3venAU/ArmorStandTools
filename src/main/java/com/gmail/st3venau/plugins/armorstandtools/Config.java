@@ -117,17 +117,18 @@ class Config {
         AST.selectedArmorStand.clear();
 
         deniedCommands.clear();
-        for(String deniedCmd : config.getStringList("deniedCommandsWhileUsingTools")) {
+        for (String deniedCmd : config.getStringList("deniedCommandsWhileUsingTools")) {
             deniedCmd = deniedCmd.split(" ")[0].toLowerCase();
-            while(deniedCmd.length() > 0 && deniedCmd.charAt(0) == '/') {
+            while (!deniedCmd.isEmpty() && deniedCmd.charAt(0) == '/') {
                 deniedCmd = deniedCmd.substring(1);
             }
-            if(deniedCmd.length() > 0) {
+
+            if (!deniedCmd.isEmpty()) {
                 deniedCommands.add(deniedCmd);
             }
         }
 
-        for(ArmorStandTool tool : ArmorStandTool.values()) {
+        for (ArmorStandTool tool : ArmorStandTool.values()) {
             tool.setEnabled(config);
         }
 
@@ -136,8 +137,7 @@ class Config {
             try {
                 PlotSquaredHook.init();
                 AST.plugin.getLogger().log(Level.INFO, "PlotSquared plugin was found. PlotSquared support enabled.");
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 AST.plugin.getLogger().log(Level.WARNING, "PlotSquared plugin was found, but there was an error initializing PlotSquared support.");
             }
@@ -147,12 +147,13 @@ class Config {
 
         Plugin wgp = AST.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 
-        if(wgp instanceof WorldGuardPlugin) {
+        if (wgp instanceof WorldGuardPlugin) {
             worldGuardPlugin = (WorldGuardPlugin) wgp;
         }
-        if(config.getBoolean("integrateWithWorldGuard")) {
+
+        if (config.getBoolean("integrateWithWorldGuard")) {
             AST.plugin.getLogger().log(Level.INFO, worldGuardPlugin == null ? "WorldGuard plugin not found. Continuing without WorldGuard support." : "WorldGuard plugin found. WorldGuard support enabled.");
-        } else if(worldGuardPlugin != null) {
+        } else if (worldGuardPlugin != null) {
             AST.plugin.getLogger().log(Level.WARNING, "WorldGuard plugin was found, but integrateWithWorldGuard is set to false in config.yml. Continuing without WorldGuard support.");
             worldGuardPlugin = null;
         }
@@ -181,6 +182,7 @@ class Config {
         if (defConfigStream != null) {
             languageConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
         }
+
         invReturned = languageConfig.getString("invReturned");
         asDropped = languageConfig.getString("asDropped");
         asVisible = languageConfig.getString("asVisible");
@@ -265,13 +267,15 @@ class Config {
 
     private static ItemStack getItemStack(String configPath) {
         String s = AST.plugin.getConfig().getString(configPath);
-        if(s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return new ItemStack(Material.AIR);
         }
-        if(s.equals("AIR 0")) {
+
+        if (s.equals("AIR 0")) {
             AST.plugin.getConfig().set(configPath, "AIR");
             return new ItemStack(Material.AIR);
         }
+
         Material m;
         try {
             m = Material.valueOf(s.toUpperCase());
@@ -279,7 +283,7 @@ class Config {
             AST.plugin.getLogger().warning("Error in config.yml: Invalid material name specifed (" + s + "). Continuing using AIR instead.");
             return new ItemStack(Material.AIR);
         }
+
         return new ItemStack(m, 1);
     }
-
 }

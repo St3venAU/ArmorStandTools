@@ -76,11 +76,12 @@ public enum ArmorStandTool {
     ArmorStandTool(String config_id, Material m, int slot, boolean forGui, String permission, boolean reverseSneaking) {
         item = new ItemStack(m);
         ItemMeta meta = item.getItemMeta();
-        if(meta != null) {
+        if (meta != null) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);
         }
+
         this.config_id = config_id;
         this.slot = slot;
         this.forGui = forGui;
@@ -109,12 +110,12 @@ public enum ArmorStandTool {
     }
 
     private boolean is(ItemStack is) {
-        return  is != null &&
-                is.getType() == item.getType() &&
-                is.getItemMeta() != null &&
-                is.getItemMeta().hasDisplayName() &&
-                item.getItemMeta() != null &&
-                is.getItemMeta().getDisplayName().equals(item.getItemMeta().getDisplayName());
+        return is != null &&
+               is.getType() == item.getType() &&
+               is.getItemMeta() != null &&
+               is.getItemMeta().hasDisplayName() &&
+               item.getItemMeta() != null &&
+               is.getItemMeta().getDisplayName().equals(item.getItemMeta().getDisplayName());
     }
 
     boolean isForGui() {
@@ -138,17 +139,19 @@ public enum ArmorStandTool {
     }
 
     void use(Player p, ArmorStand as) {
-        if(as == null || as.isDead()) {
+        if (as == null || as.isDead()) {
             UUID uuid = p.getUniqueId();
             AST.selectedArmorStand.remove(uuid);
             AST.activeTool.remove(uuid);
             return;
         }
-        if(this == MOVE) {
-            as.teleport(Utils.getLocationFacing(p.getLocation()));
+
+        if (this == MOVE) {
+            AST.scheduler().runAtEntity(as, task -> as.teleportAsync(Utils.getLocationFacing(p.getLocation())));
             Utils.title(p, Config.carrying);
             return;
         }
+
         showTitle(p);
         EulerAngle eulerAngle = switch (this) {
             case HEAD -> as.getHeadPose();
@@ -159,7 +162,11 @@ public enum ArmorStandTool {
             case RLEG -> as.getRightLegPose();
             default -> null;
         };
-        if(eulerAngle == null) return;
+
+        if (eulerAngle == null) {
+            return;
+        }
+
         eulerAngle = eulerAngle.setX(getPitch(p));
         boolean sneaking = reverseSneaking != p.isSneaking();
         double yaw = getRelativeYaw(p, as);
@@ -178,12 +185,14 @@ public enum ArmorStandTool {
     // Actual pitch multiplied for increased sensitivity
     private double getPitch(Player p) {
         double pitch = p.getLocation().getPitch() * 4;
-        while(pitch < 0) {
+        while (pitch < 0) {
             pitch += 360;
         }
-        while(pitch > 360) {
+
+        while (pitch > 360) {
             pitch -= 360;
         }
+
         return pitch * Math.PI / 180.0;
     }
 
@@ -192,19 +201,21 @@ public enum ArmorStandTool {
     private double getRelativeYaw(Player p, ArmorStand as) {
         double difference = p.getLocation().getYaw() - as.getLocation().getYaw();
         double yaw = 360.0 - (difference * 2);
-        while(yaw < 0) {
+        while (yaw < 0) {
             yaw += 360;
         }
-        while(yaw > 360) {
+
+        while (yaw > 360) {
             yaw -= 360;
         }
+
         return yaw * Math.PI / 180.0;
     }
 
     static void give(Player p) {
         PlayerInventory i = p.getInventory();
-        for(ArmorStandTool t : values()) {
-            if(t.enabled && !t.forGui) {
+        for (ArmorStandTool t : values()) {
+            if (t.enabled && !t.forGui) {
                 i.setItem(t.slot, t.item);
             }
         }
@@ -219,46 +230,44 @@ public enum ArmorStandTool {
     }
 
     ItemStack updateLore(ArmorStand as) {
-        switch (this) {
-            case INVIS:
-                return setLore(item, ChatColor.AQUA + Config.asVisible + ": " + (as.isVisible() ? (ChatColor.GREEN + Config.isTrue) : (ChatColor.RED + Config.isFalse)));
-            case SIZE:
-                return setLore(item, ChatColor.AQUA + Config.size + ": " + (as.isSmall() ? (ChatColor.BLUE + Config.small) : (ChatColor.GREEN + Config.normal)));
-            case BASE:
-                return setLore(item, ChatColor.AQUA + Config.basePlate + ": " + (as.hasBasePlate() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
-            case GRAV:
-                return setLore(item, ChatColor.AQUA + Config.gravity + ": " + (as.hasGravity() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
-            case ARMS:
-                return setLore(item, ChatColor.AQUA + Config.arms + ": " + (as.hasArms() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
-            case INVUL:
-                return setLore(item, ChatColor.AQUA + Config.invul + ": " + (as.isInvulnerable() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
-            case SLOTS:
-                return setLore(item, ChatColor.AQUA + Config.equip + ": " + (Utils.hasDisabledSlots(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
-            case NAME:
-                return setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + as.getCustomName())));
-            case PHEAD:
+        return switch (this) {
+            case INVIS -> setLore(item, ChatColor.AQUA + Config.asVisible + ": " + (as.isVisible() ? (ChatColor.GREEN + Config.isTrue) : (ChatColor.RED + Config.isFalse)));
+            case SIZE -> setLore(item, ChatColor.AQUA + Config.size + ": " + (as.isSmall() ? (ChatColor.BLUE + Config.small) : (ChatColor.GREEN + Config.normal)));
+            case BASE -> setLore(item, ChatColor.AQUA + Config.basePlate + ": " + (as.hasBasePlate() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+            case GRAV -> setLore(item, ChatColor.AQUA + Config.gravity + ": " + (as.hasGravity() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+            case ARMS -> setLore(item, ChatColor.AQUA + Config.arms + ": " + (as.hasArms() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+            case INVUL -> setLore(item, ChatColor.AQUA + Config.invul + ": " + (as.isInvulnerable() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+            case SLOTS -> setLore(item, ChatColor.AQUA + Config.equip + ": " + (Utils.hasDisabledSlots(as) ? (ChatColor.GREEN + Config.locked) : (ChatColor.RED + Config.unLocked)));
+            case NAME -> setLore(item, ChatColor.AQUA + Config.currently + ": " + (as.getCustomName() == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + as.getCustomName())));
+            case PHEAD -> {
                 String name = plrHeadName(as);
-                return setLore(item, ChatColor.AQUA + Config.currently + ": " + (name == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + name)));
-            case GLOW:
-                return setLore(item, ChatColor.AQUA + Config.glow + ": " + (as.isGlowing() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
-            default:
-                return item;
-        }
+                yield setLore(item, ChatColor.AQUA + Config.currently + ": " + (name == null ? (ChatColor.BLUE + Config.none) : (ChatColor.GREEN + name)));
+            }
+            case GLOW -> setLore(item, ChatColor.AQUA + Config.glow + ": " + (as.isGlowing() ? (ChatColor.GREEN + Config.isOn) : (ChatColor.RED + Config.isOff)));
+            default -> item;
+        };
     }
 
     private ItemStack setLore(ItemStack is, String... lore) {
         ItemMeta meta = is.getItemMeta();
-        if(meta != null) {
+        if (meta != null) {
             meta.setLore(Arrays.asList(lore));
             is.setItemMeta(meta);
         }
+
         return is;
     }
 
     private String plrHeadName(ArmorStand as) {
         EntityEquipment entityEquipment = as.getEquipment();
-        if(entityEquipment == null || entityEquipment.getHelmet() == null || !(entityEquipment.getHelmet().getItemMeta() instanceof SkullMeta meta)) return null;
-        if(meta.getOwningPlayer() == null) return null;
+        if (entityEquipment.getHelmet() == null || !(entityEquipment.getHelmet().getItemMeta() instanceof SkullMeta meta)) {
+            return null;
+        }
+
+        if (meta.getOwningPlayer() == null) {
+            return null;
+        }
+
         return meta.getOwningPlayer().getName();
     }
 
@@ -267,31 +276,42 @@ public enum ArmorStandTool {
     }
 
     static ArmorStandTool get(ItemStack is) {
-        if(is == null || is.getItemMeta() == null || !is.getItemMeta().hasDisplayName()) return null;
-        for(ArmorStandTool t : values()) {
-            if(t.is(is)) return t;
+        if (is == null || is.getItemMeta() == null || !is.getItemMeta().hasDisplayName()) {
+            return null;
         }
+
+        for (ArmorStandTool t : values()) {
+            if (t.is(is)) {
+                return t;
+            }
+        }
+
         return null;
     }
 
     static void updateTools(FileConfiguration config) {
-        for(ArmorStandTool t : values()) {
+        for (ArmorStandTool t : values()) {
             t.name = config.getString("tool." + t.config_id + ".name");
             ItemMeta im = t.item.getItemMeta();
-            if(im != null) {
+            if (im != null) {
                 im.setDisplayName(ChatColor.YELLOW + t.name);
                 List<String> lore = config.getStringList("tool." + t.config_id + ".lore");
-                if(t == GEN_CMD) {
-                    String cmdBlk = lore.size() > 0 ? lore.get(0) : "";
+                if (t == GEN_CMD) {
+                    String cmdBlk = !lore.isEmpty() ? lore.get(0) : "";
                     String logged = lore.size() > 1 ? lore.get(1) : "";
                     lore.clear();
-                    if(cmdBlk.length() > 0 && Config.saveToolCreatesCommandBlock) lore.add(cmdBlk);
-                    if(logged.length() > 0 && Config.logGeneratedSummonCommands) lore.add(logged);
+                    if (!cmdBlk.isEmpty() && Config.saveToolCreatesCommandBlock) {
+                        lore.add(cmdBlk);
+                    }
+
+                    if (!logged.isEmpty() && Config.logGeneratedSummonCommands) {
+                        lore.add(logged);
+                    }
                 }
+
                 im.setLore(lore);
                 t.item.setItemMeta(im);
             }
         }
     }
-
 }

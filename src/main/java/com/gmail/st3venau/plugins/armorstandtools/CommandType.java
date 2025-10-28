@@ -29,21 +29,22 @@ enum CommandType {
     }
 
     static CommandType fromTag(String tag) {
-        for(CommandType type : values()) {
-            if(type.tag.equalsIgnoreCase(tag)) {
+        for (CommandType type : values()) {
+            if (type.tag.equalsIgnoreCase(tag)) {
                 return type;
             }
         }
+
         return null;
     }
 
     static CommandType fromName(String name) {
-        for(CommandType type : values()) {
-            if(type.name.equalsIgnoreCase(name)) {
+        for (CommandType type : values()) {
+            if (type.name.equalsIgnoreCase(name)) {
                 return type;
             }
         }
+
         return null;
     }
-
 }
